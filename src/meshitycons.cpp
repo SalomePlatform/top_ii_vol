@@ -7,18 +7,18 @@ using namespace std;
 int main()
 {
 
-double xmin=0.0000,	xmax=4.0000,	xx;
-double ymin=0.0000,	ymax=5.0000,	yy;
-double zmin=0.0000,	zmax=-3.0000,	zz;
+double xx;
+double yy;
+double zmin=240.0000,		zmax=-1920.0000,	zz;
 
-int pntx=5;
-int pnty=6;
-int pntz=5;
+int pntx=50;
+int pnty=46;
+int pntz=20;
 
 double delz= (zmax-zmin)/(pntz-1);
 
 ifstream in;
-in.open("./../data/mesh-in-ycons.xyz");
+in.open("./../data/CoarseMesh.xyz");
 
 
 double zznew;
@@ -40,10 +40,11 @@ for(int i=0; i<pntx*pnty; i++){
 	in>>std::fixed>> xx  >> yy >> zz;
 	wrgmsh<< std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<<zz << endl;
 	counter1++;
-	zznew=zz;
+	zznew=zz; delz= (zmax-zz)/(pntz-1);
 	for(int j=0; j<pntz; j++){
 		zznew  = zznew + delz;
-		if(abs(abs(zznew) - abs(zmax)) <= 1e-5){
+		cout << " zz new " << zznew  <<endl;
+		if(abs(abs(zznew) - abs(zmax)) <= 100){
 			wrgmsh<< std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<<zmax << endl;
 			counter1++;
 			break;
