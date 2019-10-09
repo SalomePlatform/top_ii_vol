@@ -19,7 +19,7 @@ int pntz=3;
 double delz;//= (zmax-zmin)/(pntz-1);
 
 ifstream in;
-in.open("./../data/mesh-in-ycons.xyz");
+//in.open("./../data/mesh-in-ycons.xyz");
 in.open("./../data/CoarseMesh.xyz");
 
 
