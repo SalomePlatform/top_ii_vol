@@ -9,16 +9,17 @@ int main()
 
 double xx;
 double yy;
-double zmin=240.0000,		zmax=-1920.0000,	zz;
-double zdiviation=100.;
+double zmin=240.0000,		zmax=-6.0000,	zz;
+double zdiviation=1.e-3;
 
-int pntx=50;
-int pnty=46;
-int pntz=20;
+int pntx=5;
+int pnty=6;
+int pntz=3;
 
 double delz;//= (zmax-zmin)/(pntz-1);
 
 ifstream in;
+in.open("./../data/mesh-in-ycons.xyz");
 in.open("./../data/CoarseMesh.xyz");
 
 

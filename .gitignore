@@ -3,3 +3,6 @@
 *.msh
 *.out
 *.xyz
+*.mesh
+*.vtk
+*.o
