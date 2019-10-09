@@ -7,24 +7,24 @@ using namespace std;
 int main()
 {
 
-double xmin=0.0000,	xmax=3.0000,	xx;
-double ymin=0.0000,	ymax=3.0000,	yy;
+double xmin=0.0000,	xmax=4.0000,	xx;
+double ymin=0.0000,	ymax=5.0000,	yy;
 double zmin=0.0000,	zmax=-3.0000,	zz;
 
-int pntx=4;
-int pnty=4;
-int pntz=2;
+int pntx=5;
+int pnty=6;
+int pntz=5;
 
 double delz= (zmax-zmin)/(pntz-1);
 
 ifstream in;
-in.open("./../data/mesh-in.xyz");
+in.open("./../data/mesh-in-ycons.xyz");
 
 
 double zznew;
 int TotNodes = pntx * pnty * pntz;
 int TotElemt = (pntx-1) * (pnty-1) * (pntz-1) * 6;
-int counter1,counter2,counter3;
+int counter1;
 
 ofstream wrgmsh;
 wrgmsh.open("output-mesh.msh");
@@ -64,16 +64,17 @@ counter1=1;
 
 int IJK,Ip1JK,IJp1K,Ip1Jp1K,IJKp1,Ip1JKp1,IJp1Kp1,Ip1Jp1Kp1;
 
-for(int i=0; i<pntx-1;  i++){
+
 for(int j=0; j<pnty-1;  j++){
+for(int i=0; i<pntx-1;  i++){
 for(int k=1; k<=pntz-1; k++){
 
-IJK	=	i*pntx*pntz + j*pnty + k;
+IJK	=	i*pntz + j*pntx*pntz + k;
 
 
-Ip1JK	=	IJK 	+ (pnty*pntz)		;
+Ip1JK	=	IJK 	+ (pntx*pntz)		;
 IJp1K	=	IJK 	+ (pntz)		;
-Ip1Jp1K	=	IJK 	+ (pnty*pntz) + pntz	;
+Ip1Jp1K	=	IJK 	+ (pntx*pntz) + pntz	;
 
 IJKp1     =	IJK 	+ 1	;
 Ip1JKp1   =	Ip1JK 	+ 1	;
