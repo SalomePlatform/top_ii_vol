@@ -27,9 +27,9 @@ double 	zmin=240.0000		,
        	zmax=-1920.0000		,
 	zdiviation=50.		;
 
-int 	pntx=100		,
-	pnty=91			,
-	pntz=26			;
+int 	pntx=5			,
+	pnty=4			,
+	pntz=3			;
 
 
 //--------------------------------------//
@@ -47,7 +47,7 @@ int TotElemt = TotTetra + TotTrigl;
 //--------------------------------------//
 ifstream in;
 //in.open("CoarseMesh-Skip100.xyz");
-in.open("./../data/CoarseMesh.xyz");
+in.open("./../data/CoarseMeshoo.xyz");
 
 ofstream wrgmsh;
 wrgmsh.open("output-mesh.msh");
@@ -71,18 +71,10 @@ for(int i=0; i<pntx*pnty; i++){
 	wrgmsh<< std::fixed << counter1 << "  " << xx << "  " << yy << "  "<<zz << endl;
 	counter1++;
 	zznew=zz; delz= (zmax-zz)/(pntz-1);
-	for(int j=0; j<pntz; j++){
+	for(int j=0; j<pntz-1; j++){
 		zznew  = zznew + delz;
-		//cout << " zz new " << zznew  <<endl;
-		if(abs(abs(zznew) - abs(zmax)) <= zdiviation){
-			wrgmsh<< std::fixed << counter1 << "  " << xx << "  " << yy << "  "<<zmax << endl;
-			counter1++;
-			break;
-		}else
-		{
 			wrgmsh<< std::fixed << counter1 << "  " << xx << "  " << yy << "  "<<zznew << endl;
 			counter1++;
-		}
 
 	}
 }
