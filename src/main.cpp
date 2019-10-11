@@ -27,8 +27,8 @@ double 	zmin=240.0000		,
        	zmax=-1920.0000		,
 	zdiviation=50.		;
 
-int 	pntx=50			,
-	pnty=46			,
+int 	pntx=100		,
+	pnty=91			,
 	pntz=26			;
 
 
@@ -46,6 +46,7 @@ int TotElemt = TotTetra + TotTrigl;
 //---- I/O Files -----
 //--------------------------------------//
 ifstream in;
+//in.open("CoarseMesh-Skip100.xyz");
 in.open("./../data/CoarseMesh.xyz");
 
 ofstream wrgmsh;
