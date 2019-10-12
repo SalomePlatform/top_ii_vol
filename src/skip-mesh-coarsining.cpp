@@ -17,6 +17,7 @@ int main(){
 
     int skipx = 499;
     int skipy = 499;
+
     ifstream in;
         in.open("./../data/DEM_2m_new.xyz");
 
@@ -43,10 +44,38 @@ int main(){
 
    if(Scatter==1){
 
-        cout << " Please choose a Y-stripping number divisible or factor of :: " << int(pnty/skipy+1) << endl;
- 
-        int Nscat = 2;
+        int Nscat;// = 2;
         int countme=0, countme2=0;
+
+        cout << "\n\n";
+
+        cout << " *===================================================* \n" 
+             << " *                  INFORMATION                      * \n"  
+             << " *===================================================* \n"        
+             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
+             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
+             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n\n ==================================================== \n"  
+             << 
+         endl;
+
+        cout << "\n\n";
+
+        cout << " *===================================================* \n" 
+             << " *           !!!! IMPORTANT !!!!                     * \n"  
+             << " *===================================================* \n" 
+             << "\n   To get perfect scaling we recommend  choosing      "
+             << "\n   the striping parameter (number of partitions)      "
+             << "\n   so that it divides << "<< int((pnty/skipy+1)*(pntx/skipx+1))
+             << " >>   and << "<< int(pnty/skipy)
+             << " >>" 
+             << "\n\n ==================================================== \n"  
+             << 
+         endl;
+
+
+        cout << "\n\n";
+        cout << "Enter the striping parameter [int] :: ";cin  >> Nscat ;	
         cout << "\n\n";
  
         cout << " *===================================================* \n" 
@@ -61,6 +90,22 @@ int main(){
 
 	int k=0;
 	ofstream wr;
+
+        wr.open("CoarseMesh-Skip500-info.txt");
+
+        wr   << " *===================================================* \n" 
+             << " *                  INFORMATION                      * \n"  
+             << " *===================================================* \n"        
+             << "\n   Total # strips :: "<< Nscat  
+             << "\n   Total # Points :: "<< int((pnty/skipy+1) + (pntx/skipx+1))
+             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
+             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n\n ==================================================== \n"  
+             << 
+         endl;
+        wr.close();
+
+
         wr.open("CoarseMesh-Skip500_"+std::to_string(k)+".xyz");
 
         for(int j=0; j<pnty; j++){

@@ -38,7 +38,6 @@ int main(int argc, char **argv) {
     char *const fmt    = "%-13.6f   " ;
     char *const endfmt = "%-13d\n"    ;
 
-
     FILE *infile;
 
     MPI_Offset 	 offset		;
@@ -54,7 +53,7 @@ int main(int argc, char **argv) {
 
     int pntx=6;
     int pnty=5;
-    int	pntz=2;
+    int	pntz=4;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -70,9 +69,9 @@ int main(int argc, char **argv) {
     ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     int Ndiv = 	(pntx * pnty)/size ;
-    const int nrows = Ndiv*size*pntz ;
 
-    locnrows = nrows/size;
+    int nrows = NPnt;
+    locnrows = NPnt/size;
     startrow = rank * locnrows;
     endrow = startrow + locnrows - 1	;
     if (rank == size-1) {
@@ -110,7 +109,6 @@ int main(int argc, char **argv) {
     }
 
     fclose(infile);
- 
 //-----------------------------------------------------------------------------------//
 //---- New MPI data type -----
 //-----------------------------------------------------------------------------------//
@@ -136,11 +134,11 @@ int main(int argc, char **argv) {
 
     free(data[0]);
     free(data);
-
 //-----------------------------------------------------------------------------------//
 //---- create a type describing our piece of the array -----
 //-----------------------------------------------------------------------------------//
 
+    nrows = NPnt;
     int globalsizes[2] = {nrows   , 4};
     int localsizes [2] = {locnrows, 4};
     int starts[2]      = {startrow, 0};
@@ -153,7 +151,7 @@ int main(int argc, char **argv) {
 //---- open the file, and set the view -----
 //-----------------------------------------------------------------------------------//
 
-    MPI_File_open(MPI_COMM_WORLD, "Parallel.mesh", 
+    MPI_File_open(MPI_COMM_WORLD, "test.mesh", 
                   MPI_MODE_CREATE|MPI_MODE_WRONLY,
                   MPI_INFO_NULL, &file);
 
@@ -171,7 +169,6 @@ int main(int argc, char **argv) {
                  NPnt);   
         MPI_File_write(file, testchar, sizeof(testchar), MPI_CHAR, &status);
     }
-
 //-----------------------------------------------------------------------------------//
 //---- Pointdata writing -----
 //-----------------------------------------------------------------------------------//
@@ -182,6 +179,7 @@ int main(int argc, char **argv) {
 
     MPI_File_write_all(file, data_as_txt, locnrows*4, num_as_string, &status);
 
+    offset += totcar*NPnt;
 
 //-----------------------------------------------------------------------------------//
 //---- Tetdata writing -----
@@ -193,10 +191,9 @@ int main(int argc, char **argv) {
       MPI_File_write(file, testchar1, sizeof(testchar1), MPI_CHAR, &status);
     }
 
-    offset += totcar*nrows + 23;
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
-int	IJK		,
+    offset += 23;
+
+    int	IJK		,
 	Ip1JK		,
 	IJp1K		,
 	IJKp1		,
@@ -206,29 +203,20 @@ int	IJK		,
 	Ip1Jp1Kp1	;
 
     locnrows=NTet/size;
+
     char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar1 = 4*charspernum*sizeof(char);
 
     char *const fmtint = "%-11d " ;
     char *const endfmtint = "%-7d\n" ;
 
-/*
-    for (int i=0; i<locnrows; i++) {
-        for (int j=0; j<4; j++) {
-	    int nn=1000000000;
-	    sprintf(&data_as_txt1[i*totcar1+j*12], fmtint, nn);	
-        }
-        sprintf(&data_as_txt1[i*totcar1+4*12], endfmtint, NElePnt);
-    }
-*/
+    int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+    int dummycount=0,label=0;
 
 
-int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
-int dummycount=0,label=0;
 //for(int j=0; j<pnty-1;  j++){
 for(int j=istart; j<iend;  j++){
 for(int i=0; i<pntx-1;  i++){
-
 for(int k=1; k<=pntz-1; k++){
 
   IJK	    =	i*pntz  + j*pntx*pntz + k	;
@@ -292,6 +280,27 @@ dummycount++;
 }
 }
 
+    nrows = NTet;
+    startrow = rank * locnrows;
+    endrow = startrow + locnrows - 1	;
+    if (rank == size-1) {
+        endrow = nrows - 1;
+        locnrows = endrow - startrow + 1;
+    }
+
+    int globalsizes1[2] = {nrows   , 4};
+    int localsizes1 [2] = {locnrows, 4};
+    int starts1[2]      = {startrow, 0};
+    int order1          = MPI_ORDER_C  ;
+
+    MPI_Datatype localarray1	;
+
+    MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1, order1, num_as_string, &localarray1);
+    MPI_Type_commit(&localarray1);
+
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray1, 
+                           "native", MPI_INFO_NULL);
+
     MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
 /*
 //-----------------------------------------------------------------------------------//
@@ -335,7 +344,9 @@ dummycount++;
 
     MPI_File_close(&file);
     MPI_Type_free(&localarray);
+    MPI_Type_free(&localarray1);
     MPI_Type_free(&num_as_string);
+
 
     MPI_Finalize();
     return 0;
