@@ -45,7 +45,7 @@ int main(){
 
         cout << " Please choose a Y-stripping number divisible or factor of :: " << int(pnty/skipy+1) << endl;
  
-        int Nscat = 3;
+        int Nscat = 2;
         int countme=0, countme2=0;
         cout << "\n\n";
  

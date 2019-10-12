@@ -31,9 +31,9 @@ int	IJK		,
 
 double 	zmax = -1920.0		;
 
-int 	pntx =  5	        ,
-	pnty =  4	 	,
-	pntz =  3		;
+int 	pntx =  6	        ,
+	pnty =  5	 	,
+	pntz =  2		;
 
 //----------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -48,7 +48,8 @@ int 	NPnt = pntx * pnty * pntz					,
 //----------------------------------------------------------------------//
 
 ifstream in				;
-in.open("./../data/CoarseMeshoo.xyz")	;
+//in.open("./../data/CoarseMeshoo.xyz")	;
+in.open("CoarseMesh-Skip500.xyz")	;
 
 ofstream wrgmsh				;
 wrgmsh.open("output-mesh.mesh")		;
