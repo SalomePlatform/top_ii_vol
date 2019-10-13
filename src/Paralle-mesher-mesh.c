@@ -49,10 +49,11 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------//
 //---- Global Parameters -----
 //-----------------------------------------------------------------------------------//
+
     double zmax = -1920.0;
 
-    int pntx=6;
-    int pnty=5;
+    int pntx=10;
+    int pnty=9;
     int	pntz=4;
 
 //-----------------------------------------------------------------------------------//
@@ -69,8 +70,9 @@ int main(int argc, char **argv) {
     ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     int Ndiv = 	(pntx * pnty)/size ;
-
     int nrows = NPnt;
+
+
     locnrows = NPnt/size;
     startrow = rank * locnrows;
     endrow = startrow + locnrows - 1	;
@@ -84,6 +86,9 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------//
 //---- Gathering point data from partitioned files -----
 //-----------------------------------------------------------------------------------//
+
+    if(rank==0)
+	printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
     //snprintf (filepath, sizeof(filepath), "./../data/CoarseMesh_%d.xyz", rank);
@@ -109,6 +114,12 @@ int main(int argc, char **argv) {
     }
 
     fclose(infile);
+
+    if(rank==0)
+	printf(" ---- Done\n");
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
 //-----------------------------------------------------------------------------------//
 //---- New MPI data type -----
 //-----------------------------------------------------------------------------------//
@@ -119,6 +130,9 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------//
 //---- convert our data into txt -----
 //-----------------------------------------------------------------------------------//
+
+    if(rank==0)
+	printf("\n Point cloud mesh data to parallel data conversion");
 
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
@@ -134,6 +148,12 @@ int main(int argc, char **argv) {
 
     free(data[0]);
     free(data);
+
+    if(rank==0)
+	printf(" ---- Done\n");
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
 //-----------------------------------------------------------------------------------//
 //---- create a type describing our piece of the array -----
 //-----------------------------------------------------------------------------------//
@@ -159,6 +179,11 @@ int main(int argc, char **argv) {
 //---- Header writing -----
 //-----------------------------------------------------------------------------------//
 
+
+    if(rank==0)
+	printf("\n Writing mesh points ");
+
+
     offset = 0;
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
@@ -181,9 +206,17 @@ int main(int argc, char **argv) {
 
     offset += totcar*NPnt;
 
+    if(rank==0)
+	printf(" ---- Done\n");
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
 //-----------------------------------------------------------------------------------//
 //---- Tetdata writing -----
 //-----------------------------------------------------------------------------------//
+
+    if(rank==0)
+	printf("\n Writing mesh volumes ");
 
     if(rank==0){
       char testchar1[24];
@@ -210,75 +243,80 @@ int main(int argc, char **argv) {
     char *const fmtint = "%-11d " ;
     char *const endfmtint = "%-7d\n" ;
 
-    int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+
     int dummycount=0,label=0;
 
+    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
 
-//for(int j=0; j<pnty-1;  j++){
-for(int j=istart; j<iend;  j++){
-for(int i=0; i<pntx-1;  i++){
-for(int k=1; k<=pntz-1; k++){
+    for(int j=0; j<pnty-1;  j++){
+    for(int i=istart; i<iend;  i++){
 
-  IJK	    =	i*pntz  + j*pntx*pntz + k	;
-  Ip1JK	    =	IJK 	+ (pntx*pntz)		;
-  IJp1K	    =	IJK 	+ (pntz)		;
-  Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
-  IJKp1     =	IJK 	+ 1			;
-  Ip1JKp1   =	Ip1JK 	+ 1			;
-  IJp1Kp1   =	IJp1K   + 1			;
-  Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
+//    int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJK);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+//    for(int j=istart; j<iend;  j++){
+//    for(int i=0; i<pntx-1;  i++){
+    for(int k=1; k<=pntz-1; k++){
 
-dummycount++;
+        IJK	    =	i*pntz  + j*pntx*pntz + k	;
+        Ip1JK	    =	IJK 	+ (pntx*pntz)		;
+        IJp1K	    =	IJK 	+ (pntz)		;
+        Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
+        IJKp1     =	IJK 	+ 1			;
+        Ip1JKp1   =	Ip1JK 	+ 1			;
+        IJp1Kp1   =	IJp1K   + 1			;
+        Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJK);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJK);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
 
-dummycount++;
+        dummycount++;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, Ip1JKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJK);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
 
-dummycount++;
+        dummycount++;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, Ip1JKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, Ip1JKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
 
-dummycount++;
+        dummycount++;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJp1Kp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, Ip1JKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
 
-dummycount++;
+        dummycount++;
 
-  sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJp1Kp1);
-  sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-  sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
 
-dummycount++;
+        dummycount++;
 
-}
-}
-}
+        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+
+        dummycount++;
+
+    }
+    }
+    }
 
     nrows = NTet;
     startrow = rank * locnrows;
@@ -302,6 +340,15 @@ dummycount++;
                            "native", MPI_INFO_NULL);
 
     MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
+
+    if(rank==0)
+	printf(" ---- Done\n");
+
+    MPI_Type_free(&num_as_string);
+    MPI_Type_free(&localarray1);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
 /*
 //-----------------------------------------------------------------------------------//
 //---- Triangle writing -----
@@ -329,14 +376,23 @@ dummycount++;
 //---- Footer writing -----
 //-----------------------------------------------------------------------------------//
 
+    if(rank==0)
+	printf("\n Finalizing the file ");
+
+
     offset += totcar*NTet;
+
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
+
     if(rank==0){
       char testchar3[5];
       snprintf (testchar3, sizeof(testchar3), "\nEnd");
-      MPI_File_write_all(file, testchar3, sizeof(testchar3)-1, MPI_CHAR, &status);
+      MPI_File_write(file, testchar3, sizeof(testchar3)-1, MPI_CHAR, &status);
     }
+
+    if(rank==0)
+	printf(" ---- Done\n");
 
 //-----------------------------------------------------------------------------------//
 //---- Free memory -----
@@ -344,9 +400,6 @@ dummycount++;
 
     MPI_File_close(&file);
     MPI_Type_free(&localarray);
-    MPI_Type_free(&localarray1);
-    MPI_Type_free(&num_as_string);
-
 
     MPI_Finalize();
     return 0;
