@@ -22,7 +22,12 @@ int main(int argc, char **argv) {
     int ierr 	 ;
     int rank 	 ;
     int size 	 ;
+
+    int NPnt     ;
+    int NTri     ;
+    int NTet     ;
     int label 	 ;
+
     int	IJK	 ;
     int	Ip1JK	 ;
     int	IJp1K	 ;
@@ -45,23 +50,29 @@ int main(int argc, char **argv) {
     float delz	 ;
     float zznew  ;
 
-    const int charspernum=14;
+    const int charspernum = 14 ;
 
-    char *const fmt1    = "%-13d " ;
-    char *const endfmt1 = "%-13d\n"    ;
-    char *const fmt    = "%-13.6f   " ;
-    char *const endfmt = "%-13d\n"    ;
-    char *const fmtint = "%-11d "     ;
-    char *const endfmtint = "%-7d\n"  ;
-
+    char *const fmt1      = "%-13d "     ;
+    char *const endfmt1   = "%-13d\n"    ;
+    char *const fmt       = "%-13.6f   " ;
+    char *const endfmt    = "%-13d\n"    ;
+    char *const fmtint    = "%-11d "     ;
+    char *const endfmtint = "%-7d\n"     ;
 
     FILE *infile;
+
+//-----------------------------------------------------------------------------------//
+//---- MPI variables -----
+//-----------------------------------------------------------------------------------//
 
     MPI_Offset 	 offset		;
     MPI_File   	 file		;
     MPI_Status 	 status		;
     MPI_Datatype num_as_string	;
     MPI_Datatype localarray	;
+
+    MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
+    MPI_Type_commit(&num_as_string);
 
 //-----------------------------------------------------------------------------------//
 //---- Global Parameters -----
@@ -77,10 +88,9 @@ int main(int argc, char **argv) {
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
 
-
-    int NPnt = pntx * pnty * pntz					 ;
-    int NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1)) ;
-    int NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			 ;
+    NPnt = pntx * pnty * pntz					 ;
+    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1)) ;
+    NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			 ;
 
     ierr = MPI_Init(&argc, &argv);
     ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -107,7 +117,6 @@ int main(int argc, char **argv) {
 	printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
-    //snprintf (filepath, sizeof(filepath), "./../data/CoarseMesh_%d.xyz", rank);
     snprintf (filepath, sizeof(filepath), "CoarseMesh-Skip500_%d.xyz", rank);
     infile = fopen(filepath,"r"); 
 
@@ -134,14 +143,7 @@ int main(int argc, char **argv) {
     if(rank==0)
 	printf(" ---- Done\n");
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
-//-----------------------------------------------------------------------------------//
-//---- New MPI data type -----
-//-----------------------------------------------------------------------------------//
-
-    MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
-    MPI_Type_commit(&num_as_string); 
+    MPI_Barrier(MPI_COMM_WORLD); 
 
 //-----------------------------------------------------------------------------------//
 //---- convert our data into txt -----
