@@ -15,8 +15,8 @@ int main(){
     int pntx = 2500 ;
     int pnty = 2251 ;
 
-    int skipx = 499;
-    int skipy = 499;
+    int skipx = 270;
+    int skipy = 260;
 
     ifstream in;
         in.open("./../data/DEM_2m_new.xyz");
@@ -97,7 +97,7 @@ int main(){
              << " *                  INFORMATION                      * \n"  
              << " *===================================================* \n"        
              << "\n   Total # strips :: "<< Nscat  
-             << "\n   Total # Points :: "<< int((pnty/skipy+1) + (pntx/skipx+1))
+             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
              << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
              << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
              << "\n\n ==================================================== \n"  
