@@ -22,6 +22,16 @@ int main(int argc, char **argv) {
     int ierr 	 ;
     int rank 	 ;
     int size 	 ;
+    int label 	 ;
+    int	IJK	 ;
+    int	Ip1JK	 ;
+    int	IJp1K	 ;
+    int	IJKp1	 ;
+    int	Ip1JKp1	 ;
+    int	IJp1Kp1	 ;
+    int	Ip1Jp1K	 ;
+    int	Ip1Jp1Kp1;
+    int dummycount;
 
     int startrow ;
     int endrow   ;
@@ -39,6 +49,9 @@ int main(int argc, char **argv) {
 
     char *const fmt    = "%-13.6f   " ;
     char *const endfmt = "%-13d\n"    ;
+    char *const fmtint = "%-11d "     ;
+    char *const endfmtint = "%-7d\n"  ;
+
 
     FILE *infile;
 
@@ -138,13 +151,13 @@ int main(int argc, char **argv) {
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
 
-    int NElePnt=0;
+    label=0;
 
     for (int i=0; i<locnrows; i++) {
         for (int j=0; j<3; j++) {
 	    sprintf(&data_as_txt[i*totcar+j*charspernum], fmt, data[i][j]);	
         }
-        sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, NElePnt);
+        sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
 
     free(data[0]);
@@ -207,6 +220,8 @@ int main(int argc, char **argv) {
 
     offset += totcar*NPnt;
 
+    free(data_as_txt);
+
     if(rank==0)
 	printf(" ---- Done\n");
 
@@ -227,25 +242,12 @@ int main(int argc, char **argv) {
 
     offset += 23;
 
-    int	IJK		,
-	Ip1JK		,
-	IJp1K		,
-	IJKp1		,
-	Ip1JKp1		,
-	IJp1Kp1		,
-	Ip1Jp1K		,
-	Ip1Jp1Kp1	;
-
     locnrows=NTet/size;
 
     char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
-    int totcar1 = 4*charspernum*sizeof(char);
 
-    char *const fmtint = "%-11d " ;
-    char *const endfmtint = "%-7d\n" ;
-
-
-    int dummycount=0,label=0;
+    dummycount=0;
+    label=rank;
 
 //    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
 
@@ -267,51 +269,51 @@ int main(int argc, char **argv) {
         IJp1Kp1   =	IJp1K   + 1			;
         Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJK);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJK);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJK);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJK);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, Ip1JKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1JK);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, Ip1JKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, Ip1JKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, Ip1JKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, Ip1Jp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar1+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+1*12], fmtint, IJp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar1+2*12], fmtint, IJp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar1+4*12], endfmtint, label);
+        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJp1Kp1);
+        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
         dummycount++;
 
@@ -333,7 +335,6 @@ int main(int argc, char **argv) {
     int order1          = MPI_ORDER_C  ;
 
     MPI_Datatype localarray1	;
-
     MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1, order1, num_as_string, &localarray1);
     MPI_Type_commit(&localarray1);
 
@@ -342,30 +343,58 @@ int main(int argc, char **argv) {
 
     MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
 
+    offset += totcar*NTet;
+
     if(rank==0)
 	printf(" ---- Done\n");
+
+    free(data_as_txt1);
 
     MPI_Type_free(&num_as_string);
     MPI_Type_free(&localarray1);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-/*
+
 //-----------------------------------------------------------------------------------//
 //---- Triangle writing -----
 //-----------------------------------------------------------------------------------//
 
-    offset += totcar*nrows;
+    if(rank==0)
+	printf("\n Writing mesh surfaces ");
+
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
     if(rank==0){
-      char testchar2[23];
-      snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n", NTri);
+      char testchar2[23+17];
+      snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n1 2 %-10d 0\n", 1,pntz+1);
       MPI_File_write(file, testchar2, sizeof(testchar2), MPI_CHAR, &status);
     }
 
-    offset += 22;
+    offset += 22+17;
+
+    locnrows=NTri/size;
+    nrows = NTri;
+    startrow = rank * locnrows;
+    endrow = startrow + locnrows - 1	;
+    if (rank == size-1) {
+        endrow = nrows - 1;
+        locnrows = endrow - startrow + 1;
+    }
+
+    char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char));
+
+
+    if(rank==0)
+	printf(" ---- Done\n");
+
+
+    free(data_as_txt2);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+/*
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
@@ -379,9 +408,6 @@ int main(int argc, char **argv) {
 
     if(rank==0)
 	printf("\n Finalizing the file ");
-
-
-    offset += totcar*NTet;
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);

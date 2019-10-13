@@ -6,7 +6,9 @@ mesh3 Th=cube(1,1,1,[x,y,z-1]);
 savemesh(Th,"cube-1.mesh");
 
 mesh3 Th1;
-Th1=gmshload3("output-mesh.msh");
+//Th1=gmshload3("output-mesh.msh");
+
+Th1=readmesh3("test.mesh");
 
 
 
