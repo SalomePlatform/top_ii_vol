@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
     int startrow ;
     int endrow   ;
     int locnrows ;
+    int locNPnt  ;
+    int nrows    ;
 
     float **data ;
 
@@ -71,6 +73,10 @@ int main(int argc, char **argv) {
     MPI_Datatype num_as_string	;
     MPI_Datatype localarray	;
 
+    ierr = MPI_Init(&argc, &argv);
+    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
+    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
     MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
     MPI_Type_commit(&num_as_string);
 
@@ -82,23 +88,22 @@ int main(int argc, char **argv) {
 
     int pntx=120;
     int pnty=113;
-    int	pntz=50;
+    int	pntz=51;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    NPnt = pntx * pnty * pntz					 ;
-    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1)) ;
-    NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			 ;
+    NPnt = pntx * pnty * pntz					      ;
+    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
+    NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			      ;
+    locNPnt = 	(pntx * pnty)/size ;
 
-    ierr = MPI_Init(&argc, &argv);
-    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
-    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+//-----------------------------------------------------------------------------------//
+//---- Data allocation -----
+//-----------------------------------------------------------------------------------//
 
-    int Ndiv = 	(pntx * pnty)/size ;
-    int nrows = NPnt;
-
+    nrows = NPnt                   ;
     locnrows = NPnt/size;
     startrow = rank * locnrows;
     endrow = startrow + locnrows - 1	;
@@ -113,14 +118,13 @@ int main(int argc, char **argv) {
 //---- Gathering point data from partitioned files -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)
-	printf("\n Reading the partitioned point cloud mesh");
+    if(rank==0)printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
     snprintf (filepath, sizeof(filepath), "CoarseMesh-Skip500_%d.xyz", rank);
     infile = fopen(filepath,"r"); 
 
-    for (int i=0; i<Ndiv; i++){
+    for (int i=0; i<locNPnt; i++){
         for (int k=0; k<pntz; k++){
             if(k==0){
                 fscanf(infile,"%f",&data[i*pntz][0]) ;
@@ -149,8 +153,7 @@ int main(int argc, char **argv) {
 //---- convert our data into txt -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)
-	printf("\n Point cloud mesh data to parallel data conversion");
+    if(rank==0)printf("\n Point cloud mesh data to parallel data conversion");
 
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
@@ -173,10 +176,10 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
 
 //-----------------------------------------------------------------------------------//
-//---- create a type describing our piece of the array -----
+//---- create a type describing our piece of the array (Points) -----
 //-----------------------------------------------------------------------------------//
 
-    nrows = NPnt;
+    nrows = NPnt		      ;
     int globalsizes[2] = {nrows   , 4};
     int localsizes [2] = {locnrows, 4};
     int starts[2]      = {startrow, 0};
@@ -198,8 +201,7 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------//
 
 
-    if(rank==0)
-	printf("\n Writing mesh points ");
+    if(rank==0)printf("\n Writing mesh points ");
 
 
     offset = 0;
@@ -212,6 +214,8 @@ int main(int argc, char **argv) {
                  NPnt);   
         MPI_File_write(file, testchar, sizeof(testchar), MPI_CHAR, &status);
     }
+
+
 //-----------------------------------------------------------------------------------//
 //---- Pointdata writing -----
 //-----------------------------------------------------------------------------------//
@@ -236,8 +240,7 @@ int main(int argc, char **argv) {
 //---- Tetdata writing -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)
-	printf("\n Writing mesh volumes ");
+    if(rank==0) printf("\n Writing mesh volumes ");
 
     if(rank==0){
       char testchar1[24];
@@ -255,14 +258,13 @@ int main(int argc, char **argv) {
     label=rank;
 
 //    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
-
 //    for(int j=0; j<pnty-1;  j++){
 //    for(int i=istart; i<iend;  i++){
 
     int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
-
     for(int j=istart; j<iend;  j++){
     for(int i=0; i<pntx-1;  i++){
+
     for(int k=1; k<=pntz-1; k++){
 
         IJK	    =	i*pntz  + j*pntx*pntz + k	;
@@ -366,7 +368,7 @@ int main(int argc, char **argv) {
     if(rank==0)
 	printf("\n Writing mesh surfaces ");
 
-    NTri=(pnty-1)*(pntz-1)*2+(pnty-1)*(pntx-1)*4+(pnty-1)*(pntz-1)*2;	
+    //NTri=(pnty-1)*(pntz-1)*4+(pnty-1)*(pntx-1)*4+(pnty-1)*(pntz-1)*4+;	
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
@@ -403,10 +405,11 @@ int main(int argc, char **argv) {
 
 //----X-MIN-PLANE---//
     dummycount=0;
+    istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;  // Targeting Y points
 
-    istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+    label=11;
+
     for(int i=istart; i<iend;  i++){
-    //for(int i=0; i<pnty-1;  i++){
     for(int j=0; j<pntz-1;  j++){
 
         IJK	  =	i*(pntz*pntx) + j+1	;
@@ -417,20 +420,22 @@ int main(int argc, char **argv) {
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JKp1);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
     }
     }
 
+
 //----Z-MIN-PLANE----//
+    label = 22;
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntx-1;  j++){
 
@@ -442,20 +447,21 @@ int main(int argc, char **argv) {
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
     }
     }
 
 //----X-MAX-PLANE----//
+    label=33;
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntz-1;  j++){
 
@@ -467,14 +473,14 @@ int main(int argc, char **argv) {
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JKp1);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
 
@@ -482,6 +488,7 @@ int main(int argc, char **argv) {
     }
 
 //----Z-MAX-PLANE----//
+    label=44;
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntx-1;  j++){
 
@@ -493,19 +500,79 @@ int main(int argc, char **argv) {
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JK);
         sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
         dummycount++;
     }
     }
 
+
+    istart=rank*(pntz-1)/size, iend=rank*(pntz-1)/size + (pntz-1)/size;  // Targeting Y points
+
+//----Y-MAX-PLANE----//
+
+    label=55;
+
+    for(int i=0; i<pntx-1;  i++){
+    for(int j=istart; j<iend;  j++){
+
+        IJK	  =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
+        IJKp1	  =	IJK + 1					;
+        IJp1K	  =	IJK + pntz				;
+        IJp1Kp1 =	IJp1K + 1				;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1Kp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+        dummycount++;
+
+    }
+    }
+
+//----Y-MIN-PLANE----//
+
+    label=66;
+
+    for(int i=0; i<pntx-1;  i++){
+    for(int j=istart; j<iend;  j++){
+
+        IJK	  =	i*pntz + j+1	;
+        IJKp1	  =	IJK + 1		;
+        IJp1K	  =	IJK + pntz	;
+        IJp1Kp1 =	IJp1K + 1	;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1Kp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+        dummycount++;
+
+    }
+    }
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray2, 
                            "native", MPI_INFO_NULL);
@@ -541,6 +608,7 @@ int main(int argc, char **argv) {
 
     if(rank==0)
 	printf(" ---- Done\n");
+
 //-----------------------------------------------------------------------------------//
 //---- Free memory -----
 //-----------------------------------------------------------------------------------//
