@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 
-    int Scatter = 0 ;
+    int Scatter = 1 ;
 
     double x ;
     double y ;
@@ -15,8 +15,8 @@ int main(){
     int pntx = 2500 ;
     int pnty = 2251 ;
 
-    int skipx = 499;//21
-    int skipy = 499;//20
+    int skipx = 21;
+    int skipy = 20;
 
     cout << "\n\n";
 

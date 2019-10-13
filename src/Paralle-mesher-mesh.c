@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
 
     const int charspernum=14;
 
+    char *const fmt1    = "%-13d " ;
+    char *const endfmt1 = "%-13d\n"    ;
     char *const fmt    = "%-13.6f   " ;
     char *const endfmt = "%-13d\n"    ;
     char *const fmtint = "%-11d "     ;
@@ -67,9 +69,9 @@ int main(int argc, char **argv) {
 
     double zmax = -1920.0;
 
-    int pntx=6;//120;
-    int pnty=5;//113;
-    int	pntz=20;
+    int pntx=120;
+    int pnty=113;
+    int	pntz=50;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -221,11 +223,12 @@ int main(int argc, char **argv) {
     offset += totcar*NPnt;
 
     free(data_as_txt);
+    MPI_Type_free(&localarray);
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     if(rank==0)
 	printf(" ---- Done\n");
-
-    MPI_Barrier(MPI_COMM_WORLD);
 
 //-----------------------------------------------------------------------------------//
 //---- Tetdata writing -----
@@ -349,8 +352,6 @@ int main(int argc, char **argv) {
 	printf(" ---- Done\n");
 
     free(data_as_txt1);
-
-    MPI_Type_free(&num_as_string);
     MPI_Type_free(&localarray1);
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -363,16 +364,19 @@ int main(int argc, char **argv) {
     if(rank==0)
 	printf("\n Writing mesh surfaces ");
 
+    NTri=(pnty-1)*(pntz-1)*2+(pnty-1)*(pntx-1)*4+(pnty-1)*(pntz-1)*2;	
+
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
     if(rank==0){
-      char testchar2[23+17];
-      snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n1 2 %-10d 0\n", 1,pntz+1);
+      char testchar2[23];
+      snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n", NTri);
       MPI_File_write(file, testchar2, sizeof(testchar2), MPI_CHAR, &status);
     }
 
-    offset += 22+17;
+    offset += 22;
+
 
     locnrows=NTri/size;
     nrows = NTri;
@@ -383,23 +387,138 @@ int main(int argc, char **argv) {
         locnrows = endrow - startrow + 1;
     }
 
+
+    int globalsizes2[2] = {nrows   , 4};
+    int localsizes2 [2] = {locnrows, 4};
+    int starts2[2]      = {startrow, 0};
+    int order2          = MPI_ORDER_C  ;
+
+    MPI_Datatype localarray2	;
+    MPI_Type_create_subarray(2, globalsizes2, localsizes2, starts2, order2, num_as_string, &localarray2);
+    MPI_Type_commit(&localarray2);
+
     char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char));
 
+//----X-MIN-PLANE---//
+    dummycount=0;
+
+    istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+    for(int i=istart; i<iend;  i++){
+    //for(int i=0; i<pnty-1;  i++){
+    for(int j=0; j<pntz-1;  j++){
+
+        IJK	  =	i*(pntz*pntx) + j+1	;
+        IJKp1	  =	IJK + 1			;
+        Ip1JK	  =	IJK + (pntz*pntx)	;
+        Ip1JKp1 =	Ip1JK + 1		;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+    }
+    }
+
+//----Z-MIN-PLANE----//
+    for(int i=istart; i<iend;  i++){
+    for(int j=0; j<pntx-1;  j++){
+
+        IJK	  =	i*(pntz*pntx) + j*(pntz)+1	;
+        Ip1JK	  =	IJK + (pntz*pntx)		;
+        IJp1K	  =	IJK + pntz			;
+        Ip1Jp1K =	Ip1JK + pntz			;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+    }
+    }
+
+//----X-MAX-PLANE----//
+    for(int i=istart; i<iend;  i++){
+    for(int j=0; j<pntz-1;  j++){
+
+        IJK	  =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
+        IJKp1	  =	IJK + 1					;
+        Ip1JK	  =	IJK + (pntz*pntx)			;
+        Ip1JKp1 =	Ip1JK + 1				;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JKp1);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+
+    }
+    }
+
+//----Z-MAX-PLANE----//
+    for(int i=istart; i<iend;  i++){
+    for(int j=0; j<pntx-1;  j++){
+
+        IJK	  =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
+        Ip1JK	  =	IJK + (pntz*pntx)			;
+        IJp1K	  =	IJK + pntz				;
+        Ip1Jp1K =	Ip1JK + pntz				;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+
+        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JK);
+        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, rank);
+
+        dummycount++;
+    }
+    }
+
+
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray2, 
+                           "native", MPI_INFO_NULL);
+
+    MPI_File_write_all(file, data_as_txt2, locnrows*4, num_as_string, &status);
+
+    offset += totcar*NTet;
+
+    free(data_as_txt2);
+    MPI_Type_free(&localarray2);
 
     if(rank==0)
 	printf(" ---- Done\n");
 
-
-    free(data_as_txt2);
-
     MPI_Barrier(MPI_COMM_WORLD);
-
-/*
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
-
-    MPI_File_write_all(file, data_as_txt, locnrows*4, num_as_string, &status);
-*/
 
 
 //-----------------------------------------------------------------------------------//
@@ -420,7 +539,6 @@ int main(int argc, char **argv) {
 
     if(rank==0)
 	printf(" ---- Done\n");
-
 //-----------------------------------------------------------------------------------//
 //---- Free memory -----
 //-----------------------------------------------------------------------------------//
@@ -429,7 +547,7 @@ int main(int argc, char **argv) {
       printf("The program finshed in : %1.2f\n",  MPI_Wtime()-t1);fflush(stdout);}
 
     MPI_File_close(&file);
-    MPI_Type_free(&localarray);
+    MPI_Type_free(&num_as_string);
 
     MPI_Finalize();
     return 0;
