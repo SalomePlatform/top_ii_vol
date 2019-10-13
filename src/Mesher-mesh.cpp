@@ -31,9 +31,9 @@ int main(){
 
     double zmax = -1920.0  ;
 
-    int pntx =  6  ;
-    int pnty =  5  ;
-    int pntz =  2  ;
+    int pntx=6;
+    int pnty=5;
+    int	pntz=20;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -48,10 +48,10 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open("./../data/CoarseMeshoo.xyz");
+    in.open("CoarseMesh-Skip500.xyz");
 
     ofstream wrgmsh;
-        wrgmsh.open("Output-Mesh.mesh")	;
+        wrgmsh.open("test.mesh")	;
 
 //-----------------------------------------------------------------------------------//
 //---- Header for mesh -----

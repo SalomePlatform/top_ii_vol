@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 
-    int Scatter = 1 ;
+    int Scatter = 0 ;
 
     double x ;
     double y ;
@@ -15,18 +15,47 @@ int main(){
     int pntx = 2500 ;
     int pnty = 2251 ;
 
-    int skipx = 270;
-    int skipy = 260;
+    int skipx = 499;//21
+    int skipy = 499;//20
+
+    cout << "\n\n";
+
+    cout << " *===================================================* \n" 
+         << " *                  INFORMATION                      * \n"  
+         << " *===================================================* \n"        
+         << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
+         << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
+         << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+         << "\n\n ==================================================== \n"  
+         << 
+    endl;
+
 
     ifstream in;
         in.open("./../data/DEM_2m_new.xyz");
+
+    ofstream wr;
 
 //-----------------------------------------------------------------------------------//
 //---- Skipmeshing -----
 //-----------------------------------------------------------------------------------//
 
     if(Scatter!=1){
-    	ofstream wr;
+
+        wr.open("CoarseMesh-Skip500-info.txt");
+
+        wr   << " *===================================================* \n" 
+             << " *                  INFORMATION                      * \n"  
+             << " *===================================================* \n"        
+             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
+             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
+             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n\n ==================================================== \n"  
+             << 
+         endl;
+        wr.close();
+
+
         wr.open("CoarseMesh-Skip500.xyz");
         for(int j=0; j<pnty; j++){
         for(int i=0; i<pntx; i++){
@@ -44,20 +73,8 @@ int main(){
 
    if(Scatter==1){
 
-        int Nscat;// = 2;
+        int Nscat;
         int countme=0, countme2=0;
-
-        cout << "\n\n";
-
-        cout << " *===================================================* \n" 
-             << " *                  INFORMATION                      * \n"  
-             << " *===================================================* \n"        
-             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
-             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
-             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
-             << "\n\n ==================================================== \n"  
-             << 
-         endl;
 
         cout << "\n\n";
 
@@ -89,7 +106,6 @@ int main(){
          endl;
 
 	int k=0;
-	ofstream wr;
 
         wr.open("CoarseMesh-Skip500-info.txt");
 

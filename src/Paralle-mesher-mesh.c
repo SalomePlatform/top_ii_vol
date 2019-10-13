@@ -13,6 +13,8 @@ float **alloc2d(int n, int m) {
 
 int main(int argc, char **argv) {
 
+    double t1 = MPI_Wtime();
+
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
 //-----------------------------------------------------------------------------------//
@@ -52,9 +54,9 @@ int main(int argc, char **argv) {
 
     double zmax = -1920.0;
 
-    int pntx=10;
-    int pnty=9;
-    int	pntz=4;
+    int pntx=6;//120;
+    int pnty=5;//113;
+    int	pntz=20;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -71,7 +73,6 @@ int main(int argc, char **argv) {
 
     int Ndiv = 	(pntx * pnty)/size ;
     int nrows = NPnt;
-
 
     locnrows = NPnt/size;
     startrow = rank * locnrows;
@@ -246,15 +247,15 @@ int main(int argc, char **argv) {
 
     int dummycount=0,label=0;
 
-    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
+//    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
 
-    for(int j=0; j<pnty-1;  j++){
-    for(int i=istart; i<iend;  i++){
+//    for(int j=0; j<pnty-1;  j++){
+//    for(int i=istart; i<iend;  i++){
 
-//    int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+    int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
 
-//    for(int j=istart; j<iend;  j++){
-//    for(int i=0; i<pntx-1;  i++){
+    for(int j=istart; j<iend;  j++){
+    for(int i=0; i<pntx-1;  i++){
     for(int k=1; k<=pntz-1; k++){
 
         IJK	    =	i*pntz  + j*pntx*pntz + k	;
@@ -397,6 +398,9 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------//
 //---- Free memory -----
 //-----------------------------------------------------------------------------------//
+
+    if(rank==0){
+      printf("The program finshed in : %1.2f\n",  MPI_Wtime()-t1);fflush(stdout);}
 
     MPI_File_close(&file);
     MPI_Type_free(&localarray);
