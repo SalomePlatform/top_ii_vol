@@ -9,7 +9,7 @@ float **alloc2d(int n, int m) {
     for (int i=0; i<n; i++)
         array[i] = &(data[i*m]);
     return array;
-}
+}z
 
 int main(int argc, char **argv) {
 

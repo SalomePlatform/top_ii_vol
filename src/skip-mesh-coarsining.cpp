@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 
-    int Scatter = 1 ;
+    int Scatter = 0 ;
 
     double x ;
     double y ;
