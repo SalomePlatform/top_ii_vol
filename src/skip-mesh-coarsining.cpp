@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 
-    int Scatter = 0 ;
+    int Scatter = 1 ;
 
     double x ;
     double y ;
@@ -15,24 +15,35 @@ int main(){
     int pntx = 2500 ;
     int pnty = 2251 ;
 
-    int skipx = 21;
-    int skipy = 20;
+    int skipx = 150;
+    int skipy = 150;
 
-    cout << "\n\n";
+    string inpurfile="./../data/DEM_2m_new.xyz";
+    string outpufile="out-coarse.xyz";
 
     cout << " *===================================================* \n" 
-         << " *                  INFORMATION                      * \n"  
-         << " *===================================================* \n"        
-         << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
-         << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
-         << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
-         << "\n\n ==================================================== \n"  
-         << 
-    endl;
+         << " *                  Top2Vol                          * \n"  
+         << " *===================================================* \n"
+         << " 							    \n" 
+         << " *  This program  will coarsen your .xyz by skipping * \n" 
+         << " *  the  specified  number of x and y points to skip.* \n" 
+         << " 							    \n";
 
+    cout << " *===================================================* \n" 
+         << " *                  User Input                       * \n"  
+         << " *===================================================* \n" 
+         << "  							    \n"; 
+    cout << "   Enter total  points in  x  [int]   "; cin >> pntx;
+    cout << "   Enter points to skip in x  [int]   "; cin >> skipx;
+    cout << "   Enter total  points in  y  [int]   "; cin >> pnty;
+    cout << "   Enter points to skip in y  [int]   "; cin >> skipy;
+    cout << "   Enter the input .xyz file  [char]  "; cin >> inpurfile;
+    cout << "   Enter the output file name [char]  "; cin >> outpufile;
+    cout << " 							    \n";
 
+ 
     ifstream in;
-        in.open("./../data/DEM_2m_new.xyz");
+        in.open(inpurfile);
 
     ofstream wr;
 
@@ -42,7 +53,30 @@ int main(){
 
     if(Scatter!=1){
 
-        wr.open("CoarseMesh-Skip500-info.txt");
+        cout << "\n\n";
+    	cout << " *===================================================* \n" 
+             << " *                  Work in progress                 * \n"  
+             << " *===================================================* \n"
+             << " 							\n"
+             << "   Top2Vol began coarsing "+inpurfile+"                \n";
+        cout << "   ...";   
+
+        wr.open(outpufile);
+        for(int j=0; j<pnty; j++){
+        for(int i=0; i<pntx; i++){
+	    in>>std::fixed>> x  >> y >> z;
+
+	    if(int(j%skipy)==0 && int(i%skipx)==0 )
+	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
+        }
+        }
+        wr.close();
+
+        cout << "Finshed !!!                                               \n" 
+             << "   Top2Vol is now writing an info file                    \n";
+        cout << "   ...";    
+
+        wr.open("info-"+outpufile+".txt");
 
         wr   << " *===================================================* \n" 
              << " *                  INFORMATION                      * \n"  
@@ -56,15 +90,7 @@ int main(){
         wr.close();
 
 
-        wr.open("CoarseMesh-Skip500.xyz");
-        for(int j=0; j<pnty; j++){
-        for(int i=0; i<pntx; i++){
-	    in>>std::fixed>> x  >> y >> z;
-
-	    if(int(j%skipy)==0 && int(i%skipx)==0 )
-	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
-        }
-        }
+        cout << "Finshed !!!                                               \n";
     }
 
 //-----------------------------------------------------------------------------------//
@@ -98,7 +124,7 @@ int main(){
         cout << " *===================================================* \n" 
              << " *                  IMPORTANT                        * \n"  
              << " *===================================================* \n"        
-             << " *   Note that when using the parallel GFTM-mesher   * \n" 
+             << " *   Note that when using the parallel Top2Vol-mesher* \n" 
              << " *   please use << "<< Nscat <<" >> MPI processing units for     * \n"
              << " *   optimal performance of the mesher in parallel   * \n"
              << " *===================================================* \n"  
@@ -107,7 +133,7 @@ int main(){
 
 	int k=0;
 
-        wr.open("CoarseMesh-Skip500-info.txt");
+        wr.open(outpufile+"-info.txt");
 
         wr   << " *===================================================* \n" 
              << " *                  INFORMATION                      * \n"  
@@ -122,7 +148,7 @@ int main(){
         wr.close();
 
 
-        wr.open("CoarseMesh-Skip500_"+std::to_string(k)+".xyz");
+        wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 
         for(int j=0; j<pnty; j++){
         for(int i=0; i<pntx; i++){
@@ -133,7 +159,7 @@ int main(){
                 if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
 		countme=0; k++;
     		wr.close();
-		wr.open("CoarseMesh-Skip500_"+std::to_string(k)+".xyz");
+                wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 		}
 	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
 	        countme++;
@@ -143,7 +169,17 @@ int main(){
 
     }
 
-    cout << "Program ended successfully" << endl;
+    	cout << "\n\n";
+
+    	cout << " *===================================================* \n" 
+             << " *                  Information                      * \n"  
+             << " *===================================================* \n"        
+             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
+             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
+             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n\n ==================================================== \n"
+             << 
+    	endl;
 
 return 0;
 }

@@ -31,9 +31,9 @@ int main(){
 
     double zmax = -1920.0  ;
 
-    int pntx=6;
-    int pnty=5;
-    int	pntz=20;
+    int pntx=250;
+    int pnty=226;
+    int	pntz=220;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -48,7 +48,7 @@ int main(){
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open("CoarseMesh-Skip500.xyz");
+    in.open("outfile.xyz");
 
     ofstream wrgmsh;
         wrgmsh.open("test.mesh")	;

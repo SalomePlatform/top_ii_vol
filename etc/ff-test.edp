@@ -8,7 +8,7 @@ savemesh(Th,"cube-1.mesh");
 mesh3 Th1;
 //Th1=gmshload3("output-mesh.msh");
 
-Th1=readmesh3("test.mesh");
+Th1=readmesh3("../src/test.o.mesh");
 
 
 
@@ -18,7 +18,7 @@ fespace Vh(Th1,P1);
 Vh u=x*x;
 
 int[int] vtkorder=[1];
-savevtk("ffout.vtk",Th1,u,order=vtkorder);
+savevtk("ffout.vtk",Th1,u,order=vtkorder,bin=0);
 
 
 plot(Th1,wait=1);

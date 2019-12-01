@@ -161,8 +161,6 @@ int main(int argc, char **argv) {
     MPI_File_read_all(file, data_as_txt, locnrows*1, num_as_string, &status);
 
     MPI_File_write_all(file1, data_as_txt, locnrows*1, num_as_string, &status);
-
-	//printf("")
     free(data_as_txt);
     MPI_Type_free(&localarray);
 

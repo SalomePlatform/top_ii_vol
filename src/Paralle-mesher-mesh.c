@@ -9,7 +9,7 @@ float **alloc2d(int n, int m) {
     for (int i=0; i<n; i++)
         array[i] = &(data[i*m]);
     return array;
-}z
+}
 
 int main(int argc, char **argv) {
 
@@ -86,9 +86,9 @@ int main(int argc, char **argv) {
 
     double zmax = -1920.0;
 
-    int pntx=120;
-    int pnty=113;
-    int	pntz=51;
+    int pntx=132;
+    int pnty=119;
+    int	pntz=100;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     if(rank==0)printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
-    snprintf (filepath, sizeof(filepath), "CoarseMesh-Skip500_%d.xyz", rank);
+    snprintf (filepath, sizeof(filepath), "outfile-par_%d.xyz", rank);
     infile = fopen(filepath,"r"); 
 
     for (int i=0; i<locNPnt; i++){
