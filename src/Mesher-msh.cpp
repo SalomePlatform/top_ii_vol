@@ -23,9 +23,7 @@ double zznew	;
 //--------------------------------------//
 //---- Global Parameters -----
 //--------------------------------------//
-double 	zmin=240.0000		,
-       	zmax=-1920.0000		,
-	zdiviation=50.		;
+double 	zmax=-1920.0000		;
 
 int 	pntx=10			,
 	pnty=10			,
