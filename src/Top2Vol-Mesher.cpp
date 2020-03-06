@@ -4,7 +4,7 @@
 using namespace std;
 
 
-int main(){
+int main(int argc, char *argv[]){
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -25,15 +25,91 @@ int main(){
     int Ip1Jp1K	  ;
     int Ip1Jp1Kp1 ;
 
+
+//-----------------------------------------------------------------------------------//
+//---- Message on commandline -----
+//-----------------------------------------------------------------------------------//
+
+    cout << " *===================================================* \n" 
+         << " *                  Top2Vol                          * \n"  
+         << " *===================================================* \n"
+         << " 							    \n" 
+         << " *  This program  will take your .xyz cloud topology * \n" 
+         << " *  mesh and and generate a  pseudo-structured tetra * \n"
+         << " *  mesh in medit's '.mesh' format                   * \n"  
+         << " 							    \n";
+
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
 
     double zmax = -1920.0  ;
 
-    int pntx=250;
-    int pnty=226;
-    int	pntz=220;
+    int pntx=11;
+    int pnty=10;
+    int	pntz=10;
+
+    string inpurfile="out-coarse.xyz";
+    string outpufile="test.mesh";
+
+//-----------------------------------------------------------------------------------//
+//---- Comandline Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    for(int i=0; i<argc-1; i++){
+
+        string argvdummy=argv[i];
+        string argvdummy1=argv[i+1];
+
+		if( argvdummy == "--xpoints") 
+	    	pntx= stoi(argvdummy1);
+
+		if( argvdummy == "--ypoints") 
+	    	pnty= stoi(argvdummy1);
+
+		if( argvdummy == "--zpoints") 
+	    	pntz= stoi(argvdummy1);
+
+		if( argvdummy == "--in") 
+	    	inpurfile = argvdummy1;
+
+		if( argvdummy == "--out") 
+	    	outpufile = argvdummy1;
+
+		if( argvdummy == "--depth") 
+	    	zmax= stod(argvdummy1);
+	
+     }
+
+
+//-----------------------------------------------------------------------------------//
+//---- I/O Files -----
+//-----------------------------------------------------------------------------------//
+
+    ifstream in;
+    in.open(inpurfile);
+
+    ofstream wrgmsh;
+        wrgmsh.open(outpufile)	;
+
+//-----------------------------------------------------------------------------------//
+//---- Message on commandline -----
+//-----------------------------------------------------------------------------------//
+
+    cout << " *===================================================* \n" 
+         << " *                  User Input                       * \n"  
+         << " *===================================================* \n" 
+         << "  							    \n"; 
+
+
+    cout << "   X points are        ------ " << pntx      << endl;
+    cout << "   Y points are        ------ " << pnty      << endl;
+    cout << "   Z points are        ------ " << pntz      << endl;
+    cout << "   Z depth provided    ------ " << zmax      << endl;
+    cout << "   Input file          ------ " << inpurfile << endl;
+    cout << "   Output file         ------ " << outpufile << endl;
+    cout << " 							    \n";
+
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -43,15 +119,7 @@ int main(){
     int NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
     int NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			;
 
-//-----------------------------------------------------------------------------------//
-//---- I/O Files -----
-//-----------------------------------------------------------------------------------//
 
-    ifstream in;
-    in.open("outfile.xyz");
-
-    ofstream wrgmsh;
-        wrgmsh.open("test.mesh")	;
 
 //-----------------------------------------------------------------------------------//
 //---- Header for mesh -----

@@ -11,7 +11,24 @@ float **alloc2d(int n, int m) {
     return array;
 }
 
-int main(int argc, char **argv) {
+int myatoi(char *str) {
+    int i, res = 0;
+    for (i = 0; str[i] != '\0'; ++i) {
+        res = res * 10 + str[i] - '0';
+    }
+    return res;
+}
+
+int myatod(char *str) {
+    int i;
+    double res = 0;
+    for (i = 0; str[i] != '\0'; ++i) {
+        res = res * 10 + str[i] - '0';
+    }
+    return res;
+}
+
+int main(int argc, char *argv[]) {
 
     double t1 = MPI_Wtime();
 
@@ -63,6 +80,7 @@ int main(int argc, char **argv) {
 
     FILE *infile;
 
+
 //-----------------------------------------------------------------------------------//
 //---- MPI variables -----
 //-----------------------------------------------------------------------------------//
@@ -86,9 +104,44 @@ int main(int argc, char **argv) {
 
     double zmax = -1920.0;
 
-    int pntx=132;
-    int pnty=119;
+    int pntx=10;//=105;
+    int pnty=9; //=94;
     int	pntz=100;
+
+
+    char inpurfile[80]="out-coarse.xyzsd";
+    char outpufile[80]="Tetra-ParTop2Vol.mesh";
+
+//-----------------------------------------------------------------------------------//
+//---- Comandline Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    for(int i=0; i<argc-1; i++){
+
+        char argvdummy=argv[i];
+        //char argvdummy1=argv[i+1];
+
+		if ( ! strcmp(argv[i], "--xpoints")) 
+	    	pntx= atoi(argv[i+1]);
+
+		if ( ! strcmp(argv[i], "--ypoints")) 
+	    	pnty= atoi(argv[i+1]);
+
+		if ( ! strcmp(argv[i], "--zpoints")) 
+	    	pntz= atoi(argv[i+1]);
+
+		if ( ! strcmp(argv[i], "--in"))
+			strcpy(inpurfile, argv[i+1]); 
+	    //	inpurfile = argvdummy1;
+
+		if ( ! strcmp(argv[i], "--out"))
+			strcpy(outpufile, argv[i+1]); 
+	    	//outpufile = argv[i+1];
+
+		if ( ! strcmp(argv[i], "--depth")) 
+	    	zmax= atol(argv[i+1]);
+	
+     }
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -121,7 +174,7 @@ int main(int argc, char **argv) {
     if(rank==0)printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
-    snprintf (filepath, sizeof(filepath), "outfile-par_%d.xyz", rank);
+    snprintf (filepath, sizeof(filepath), "%s_%d.xyz", inpurfile, rank);
     infile = fopen(filepath,"r"); 
 
     for (int i=0; i<locNPnt; i++){
@@ -192,14 +245,16 @@ int main(int argc, char **argv) {
 //---- open the file, and set the view -----
 //-----------------------------------------------------------------------------------//
 
-    MPI_File_open(MPI_COMM_WORLD, "test.mesh", 
+	char str[80]="";
+    strcat (str, outpufile);
+
+    MPI_File_open(MPI_COMM_WORLD, str, 
                   MPI_MODE_CREATE|MPI_MODE_WRONLY,
                   MPI_INFO_NULL, &file);
 
 //-----------------------------------------------------------------------------------//
 //---- Header writing -----
 //-----------------------------------------------------------------------------------//
-
 
     if(rank==0)printf("\n Writing mesh points ");
 
