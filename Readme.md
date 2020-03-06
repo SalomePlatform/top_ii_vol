@@ -91,7 +91,13 @@ This is the sequential mesher
 - For  sequential mesher producing  `*.mesh` mesh.
 
   ```
-  ./Top2Vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.mesh --depth -1000
+  ./Top2Vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+  ```
+  
+- For  sequential mesher producing  `*.mesh` mesh.
+
+  ```
+  ./Top2Vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
   ```
 
 *Command-line oprtion definitions*
@@ -104,10 +110,9 @@ This is the sequential mesher
 | `--in`      | `[string]` | Sting to provide the input point coloud file `.xyz`  |
 | `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
 | `--depth`   | `[int]`    | This is the depth of the mesh needed.                |
+| `--mesh`    | `[string]` | To specify the kind of mesh needed                   |
 
-*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud.*
-
-
+*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud.*0
 
 
 
