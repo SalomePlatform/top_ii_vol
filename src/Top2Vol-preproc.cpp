@@ -6,41 +6,51 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
+//-----------------------------------------------------------------------------------//
+//---- Global Variables -----
+//-----------------------------------------------------------------------------------//
 
-    int Scatter = 0 ;
+    double x 		;
+    double y 		;
+    double z 		;
 
-    double x ;
-    double y ;
-    double z ;
+//-----------------------------------------------------------------------------------//
+//---- Input Parameters -----
+//-----------------------------------------------------------------------------------//
 
-	int Nscat;
+    int Scatter = 0     ;
+    int Nscat   = 1     ;
 
-    int pntx = 2500 ;
-    int pnty = 2251 ;
+    int pntx = 2500     ;
+    int pnty = 2251     ;
 
-    int skipx = 150;
-    int skipy = 150;
+    int skipx = 150     ;
+    int skipy = 150     ;
 
-    string inpurfile="./../data/DEM_2m_new.xyz";
-    string outpufile="out-coarse.xyz";
+    string inpurfile = "./../data/DEM_2m_new.xyz" ;
+    string outpufile = "out-coarse.xyz"           ;
+
+
+//-----------------------------------------------------------------------------------//
+//---- Comandline Parameters -----
+//-----------------------------------------------------------------------------------//
 
     for(int i=0; i<argc-1; i++){
 
-        string argvdummy=argv[i];
-        string argvdummy1=argv[i+1];
-	//if ( !strtoq(argv[i], "-s")) { cout << "   ASDSADASDASXADDWWDD  %d "<< i; }
+        string argvdummy  = argv[i]   ;
+        string argvdummy1 = argv[i+1] ;
 
 	if( argvdummy == "--xpoints") 
-	    pntx= stoi(argvdummy1);
+	    pntx = stoi(argvdummy1);
 
 	if( argvdummy == "--ypoints") 
-	    pnty= stoi(argvdummy1);
+	    pnty = stoi(argvdummy1);
 
 	if( argvdummy == "--xskip") 
-	    skipx= stoi(argvdummy1);
+	    skipx = stoi(argvdummy1);
 
 	if( argvdummy == "--yskip") 
-	    skipy= stoi(argvdummy1);
+	    skipy = stoi(argvdummy1);
 
 	if( argvdummy == "--in") 
 	    inpurfile = argvdummy1;
@@ -56,23 +66,14 @@ int main(int argc, char *argv[]){
 	}
 
 	if( argvdummy == "--strips")
-		Nscat= stoi(argvdummy1);		
+		Nscat = stoi(argvdummy1);		
      
    }
 
-/*
-    cout << "   Total arguments entered are  "<< argc << endl;
 
-    for(int i=0; i<argc; i++){
-        string argvdummy=argv[i];
-	//if ( !strtoq(argv[i], "-s")) { cout << "   ASDSADASDASXADDWWDD  %d "<< i; }
-	if( argvdummy == "--xpoints") 
-	    cout << "   ASDSADASDASXADDWWDD  %d "<< i;}
-		
-	}
-*/
-
-
+//-----------------------------------------------------------------------------------//
+//---- Message on commandline -----
+//-----------------------------------------------------------------------------------//
 
     cout << " *===================================================* \n" 
          << " *                  Top2Vol                          * \n"  
@@ -108,17 +109,22 @@ int main(int argc, char *argv[]){
 
 
 
+
+//-----------------------------------------------------------------------------------//
+//---- I/O Files -----
+//-----------------------------------------------------------------------------------//
  
     ifstream in;
         in.open(inpurfile);
 
     ofstream wr;
 
+
 //-----------------------------------------------------------------------------------//
-//---- Skipmeshing -----
+//---- Skipmeshing with scatter-----
 //-----------------------------------------------------------------------------------//
 
-    if(Scatter!=1){
+    if(Scatter != 1){
 
         cout << "\n\n";
     	cout << " *===================================================* \n" 
@@ -129,11 +135,11 @@ int main(int argc, char *argv[]){
         cout << "   ...";   
 
         wr.open(outpufile);
-        for(int j=0; j<pnty; j++){
-        for(int i=0; i<pntx; i++){
+        for(int j = 0; j<pnty; j++){
+        for(int i = 0; i<pntx; i++){
 	    in>>std::fixed>> x  >> y >> z;
 
-	    if(int(j%skipy)==0 && int(i%skipx)==0 )
+	    if(int(j%skipy) == 0 && int(i%skipx) == 0 )
 	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
         }
         }
@@ -164,10 +170,11 @@ int main(int argc, char *argv[]){
 //---- Skip mesh with partitioning -----
 //-----------------------------------------------------------------------------------//
 
-   if(Scatter==1){
+   if(Scatter == 1){
 
         
-        int countme=0, countme2=0;
+        int countme  = 0  ;
+        int countme2 = 0  ;
 
         cout << "\n\n";
 
@@ -199,7 +206,7 @@ int main(int argc, char *argv[]){
              << 
          endl;
 
-	int k=0;
+	int k = 0 ;
 
         wr.open(outpufile+"-info.txt");
 
@@ -218,24 +225,29 @@ int main(int argc, char *argv[]){
 
         wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 
-        for(int j=0; j<pnty; j++){
-        for(int i=0; i<pntx; i++){
+        for(int j = 0; j<pnty; j++){
+        for(int i = 0; i<pntx; i++){
 
 	    in>>std::fixed>> x  >> y >> z;
 
-	    if(int(j%skipy)==0 && int(i%skipx)==0 ){
+	    if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
                 if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
 		countme=0; k++;
     		wr.close();
                 wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 		}
-	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
+	        wr << std::fixed << x << "  " << y << "  "<< z << endl;
 	        countme++;
             }
         }
         }
 
     }
+
+
+//-----------------------------------------------------------------------------------//
+//---- Message on commandline -----
+//-----------------------------------------------------------------------------------//
 
     	cout << "\n\n";
 
