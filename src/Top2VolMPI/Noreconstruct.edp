@@ -1,7 +1,3 @@
-//  run with MPI:  ff-mpirun -np 4 script.edp
-// NBPROC 4
-
-
 load "PETSc"
 func Pk = P1;
 
@@ -9,19 +5,7 @@ macro def(u)u//
 {
     macro dimension()3// EOM
     include "macro_ddm.idp"
-    mesh3 Th;
-/*
-    mesh3 ThGlobal;
-    ThGlobal = cube(getARGV("-global_3d", 30), getARGV("-global_3d", 30), getARGV("-global_3d", 30));
-    fespace Ph(ThGlobal, P0);
-    Ph part;
-    if(mpirank == 0) {
-        partitionerSeq(part[], ThGlobal, mpisize);
-    }
-    partitionerPar(part[], ThGlobal, mpiCommWorld, mpisize);
-    Th = trunc(ThGlobal, abs(part - mpirank) < 1.0e-2, renum = 1);
-    savemesh(Th,"ffPart2vtest_"+mpirank+".mesh"); 
-*/ 
+    mesh3 Th; 
     real t0;
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
@@ -31,9 +15,7 @@ macro def(u)u//
  
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0)
-    cout << "Elapsed time Reconstruction Dmesh : " << mpiWtime()-t0 << " seconds" << endl;
-
-
+    cout <<  "  Total time taken for Dmesh construction : " << mpiWtime()-t0 << " s"<< endl;
 
     fespace Wh(Th, Pk);
     Wh<real> u=z;

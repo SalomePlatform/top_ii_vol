@@ -291,7 +291,7 @@ if(rank==(size-1))labymax=5;
     cout << "                                                               \n"
          << " *============================================================*\n"
          << "                                                               \n";
-    cout << std::fixed << std::setprecision(4) <<  "  Total time taken for point cloud stripping : " << MPI_Wtime()-t1 << " s"<< endl;
+    cout << std::fixed << std::setprecision(4) <<  "  Total time taken by MPI mesher : " << MPI_Wtime()-t1 << " s"<< endl;
 
     cout << "                                                               \n"
          << " *============================================================*\n"
