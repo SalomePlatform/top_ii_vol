@@ -14,9 +14,7 @@ int main(int argc, char **argv){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-auto start = std::chrono::system_clock::now();
-
-
+    double t1 = MPI_Wtime();
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -73,23 +71,36 @@ auto start = std::chrono::system_clock::now();
 
     int NPnt = pntx * pnty * pntz					;
     int NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
-    //int  NTri = 4*((pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
-    //if(rank==0)     NTri = 2*(pntz-1)*(pntx-1)+4*((pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
-    //if(rank==(size-1))  NTri = 2*(pntz-1)*(pntx-1)+4*((pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
-
     int NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			;
 
-/*
-//-----------------------------------------------------------------------------------//
-//---- I/O Files -----
-//-----------------------------------------------------------------------------------//
 
-    ifstream in;
-    in.open("out-coarse-parallel.xyz_"+std::to_string(rank)+".xyz");
+//=============================================================================
+// ------------- Commandline logo output ------------------
+//=============================================================================
 
-    ofstream wrgmsh;
-        wrgmsh.open("Part2vtestseq_"+std::to_string(rank)+".mesh")	;
-*/
+    if(rank==0)
+    cout << " *============================================================*\n" 
+         << "         ___                                            ___    \n" 
+         << "        /  /               ___________                 /  /    \n" 
+         << "     __/  /_ ___    ___   /__  __  __/__    __ ____   /  /     \n" 
+         << "    /_   __// _  \\ / _  \\   / / / /   \\ \\  / // _  \\ /  / \n" 
+         << "     /  /_ / /_/ // /_/ /__/ /_/ /__   \\ \\/ // /_/ //  /__   \n" 
+         << "     \\___/ \\____// ____//__________/    \\__/ \\____/ \\____/\n" 
+         << "                / /                                            \n" 
+         << "               /_/                                             \n"
+         << " *============================================================*\n"; 
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    cout << "                                                               \n"
+         << "           MPI Processs # "<<rank <<"                          \n"
+         << "                                                               \n"
+         << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n" 
+         << "  # points in X -------------------- "<< pntx << "             \n"
+         << "  # points in Y -------------------- "<< pnty << "             \n"
+         << "                                                               \n"
+         << " *============================================================*\n";
+
 //-----------------------------------------------------------------------------------//
 //---- Header for mesh -----
 //-----------------------------------------------------------------------------------//
@@ -103,7 +114,7 @@ auto start = std::chrono::system_clock::now();
 //---- Generating points -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "Generating points...."		               ;
+    cout   << "Generating points ........"		               ;
     wrgmsh << "Vertices" 				<< endl;
     wrgmsh <<  NPnt	 				<< endl;
 
@@ -119,13 +130,13 @@ auto start = std::chrono::system_clock::now();
     }
 
     wrgmsh << "" 					<< endl;
-    cout   << "Done  "					<< endl;
+    cout   << " finished for MPI rank : " << rank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "Generating Tetrahedra...."			       ;
+    cout   << "Generating Tetrahedra ...."			       ;
     wrgmsh << "Tetrahedra" 					<< endl;
     wrgmsh <<  NTet	        				<< endl;
 
@@ -153,13 +164,13 @@ auto start = std::chrono::system_clock::now();
     }
 
     wrgmsh << "" 					    << endl;
-    cout   << "Done"					<< endl;
+    cout   << " finished for MPI rank : " << rank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "Generating Triangles...."			       ;
+    cout   << "Generating Triangles ....."			       ;
     wrgmsh << "Triangles" 					<< endl;
     wrgmsh << NTri	        				<< endl;
 
@@ -264,7 +275,7 @@ if(rank==(size-1))labymax=5;
     }
     }
 
-    cout << "Done  "<< endl;
+    cout   << " finished for MPI rank : " << rank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----
@@ -273,16 +284,19 @@ if(rank==(size-1))labymax=5;
     wrgmsh << "" 					        << endl;
     wrgmsh << "End" 						<< endl;
 
-    cout << "Program ended successfully" << endl;
 
-/* .. perform work .. */
-auto end = std::chrono::system_clock::now();
 
-int elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>
-                         (end - start).count();
-if(rank==0)
-std::cout << "Elapsed time Top2VolMesh : " << elapsed_seconds << " seconds" << std::endl;
+   MPI_Barrier(MPI_COMM_WORLD);
+   if(rank==0){
+    cout << "                                                               \n"
+         << " *============================================================*\n"
+         << "                                                               \n";
+    cout << std::fixed << std::setprecision(4) <<  "  Total time taken for point cloud stripping : " << MPI_Wtime()-t1 << " s"<< endl;
 
+    cout << "                                                               \n"
+         << " *============================================================*\n"
+         << "                                                               \n";
+    }
     MPI_Finalize();
 return 0;
 }
