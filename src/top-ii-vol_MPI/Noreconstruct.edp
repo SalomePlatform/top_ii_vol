@@ -1,0 +1,24 @@
+load "PETSc"
+func Pk = P1;
+
+macro def(u)u//
+{
+    macro dimension()3// EOM
+    include "macro_ddm.idp"
+    mesh3 Th; 
+    real t0;
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    Th=readmesh3("Top2Vol-mesh.mesh");
+
+	buildDmesh(Th)
+ 
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Dmesh construction : " << mpiWtime()-t0 << " s"<< endl;
+
+    fespace Wh(Th, Pk);
+    Wh<real> u=z;
+    savevtk("vtk.vtu",Th,u);
+}
+
