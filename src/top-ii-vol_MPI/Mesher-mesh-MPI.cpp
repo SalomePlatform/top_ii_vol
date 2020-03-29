@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <iomanip>
 #include <chrono>
 #include <mpi.h>
@@ -39,27 +40,57 @@ int main(int argc, char **argv){
 //---- I/O Files -----
 //-----------------------------------------------------------------------------------//
 
-    ifstream in;
-    in.open("point-cloud-strip_"+std::to_string(rank)+".xyz");
-
-    ifstream in1;
-    in1.open("point-cloud-strip_"+std::to_string(rank)+".info");
-
-    ofstream wrgmsh;
-        wrgmsh.open("Top2Vol-mesh_"+std::to_string(rank)+".mesh");
+    string inputfile  = "point-cloud-strip";
+    string outputfile = "Top2Vol-mesh";
 
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
 
     double zmax = -1920.0  ;
+
     int	pntz=9;
-
-    int pntx=500;//250;//125;//63;//32;
-
     int pnty=6;
+    int pntx=500;  //250;//125;//63;//32;
 
-    in1 >> pnty ;
+//-----------------------------------------------------------------------------------//
+//---- Comandline Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    for(int i=0; i<argc-1; i++){
+
+        string argvdummy=argv[i];
+
+		if ( ! strcmp(argv[i], "--zpoints")) 
+	    	pntz = atoi(argv[i+1]);
+
+		if ( ! strcmp(argv[i], "--in"))
+            inputfile  = argv[i+1];
+			//strcpy(inputfile, argv[i+1]); 
+
+		if ( ! strcmp(argv[i], "--out"))
+            outputfile  = argv[i+1];
+			//strcpy(outputfile, argv[i+1]); 
+
+		if ( ! strcmp(argv[i], "--depth")) 
+	    	zmax= atol(argv[i+1]);	
+     }
+
+
+//-----------------------------------------------------------------------------------//
+//---- Calculating Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    ifstream in;
+    in.open(inputfile+"_"+std::to_string(rank)+".xyz");
+
+    ifstream in1;
+    in1.open(inputfile+"_"+std::to_string(rank)+".info");
+
+    ofstream wrgmsh;
+    wrgmsh.open(outputfile+"_"+std::to_string(rank)+".mesh");
+
+    in1 >> pnty >> pntx;
     in1.close() ;
     
 

@@ -1,11 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-//#include <chrono>
 using namespace std;
 
 
-int main(){
+int main(int argc, char *argv[]){
 
 //=============================================================================
 // ------------- Initial Variables ------------------
@@ -24,24 +23,56 @@ int main(){
 
   //-----------------------------------------//
   //---- Points in x & y on the surface -----
-  //-----------------------------------------//       
-    int pntx = 500 ; //250; //125; //63; //32;
-    int pnty = 451 ; //226; //113; //57; //29;
+  //-----------------------------------------// 
+                   //10m  20m  40m  80m 160m      
+    int pntx = 32; //500; 250; 125; 63; 32;
+    int pnty = 29; //451; 226; 113; 57; 29;
 
   //-----------------------------------------//
   //---- Number of strips -----
   //-----------------------------------------// 
-    int proc = 4   ;
+    int proc = 2   ;
 
   //-----------------------------------------//
   //---- Input & output file names -----
   //-----------------------------------------// 
-    string inputfile = "./../../data/DEM_10m.xyz";  //"./../data/DEM_20m.xyz";//"./../data/DEM_40m.xyz";//"./../data/DEM_80m.xyz";//"./../data/DEM_160m.xyz";
-    string outpufile = "point-cloud-strip"    ;
+                                      //_10m";  _20m"; _40m"; _80m"; _160m";
+    string inputfile = "./../../data/DEM_160m"; 
+    string outputfile = "point-cloud-strip"    ;
 
-    ifstream in  ; in.open(inputfile);
-    ofstream wr  ; wr.open(outpufile+"_"+std::to_string(fileNo)+".xyz");
-    ofstream wr1 ; wr1.open(outpufile+"_"+std::to_string(fileNo)+".info"); 
+  //-----------------------------------------//
+  //---- Comandline Parameters -----
+  //-----------------------------------------//
+
+    for(int i=0; i<argc-1; i++){
+
+        string argvdummy=argv[i];
+        string argvdummy1=argv[i+1];
+
+		if( argvdummy == "--xpoints") 
+	    	pntx= stoi(argvdummy1);
+
+		if( argvdummy == "--ypoints") 
+	    	pnty= stoi(argvdummy1);
+
+		if( argvdummy == "--strips") 
+	    	proc= stoi(argvdummy1);
+
+		if( argvdummy == "--in") 
+	    	inputfile = argvdummy1;
+
+		if( argvdummy == "--out") 
+	    	outputfile = argvdummy1;
+     }
+
+   cout << "file name "<< inputfile << endl;
+   
+  //-----------------------------------------//
+  //---- Open input & output files -----
+  //-----------------------------------------// 
+    ifstream in  ; in.open(inputfile+".xyz");
+    ofstream wr  ; wr.open(outputfile+"_"+std::to_string(fileNo)+".xyz");
+    ofstream wr1 ; wr1.open(outputfile+"_"+std::to_string(fileNo)+".info"); 
 
 //=============================================================================
 // ------------- Commandline logo output ------------------
@@ -68,7 +99,7 @@ int main(){
          << "                                                               \n"
          << "  top-ii-vol is now stripping the point cloud .......          \n"
          << "                                                               \n"
-         << "  writing "<<string(outpufile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
+         << "  writing "<<string(outputfile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
 
 
 //=============================================================================
@@ -94,13 +125,13 @@ int main(){
           fileNo++; 
           wr.close(); 
           cout << "  done\n";
-          cout << "  writing "<<string(outpufile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
-          wr.open(outpufile+"_"+std::to_string(fileNo)+".xyz");
+          cout << "  writing "<<string(outputfile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
+          wr.open(outputfile+"_"+std::to_string(fileNo)+".xyz");
 
-          wr1<< counter << endl; 
+          wr1 << counter <<  "  " <<  pntx << endl; 
           counter=0;
  
-           wr1.close(); wr1.open(outpufile+"_"+std::to_string(fileNo)+".info");
+           wr1.close(); wr1.open(outputfile+"_"+std::to_string(fileNo)+".info");
           counter++;
 
           for(int i=1; i<=pntx; i++){
@@ -109,7 +140,7 @@ int main(){
         }
     }
           
-    wr1 << counter << endl; wr1.close();
+    wr1 << counter <<  "  " <<  pntx << endl;  wr1.close();
     cout << "  done\n";
 
 

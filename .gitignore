@@ -9,3 +9,6 @@
 *.dat
 *.txt
 *.csv
+*.info
+*.vtu
+*.pvd
