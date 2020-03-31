@@ -72,8 +72,6 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const {
     string* outputfile= GetAny<string*>((*outname)(stack))	;
     int     pntx      = GetAny<long>((*ptx)(stack))	        ;
     int     pnty      = GetAny<long>((*pty)(stack))		    ;
-
-    double anew						;
     
 //    cout << " Px "<< pntx << " py  "<<pnty  << " Name input "<< *inputfile << " Name output "<< *outputfile << endl;
 
@@ -246,8 +244,6 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const {
     string* outputfile= GetAny<string*>((*outname)(stack))	;
     int     pntz      = GetAny<long>((*ptz)(stack))	        ;
     double  zmax      = GetAny<double>((*dpth)(stack))	    ;
-
-    cout <<" Name input "<< *inputfile << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
