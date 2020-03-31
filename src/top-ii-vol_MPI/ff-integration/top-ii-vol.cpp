@@ -3,7 +3,6 @@
 #include <iomanip>
 
 #include "ff++.hpp"
-#include "RNM.hpp"
 #include "AFunction.hpp"
 #include "AFunction_ext.hpp"
 using namespace Fem2D;

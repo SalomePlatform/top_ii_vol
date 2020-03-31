@@ -1,20 +1,29 @@
 load "top-ii-vol"
 load "PETSc"
+
 func Pk = P1;
 macro grad(u)[dx(u), dy(u), dz(u)]// // three-dimensional gradient
 macro def(u)u//
 
-real t0;
+include "getARGV.idp"    	// Enables importing commandline arguments
+//10m  20m  40m  80m 160m      
+//500; 250; 125; 63; 32;
+//451; 226; 113; 57; 29;
+int totaltsets=getARGV("-tests", 1);
+real t0,t1,tt;
+for(int i=0; i < totaltsets; i++){
 mpiBarrier(mpiCommWorld);
 if(mpirank == 0) t0 = mpiWtime();
 
-   topiivolpart("./../../../data/DEM_160m","point-cloud-strip",32,29);
-   mpiBarrier(mpiCommWorld);
-   topiivolmesh("point-cloud-strip","top-ii-vol-mesh",50,-1920.0);
+		topiivolpart("./../../../data/DEM_40m","point-cloud-strip",125,113);
+		mpiBarrier(mpiCommWorld);
+		topiivolmesh("point-cloud-strip","top-ii-vol-mesh",50,-1920.0);
 
 mpiBarrier(mpiCommWorld);
+t1=mpiWtime()-t0;
 if(mpirank == 0)
-cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
+cout <<  "  Total time taken for Dmesh construction : " << t1 << " s"<< endl;
+
 
 {
     macro dimension()3// EOM
@@ -52,3 +61,9 @@ cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
 
 }
 
+
+if(i>2)tt=t1+tt;
+}
+
+if(mpirank == 0 && totaltsets>3)
+cout <<  "  Total average time taken for "<< totaltsets-3  << " runs : " << tt/(totaltsets-3) << " s"<< endl;

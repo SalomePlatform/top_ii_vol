@@ -1,7 +1,8 @@
 load "PETSc"
 func Pk = P1;
-
+macro grad(u)[dx(u), dy(u), dz(u)]//
 macro def(u)u//
+
 {
     macro dimension()3// EOM
     include "macro_ddm.idp"
@@ -9,7 +10,7 @@ macro def(u)u//
     real t0;
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
-    Th=readmesh3("Top2Vol-mesh.mesh");
+    Th=readmesh3("Top2Vol-mesh_0.mesh");
 
 	buildDmesh(Th)
  
@@ -22,10 +23,10 @@ macro def(u)u//
     Mat A;
     createMat(Th, A, Pk)
 
-    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v)) /*+ intN(Th)(1e6*(x<.6)*(x>.4)*x*y*v)*/ + on(6, u = 15.0)+ on(3, u = 1.0);
+    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v))  + on(6, u = 15.0)+ on(3, u = 1.0);
     real[int] rhs = vPb(0, Wh);
 
-    set(A, sparams = "-ksp_view");
+    set(A, sparams = " ");
     A = vPb(Wh, Wh);
     u[] = A^-1 * rhs; 
 

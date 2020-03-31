@@ -14,7 +14,8 @@ top-ii-vol.so: top-ii-vol.cpp
 
 
 test:
-	ff-mpirun -np 2 test.edp
+	ff-mpirun -np 2 test.edp -v 0
+	paraview vtk_2.pvd    
 
 clean:
 	@echo "  			            "
