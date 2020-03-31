@@ -6,20 +6,16 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
+#include "LogoTopiiVolCpp.hpp"
+
 //=============================================================================
-// ------------- Initial Variables ------------------
+// ------------- Initial Common Variables ------------------
 //=============================================================================
 
   //-----------------------------------------//
   //---- For timing the program -----
   //-----------------------------------------//
     std::clock_t c_start = std::clock();        
-
-  //-----------------------------------------//
-  //---- Program variables -----
-  //-----------------------------------------//
-    int fileNo  = 0 ;   
-    int counter = 0 ;
 
   //-----------------------------------------//
   //---- Points in x & y on the surface -----
@@ -31,14 +27,18 @@ int main(int argc, char *argv[]){
   //-----------------------------------------//
   //---- Number of strips -----
   //-----------------------------------------// 
-    int proc = 2   ;
+    int mpisize = 2   ;
 
   //-----------------------------------------//
   //---- Input & output file names -----
   //-----------------------------------------// 
-                                      //_10m";  _20m"; _40m"; _80m"; _160m";
-    string inputfile = "./../../data/DEM_160m"; 
-    string outputfile = "point-cloud-strip"    ;
+
+    string * inputfile  = new string();
+    string * outputfile = new string();
+
+                                 //_10m";  _20m"; _40m"; _80m"; _160m";
+    *inputfile  = "./../../data/DEM_160m" ; 
+    *outputfile = "point-cloud-strip"     ;
 
   //-----------------------------------------//
   //---- Comandline Parameters -----
@@ -56,97 +56,24 @@ int main(int argc, char *argv[]){
 	    	pnty= stoi(argvdummy1);
 
 		if( argvdummy == "--strips") 
-	    	proc= stoi(argvdummy1);
+	    	mpisize = stoi(argvdummy1);
 
 		if( argvdummy == "--in") 
-	    	inputfile = argvdummy1;
+	    	*inputfile = argvdummy1;
 
 		if( argvdummy == "--out") 
-	    	outputfile = argvdummy1;
+	    	*outputfile = argvdummy1;
      }
 
-   cout << "file name "<< inputfile << endl;
-   
-  //-----------------------------------------//
-  //---- Open input & output files -----
-  //-----------------------------------------// 
-    ifstream in  ; in.open(inputfile+".xyz");
-    ofstream wr  ; wr.open(outputfile+"_"+std::to_string(fileNo)+".xyz");
-    ofstream wr1 ; wr1.open(outputfile+"_"+std::to_string(fileNo)+".info"); 
-
 //=============================================================================
-// ------------- Commandline logo output ------------------
+// ------------- main algo ------------------
 //=============================================================================
 
-    cout << " *============================================================*\n" 
-         << "         ___                                            ___    \n" 
-         << "        /  /               ___________                 /  /    \n" 
-         << "     __/  /_ ___    ___   /__  __  __/__    __ ____   /  /     \n" 
-         << "    /_   __// _  \\ / _  \\   / / / /   \\ \\  / // _  \\ /  / \n" 
-         << "     /  /_ / /_/ // /_/ /__/ /_/ /__   \\ \\/ // /_/ //  /__   \n" 
-         << "     \\___/ \\____// ____//__________/    \\__/ \\____/ \\____/\n" 
-         << "                / /                                            \n" 
-         << "               /_/                                             \n"
-         << " *============================================================*\n"; 
-
-    cout << "                                                               \n"
-         << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n" 
-         << "  # points in X -------------------- "<< pntx << "             \n"
-         << "  # points in Y -------------------- "<< pnty << "             \n"
-         << "  # of strips ---------------------- "<< proc << "             \n"
-         << "                                                               \n"
-         << " *============================================================*\n"
-         << "                                                               \n"
-         << "  top-ii-vol is now stripping the point cloud .......          \n"
-         << "                                                               \n"
-         << "  writing "<<string(outputfile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
-
+#include "TopiiVolPartAlgo.hpp"
 
 //=============================================================================
-// ------------- Main loop to read file and return the strips  ---------
-//=========================================================================== 
-
-    double xx[pntx] ;   
-    double yy[pntx] ;
-    double zz[pntx] ;
- 
-    int cutoff = pnty/proc;
-
-    for(int j=1; j<=pnty; j++){
-
-       counter++;
-       for(int i=1; i<=pntx; i++){
-           in >> std::fixed >> xx[i-1]         >> yy[i-1]         >> zz[i-1];
-           wr << std::fixed << xx[i-1] << "  " << yy[i-1] << "  " << zz[i-1] << endl;
-       }
-
-       if(j%cutoff==0 && fileNo < proc-1){
-
-          fileNo++; 
-          wr.close(); 
-          cout << "  done\n";
-          cout << "  writing "<<string(outputfile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
-          wr.open(outputfile+"_"+std::to_string(fileNo)+".xyz");
-
-          wr1 << counter <<  "  " <<  pntx << endl; 
-          counter=0;
- 
-           wr1.close(); wr1.open(outputfile+"_"+std::to_string(fileNo)+".info");
-          counter++;
-
-          for(int i=1; i<=pntx; i++){
-            wr<< std::fixed << xx[i-1] << "  " << yy[i-1] << "  " << zz[i-1] << endl;
-          }
-        }
-    }
-          
-    wr1 << counter <<  "  " <<  pntx << endl;  wr1.close();
-    cout << "  done\n";
-
-
-    cout << "                                                               \n"
-         << " *============================================================*\n"
-         << "                                                               \n";
+//---- For timing the program -----
+//=============================================================================
 
     std::clock_t c_end = std::clock();
 
