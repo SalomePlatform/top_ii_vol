@@ -22,11 +22,10 @@ top-ii-vol-Mesh: top-ii-vol-MPImesher.o
 	$(MPICXX) -o top-ii-vol-Mesh top-ii-vol-MPImesher.o	
 
 test: reconstruct.edp top-ii-vol-partitioner.cpp top-ii-vol-MPImesher.cpp
-	@echo " KOKOKOK "
 	./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../../data/DEM_160m --xpoints 32 --ypoints 29
 	mpirun -np 2 ./top-ii-vol-Mesh
 	ff-mpirun -np 2 reconstruct.edp
-	paraview vtk.pvd    
+	paraview vtk_2.pvd    
 
 clean:
 	@echo "  			            "

@@ -1,0 +1,18 @@
+load "top-ii-vol"
+
+//10m  20m  40m  80m 160m      
+//500; 250; 125; 63; 32;
+//451; 226; 113; 57; 29;
+
+real t0;
+mpiBarrier(mpiCommWorld);
+if(mpirank == 0) t0 = mpiWtime();
+
+		topiivolpart("./../../../data/DEM_160m","point-cloud-strip",32,29);
+		mpiBarrier(mpiCommWorld);
+		topiivolmesh("point-cloud-strip","top-ii-vol-mesh",50,-1920.0);
+
+mpiBarrier(mpiCommWorld);
+if(mpirank == 0)
+cout <<  "  Total time taken for Dmesh construction : " << mpiWtime()-t0 << " s"<< endl;
+

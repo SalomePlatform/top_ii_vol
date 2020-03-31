@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-#include <chrono>
 #include <mpi.h>
 using namespace std;
 
@@ -11,9 +10,9 @@ int main(int argc, char **argv){
 
     MPI_Init(&argc, &argv);
 
-    int size, rank;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int mpisize, mpirank;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
 
     double t1 = MPI_Wtime();
 
@@ -82,19 +81,19 @@ int main(int argc, char **argv){
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open(inputfile+"_"+std::to_string(rank)+".xyz");
+    in.open(inputfile+"_"+std::to_string(mpirank)+".xyz");
 
     ifstream in1;
-    in1.open(inputfile+"_"+std::to_string(rank)+".info");
+    in1.open(inputfile+"_"+std::to_string(mpirank)+".info");
 
     ofstream wrgmsh;
-    wrgmsh.open(outputfile+"_"+std::to_string(rank)+".mesh");
+    wrgmsh.open(outputfile+"_"+std::to_string(mpirank)+".mesh");
 
     in1 >> pnty >> pntx;
     in1.close() ;
     
 
-    if(rank==(size-1))pnty=pnty-1; // LAST rank does not have comman partion 
+    if(mpirank==(mpisize-1))pnty=pnty-1; // Last mpirank does not have comman partion 
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -109,7 +108,7 @@ int main(int argc, char **argv){
 // ------------- Commandline logo output ------------------
 //=============================================================================
 
-    if(rank==0)
+    if(mpirank==0)
     cout << " *============================================================*\n" 
          << "         ___                                            ___    \n" 
          << "        /  /               ___________                 /  /    \n" 
@@ -124,7 +123,7 @@ int main(int argc, char **argv){
     MPI_Barrier(MPI_COMM_WORLD);
 
     cout << "                                                               \n"
-         << "           MPI Processs # "<<rank <<"                          \n"
+         << "           MPI Processs # "<<mpirank <<"                       \n"
          << "                                                               \n"
          << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n" 
          << "  # points in X -------------------- "<< pntx << "             \n"
@@ -146,7 +145,7 @@ int main(int argc, char **argv){
 //-----------------------------------------------------------------------------------//
 
     cout   << "Generating points ........"		               ;
-    wrgmsh << "Vertices" 				<< endl;
+    wrgmsh << "Vertices" 		    << endl;
     wrgmsh <<  NPnt	 				<< endl;
 
     for(int i=0; i<pntx*pnty; i++){
@@ -160,8 +159,8 @@ int main(int argc, char **argv){
         }
     }
 
-    wrgmsh << "" 					<< endl;
-    cout   << " finished for MPI rank : " << rank << endl;
+    wrgmsh << "							" << endl;
+    cout   << " finished for MPI rank : " << mpirank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
@@ -194,8 +193,8 @@ int main(int argc, char **argv){
     }
     }
 
-    wrgmsh << "" 					    << endl;
-    cout   << " finished for MPI rank : " << rank << endl;
+    wrgmsh << "" 					      << endl;
+    cout   << " finished for MPI rank : " << mpirank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
@@ -224,7 +223,7 @@ int main(int argc, char **argv){
 //----Y-MIN-PLANE----//
 int labymin=99099;
 
-if(rank==0)labymin=2;
+if(mpirank==0)labymin=2;
 
     for(int i=0; i<pntx-1;  i++){
     for(int j=0; j<pntz-1;  j++){
@@ -275,7 +274,7 @@ if(rank==0)labymin=2;
 //----Y-MAX-PLANE----//
 int labymax=99099;
 
-if(rank==(size-1))labymax=5;
+if(mpirank==(mpisize-1))labymax=5;
 
     for(int i=0; i<pntx-1;  i++){
     for(int j=0; j<pntz-1;  j++){
@@ -306,7 +305,7 @@ if(rank==(size-1))labymax=5;
     }
     }
 
-    cout   << " finished for MPI rank : " << rank << endl;
+    cout   << " finished for MPI rank : " << mpirank << endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----
@@ -318,7 +317,7 @@ if(rank==(size-1))labymax=5;
 
 
    MPI_Barrier(MPI_COMM_WORLD);
-   if(rank==0){
+   if(mpirank==0){
     cout << "                                                               \n"
          << " *============================================================*\n"
          << "                                                               \n";
