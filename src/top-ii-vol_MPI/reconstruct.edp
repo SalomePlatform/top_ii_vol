@@ -12,7 +12,7 @@ macro def(u)u//
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
 
-    Th=readmesh3("Top2Vol-mesh_"+mpirank+".mesh");
+    Th=readmesh3("top-ii-vol-mesh_"+mpirank+".mesh");
 
     reconstructDmesh(Th)
 
@@ -29,7 +29,7 @@ macro def(u)u//
     varf vPb(u, v) = intN(Th)(grad(u)' * grad(v)) /*+ intN(Th)(1e6*(x<.6)*(x>.4)*x*y*v)*/ + on(6, u = 15.0)+ on(3, u = 1.0);
     real[int] rhs = vPb(0, Wh);
 
-    set(A, sparams = "-ksp_view");
+    set(A, sparams = "-ksp_type cg");
     A = vPb(Wh, Wh);
     u[] = A^-1 * rhs; 
 
