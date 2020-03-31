@@ -12,7 +12,7 @@ macro def(u)u//
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
 
-    Th=readmesh3("top-ii-vol-mesh_"+mpirank+".mesh");
+    Th=readmesh3("top-ii-vol-mesh_"+mpirank+".meshb");
 
     reconstructDmesh(Th)
 

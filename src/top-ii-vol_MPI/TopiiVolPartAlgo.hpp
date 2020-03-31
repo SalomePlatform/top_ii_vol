@@ -12,8 +12,8 @@
   //---- Open input & output files -----
   //-----------------------------------------// 
     ifstream in  ; in.open(*inputfile+".xyz");
-    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz");
-    ofstream wr1 ; wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info"); 
+    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz",ios::binary);
+    ofstream wr1 ; wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info",ios::binary); 
 
 //=============================================================================
 // ------------- Commandline output ------------------
@@ -48,7 +48,7 @@
 
        for(int i=1; i<=pntx; i++){
            in >> std::fixed >> xx[i-1]         >> yy[i-1]         >> zz[i-1];
-           wr << std::fixed << xx[i-1] << "  " << yy[i-1] << "  " << zz[i-1] << endl;
+           wr << std::fixed << xx[i-1] << "\t" << yy[i-1] << "\t" << zz[i-1] << "\n";
        }
 
        if(j%cutoff==0 && fileNo < mpisize-1){
@@ -59,14 +59,14 @@
           cout << "  writing "<<string(*outputfile+"_"+std::to_string(fileNo)+".xyz")<<" ... ";
           wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz");
 
-          wr1 << counter <<  "  " <<  pntx << endl; 
+          wr1 << counter <<  "  " <<  pntx << "\n"; 
           counter=0;
  
            wr1.close(); wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info");
           counter++;
 
           for(int i=1; i<=pntx; i++){
-            wr<< std::fixed << xx[i-1] << "  " << yy[i-1] << "  " << zz[i-1] << endl;
+            wr<< std::fixed << xx[i-1] << "\t" << yy[i-1] << "\t" << zz[i-1] << "\n";
           }
         }
 

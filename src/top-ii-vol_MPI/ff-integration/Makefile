@@ -1,7 +1,6 @@
 LIST_COMPILE= top-ii-vol.cpp
 
 ffCXX=ff-c++
-MPICXX=mpic++
 	
 all: top-ii-vol.so
 	@echo "  			                              "
@@ -22,5 +21,5 @@ clean:
 	@echo " Cleaning in progress ..."
 	@echo "  			            "
 	@echo "  			            "
-	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.so *.vtu *.pvd *.xyz *.info *.mesh
+	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.so *.vtu *.pvd *.xyz *.info *.mesh *.meshb
 	rm  -rf VTUs 
