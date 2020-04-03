@@ -8,9 +8,11 @@ real t0;
 mpiBarrier(mpiCommWorld);
 if(mpirank == 0) t0 = mpiWtime();
 
-   topiivolpart("./../../../data/DEM_160m","point-cloud-strip",32,29);
+   topiivolpart("./../../../data/DEM_160m",outfile="point-cloud-strip",pointsx=32,pointsy=29);
+//   topiivolpart("./../../../data/DEM_160m","point-cloud-strip",32,29);
    mpiBarrier(mpiCommWorld);
-   topiivolmesh("point-cloud-strip","top-ii-vol-mesh",50,-1920.0);
+//   topiivolmesh("point-cloud-strip","top-ii-vol-mesh",4,-1920.0);
+   topiivolmesh("point-cloud-strip",outfile="top-ii-vol-mesh",pointsz=4,zdepth=-1920.0);
 
 mpiBarrier(mpiCommWorld);
 if(mpirank == 0)
@@ -49,6 +51,6 @@ cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
     plotMPI(Th, u, Pk, def, real, cmm = "u"); 
     int[int] fforder=[1];
     savevtk("vtk.vtu",Th,u,order=fforder, dataname = "u");
-
+    saveDmesh(Th, "saved-Dmesh");
 }
 

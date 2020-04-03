@@ -12,3 +12,7 @@
 *.info
 *.vtu
 *.pvd
+*.meshb
+*.khi
+*.idp
+*.so

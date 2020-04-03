@@ -93,7 +93,7 @@
     }
 
     wrgmsh << "\n";
-    cout   << " finished for MPI rank : " << mpirank << endl;
+    cout   << " finished for MPI rank : " << mpirank << "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
@@ -107,14 +107,14 @@
     for(int i=0; i<pntx-1;  i++){
     for(int k=1; k<=pntz-1; k++){
 
-        IJK	    =	i*pntz  + j*pntx*pntz + k	;
-        Ip1JK	    =	IJK 	+ (pntx*pntz)		;
-        IJp1K	    =	IJK 	+ (pntz)		;
-        Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
-        IJKp1     =	IJK 	+ 1			;
-        Ip1JKp1   =	Ip1JK 	+ 1			;
-        IJp1Kp1   =	IJp1K   + 1			;
-        Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
+        IJK	        =	i*pntz  + j*pntx*pntz + k	    ;
+        Ip1JK	    =	IJK 	+ (pntx*pntz)		    ;
+        IJp1K	    =	IJK 	+ (pntz)		        ;
+        Ip1Jp1K     =	IJK 	+ (pntx*pntz) + pntz	;
+        IJKp1       =	IJK 	+ 1			;
+        Ip1JKp1     =	Ip1JK 	+ 1			;
+        IJp1Kp1     =	IJp1K   + 1			;
+        Ip1Jp1Kp1   =	Ip1Jp1K + 1			;
 
         wrgmsh << std::fixed << IJK     << "\t" << IJKp1   << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n"
                              << IJKp1   << "\t" << IJK     << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
@@ -127,7 +127,7 @@
     }
 
     wrgmsh << "\n";
-    cout   << " finished for MPI rank : " << mpirank << endl;
+    cout   << " finished for MPI rank : " << mpirank << "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
@@ -238,7 +238,7 @@ if(mpirank==(mpisize-1))labymax=5;
     }
     }
 
-    cout   << " finished for MPI rank : " << mpirank << endl;
+    cout   << " finished for MPI rank : " << mpirank << "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----

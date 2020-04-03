@@ -36,5 +36,5 @@ macro def(u)u//
     plotMPI(Th, u, Pk, def, real, cmm = "u"); 
     int[int] fforder=[1];
     savevtk("vtk.vtu",Th,u,order=fforder, dataname = "u");
-
+    saveDmesh(Th, "saved-Dmesh");
 }

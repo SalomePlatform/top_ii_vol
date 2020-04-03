@@ -27,14 +27,14 @@ cout <<  "  Total time taken for Dmesh construction : " << t1 << " s"<< endl;
 
 {
     macro dimension()3// EOM
-    include "macro_ddm.idp"
+    include "./../macro_ddm.idp"
     mesh3 Th;
 
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
 
     Th=readmesh3("top-ii-vol-mesh_"+mpirank+".meshb");
-
+    mpiBarrier(mpiCommWorld);
     reconstructDmesh(Th)
 
 	mpiBarrier(mpiCommWorld);
@@ -59,6 +59,7 @@ cout <<  "  Total time taken for Dmesh construction : " << t1 << " s"<< endl;
     int[int] fforder=[1];
     savevtk("vtk.vtu",Th,u,order=fforder, dataname = "u");
 
+//saveDmesh(Th, "saved-Dmesh");
 }
 
 

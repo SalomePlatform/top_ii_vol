@@ -12,7 +12,7 @@
   //---- Open input & output files -----
   //-----------------------------------------// 
     ifstream in  ; in.open(*inputfile+".xyz");
-    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz",ios::binary);
+    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz", ios::binary);
     ofstream wr1 ; wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info",ios::binary); 
 
 //=============================================================================
@@ -72,7 +72,7 @@
 
     }
           
-    wr1 << counter <<  "  " <<  pntx << endl;  wr1.close(); in.close();
+    wr1 << counter <<  "  " <<  pntx;  wr1.close(); in.close();
     cout << "  done\n";
 
 
