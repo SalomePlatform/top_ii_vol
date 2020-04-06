@@ -42,9 +42,16 @@
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    int NPnt = pntx * pnty * pntz					;
-    int NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1));
-    int NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			;
+    int PxM1 = pntx-1                                       ;
+    int PyM1 = pnty-1                                       ;
+    int PzM1 = pntz-1                                       ;
+    int PxPz = pntx*pntz									;
+    int PxPy = pntx*pnty									;
+
+    int NPnt = pntx * pnty * pntz					        ;
+    int NTri = 4*( PzM1*PxM1 + PyM1*PzM1 + PxM1*PyM1 )      ;
+    int NTet = PxM1 * PyM1 * PzM1 * 6			            ;
+
 
 
 /*
@@ -59,7 +66,7 @@
     cout << "                                                               \n"
          << "           MPI Processs # "<<mpirank <<"                       \n"
          << "                                                               \n"
-         << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n" 
+         << "  # points in the .xyz ------------- "<< PxPy << "             \n" 
          << "  # points in X -------------------- "<< pntx << "             \n"
          << "  # points in Y -------------------- "<< pnty << "             \n"
          << "                                                               \n"
@@ -81,12 +88,12 @@
     wrgmsh << "Vertices\n"
            <<  NPnt	<<"\n";
 
-    for(int i=0; i<pntx*pnty; i++){
+    for(int i=0; i<PxPy; i++){
         in     >> std::fixed >> xx >>        yy        >> zz                 ;
-        wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n";
+        wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n"     ;
 
-        zznew=zz;  delz= (zmax-zz)/(pntz-1);
-        for(int j=0; j<pntz-1; j++){
+        zznew=zz;  delz= (zmax-zz)/PzM1;
+        for(int j=0; j<PzM1; j++){
             zznew  = zznew + delz;
             wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zznew << " 0\n";
         }
@@ -103,18 +110,18 @@
     wrgmsh << "Tetrahedra\n"
            <<  NTet <<"\n";
 
-    for(int j=0; j<pnty-1;  j++){
-    for(int i=0; i<pntx-1;  i++){
-    for(int k=1; k<=pntz-1; k++){
+    for(int j=0; j<PyM1;  j++){
+    for(int i=0; i<PxM1;  i++){
+    for(int k=1; k<=PzM1; k++){
 
-        IJK	        =	i*pntz  + j*pntx*pntz + k	    ;
-        Ip1JK	    =	IJK 	+ (pntx*pntz)		    ;
-        IJp1K	    =	IJK 	+ (pntz)		        ;
-        Ip1Jp1K     =	IJK 	+ (pntx*pntz) + pntz	;
-        IJKp1       =	IJK 	+ 1			;
-        Ip1JKp1     =	Ip1JK 	+ 1			;
-        IJp1Kp1     =	IJp1K   + 1			;
-        Ip1Jp1Kp1   =	Ip1Jp1K + 1			;
+        IJK	        =	i*pntz  + j*PxPz + k  ;
+        Ip1JK	    =	IJK 	+ PxPz		  ;
+        IJp1K	    =	IJK 	+ pntz		  ;
+        Ip1Jp1K     =	IJK 	+ PxPz + pntz ;
+        IJKp1       =	IJK 	+ 1			  ;
+        Ip1JKp1     =	Ip1JK 	+ 1			  ;
+        IJp1Kp1     =	IJp1K   + 1			  ;
+        Ip1Jp1Kp1   =	Ip1Jp1K + 1			  ;
 
         wrgmsh << std::fixed << IJK     << "\t" << IJKp1   << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n"
                              << IJKp1   << "\t" << IJK     << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
@@ -139,13 +146,13 @@
 
 //----X-MIN-PLANE---//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int i=0; i<PyM1;  i++){
+    for(int j=0; j<PzM1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j+1	;
+        IJK	      =	i*PxPz + j + 1	;
         IJKp1	  =	IJK + 1			;
-        Ip1JK	  =	IJK + (pntz*pntx)	;
-        Ip1JKp1 =	Ip1JK + 1		;
+        Ip1JK	  =	IJK + PxPz    	;
+        Ip1JKp1   =	Ip1JK + 1		;
 
         wrgmsh << std::fixed << IJKp1   << "\t" <<  IJK  << "\t" << Ip1JK << " 1\n"
                              << Ip1JKp1 << "\t" << IJKp1 << "\t" << Ip1JK << " 1\n";
@@ -158,13 +165,13 @@ int labymin=99099;
 
 if(mpirank==0)labymin=2;
 
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int i=0; i<PxM1;  i++){
+    for(int j=0; j<PzM1;  j++){
 
-        IJK	  =	i*pntz + j+1	;
-        IJKp1	  =	IJK + 1		;
-        IJp1K	  =	IJK + pntz	;
-        IJp1Kp1 =	IJp1K + 1	;
+        IJK	      =	i*pntz + j + 1	;
+        IJKp1	  =	IJK + 1		    ;
+        IJp1K	  =	IJK + pntz	    ;
+        IJp1Kp1   =	IJp1K + 1	    ;
 
         wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << IJp1K << "\t" << labymin << "\n"
                              << IJKp1 << "\t" << IJp1Kp1 << "\t" << IJp1K << "\t" << labymin << "\n";
@@ -174,13 +181,13 @@ if(mpirank==0)labymin=2;
 
 
 //----Z-MIN-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+    for(int i=0; i<PyM1;  i++){
+    for(int j=0; j<PxM1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1	;
-        Ip1JK	  =	IJK + (pntz*pntx)		;
-        IJp1K	  =	IJK + pntz			;
-        Ip1Jp1K =	Ip1JK + pntz			;
+        IJK	      =	i*PxPz + j*pntz +1	    ;
+        Ip1JK	  =	IJK + PxPz         		;
+        IJp1K	  =	IJK + pntz		    	;
+        Ip1Jp1K   =	Ip1JK + pntz			;
 
         wrgmsh << std::fixed << IJK   << "\t" << IJp1K << "\t" << Ip1Jp1K << " 3\n"
                              << Ip1JK << "\t" << IJK   << "\t" << Ip1Jp1K << " 3\n";
@@ -188,13 +195,13 @@ if(mpirank==0)labymin=2;
     }
 
 //----X-MAX-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int i=0; i<PyM1;  i++){
+    for(int j=0; j<PzM1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
-        IJKp1	  =	IJK + 1					;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
-        Ip1JKp1 =	Ip1JK + 1				;
+        IJK	      =	i*PxPz + j+1 + PxM1*(pntz)	;
+        IJKp1	  =	IJK + 1					        ;
+        Ip1JK	  =	IJK + PxPz			            ;
+        Ip1JKp1   =	Ip1JK + 1				        ;
 
         wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << Ip1JK << " 4\n"
                              << IJKp1 << "\t" << Ip1JKp1 << "\t" << Ip1JK << " 4\n";
@@ -209,13 +216,13 @@ int labymax=99099;
 
 if(mpirank==(mpisize-1))labymax=5;
 
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int i=0; i<PxM1;  i++){
+    for(int j=0; j<PzM1;  j++){
 
-        IJK	  =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
-        IJKp1	  =	IJK + 1					;
-        IJp1K	  =	IJK + pntz				;
-        IJp1Kp1 =	IJp1K + 1				;
+        IJK	      =	i*pntz + j+1 + PxPz*PyM1	;
+        IJKp1	  =	IJK + 1					    ;
+        IJp1K	  =	IJK + pntz				    ;
+        IJp1Kp1   =	IJp1K + 1				    ;
 
         wrgmsh << std::fixed << IJKp1   << "\t" << IJK   << "\t" << IJp1K << "\t" << labymax << "\n"
                              << IJp1Kp1 << "\t" << IJKp1 << "\t" << IJp1K << "\t" << labymax << "\n";
@@ -225,13 +232,13 @@ if(mpirank==(mpisize-1))labymax=5;
 //}
 
 //----Z-MAX-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+    for(int i=0; i<PyM1;  i++){
+    for(int j=0; j<PxM1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
-        IJp1K	  =	IJK + pntz				;
-        Ip1Jp1K =	Ip1JK + pntz				;
+        IJK	      =	i*PxPz + j*pntz + 1 + PzM1	;
+        Ip1JK	  =	IJK + PxPz			        ;
+        IJp1K	  =	IJK + pntz				    ;
+        Ip1Jp1K   =	Ip1JK + pntz				;
 
         wrgmsh << std::fixed << IJp1K << "\t" << IJK   << "\t" << Ip1Jp1K << " 6\n"
                              << IJK   << "\t" << Ip1JK << "\t" << Ip1Jp1K << " 6\n";
