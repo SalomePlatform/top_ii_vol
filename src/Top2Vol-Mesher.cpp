@@ -140,7 +140,7 @@ int main(int argc, char *argv[]){
 
    if(meshtype == "mesh"){
 
-    cout << "Meshing the topology in Medit's *.mesh format"	<< endl;
+    cout << "   Meshing the topology in Medit's *.mesh format"	<< endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Header for mesh -----
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]){
 //---- Generating points -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "Generating points...."		               ;
+    cout   << "   Generating points...."		               ;
     wrgmsh << "Vertices" 				<< endl;
     wrgmsh <<  NPnt	 				<< endl;
 
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]){
     }
 
     wrgmsh << "" 					<< endl;
-    cout   << "Done  "					<< endl;
+    cout   << "   Done  "					<< endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]){
     }
 
     wrgmsh << "" 					<< endl;
-    cout   << "Done"					<< endl;
+    cout   << "   Done"					<< endl;
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
@@ -321,7 +321,7 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 
   else if (meshtype == "msh"){
-    cout << "Meshing the topology in Gmsh's *.msh format"	<< endl;
+    cout << "   Meshing the topology in Gmsh's *.msh format"	<< endl;
 
 //--------------------------------------//
 //---- Header for msh2 -----

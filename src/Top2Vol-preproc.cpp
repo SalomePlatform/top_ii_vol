@@ -105,19 +105,6 @@ int main(int argc, char *argv[]){
     cout << "   Output file         ------ " << outpufile << endl;
     cout << " 							    \n";
 
-/*
-    cout << "   Enter total  points in  x  [int]   "; cin >> pntx;
-    cout << "   Enter points to skip in x  [int]   "; cin >> skipx;
-    cout << "   Enter total  points in  y  [int]   "; cin >> pnty;
-    cout << "   Enter points to skip in y  [int]   "; cin >> skipy;
-    cout << "   Enter the input .xyz file  [char]  "; cin >> inpurfile;
-    cout << "   Enter the output file name [char]  "; cin >> outpufile;
-    cout << " 							    \n";
-*/
-
-
-
-
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
 //-----------------------------------------------------------------------------------//
@@ -148,7 +135,7 @@ int main(int argc, char *argv[]){
 	    in>>std::fixed>> x  >> y >> z;
 
 	    if(int(j%skipy) == 0 && int(i%skipx) == 0 )
-	        wr<< std::fixed << x << "  " << y << "  "<<z << endl;
+	        wr<< std::fixed << x << "  " << y << "  "<<z << "\n";
         }
         }
         wr.close();
@@ -244,7 +231,7 @@ int main(int argc, char *argv[]){
     		wr.close();
                 wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 		}
-	        wr << std::fixed << x << "  " << y << "  "<< z << endl;
+	        wr << std::fixed << x << "  " << y << "  "<< z << "\n";
 	        countme++;
             }
         }
