@@ -84,5 +84,5 @@ clean:
 	@echo " Cleaning in progress ..."
 	@echo "  			            "
 	@echo "  			            "
-	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.vtu *.pvd *.xyz *.info *.mesh *.meshb
+	rm  -f *~  top-ii-vol-Mesher top-ii-vol-PreProc  top-ii-vol-ParMesher *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh
 	rm  -rf VTUs 

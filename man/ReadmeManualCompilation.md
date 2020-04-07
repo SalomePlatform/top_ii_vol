@@ -1,4 +1,4 @@
-# Manual comilation of top-ii-vol tools
+# Manual compilation of top-ii-vol tools
 
 Plan is to build Automake compilation for multiplatform builds but for now the manual setup should be followed:
 
