@@ -13,7 +13,7 @@ Plan is to build Automake compilation for multiplatform builds but for now the m
 It has two main functions 
 
 - Provides way to coarsen the point cloud by skipping points.
-- Provides point cloud scattering (Necessary for parallel for now).  
+- Provides point cloud scattering (necessary for parallel for now).  
 
 To compile and build the executable 
 
@@ -38,14 +38,14 @@ This is a parallel mesher that can output `.msh` and `.mesh` format tetrahedral 
 To compile and build the executable 
 
 ```
-mpicc -c ParTop2Vol-Mesher.c ; mpicc -o ParTop2Vol-Mesher ParTop2Vol-Mesher.o
+mpicc -c ParTop2Vol-Mesher.c; mpicc -o ParTop2Vol-Mesher ParTop2Vol-Mesher.o
 ```
 
 
 
 ## Running Top2Vol
 
-If the compilation went successfull you should have three tools at your disposal `ParTop2Vol-Mesher` , `Top2Vol-Mesher` , and `Top2Vol-preproc`. These tools can be worked with command line inputs.
+If the compilation went successful you should have three tools at your disposal `ParTop2Vol-Mesher` , `Top2Vol-Mesher` , and `Top2Vol-preproc`. These tools can be worked with command line inputs.
 
 
 
@@ -94,7 +94,7 @@ This is the sequential mesher
   ./Top2Vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
   ```
   
-- For  sequential mesher producing  `*.mesh` mesh.
+- For  sequential mesher producing  `*.msh` mesh.
 
   ```
   ./Top2Vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
