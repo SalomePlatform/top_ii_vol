@@ -15,6 +15,7 @@ MPICXX=mpic++
 MPICC=mpicc
 	
 all: logo top-ii-vol-PreProc top-ii-vol-Mesher top-ii-vol-ParMesher
+	cd ./top-ii-vol_MPI && make
 	@echo ""
 	@echo " *============================================================*"
 	@echo ""
@@ -65,12 +66,17 @@ ParTop2Vol-Mesher.o: ParTop2Vol-Mesher.c
 top-ii-vol-ParMesher: ParTop2Vol-Mesher.o
 	$(MPICC) -o top-ii-vol-ParMesher ParTop2Vol-Mesher.o	
 
-test-all: logo test-Mesher
+test: logo test-Mesher
 
 
 test-Mesher:
 	./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ../data/DEM_10m.xyz --out out-coarse.xyz --scatter no
 	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh meshb
+	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
+	./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in ../data/DEM_2m.xyz --out out-coarse-striped-test.xyz --scatter no
+	./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in ../data/DEM_2m.xyz --out out-coarse-striped.xyz --scatter yes --strips 3
+	mpirun -n 3 ./top-ii-vol-ParMesher --xpoints 105 --ypoints 94 --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
 
 
 clean:

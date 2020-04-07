@@ -132,11 +132,9 @@ int main(int argc, char *argv[]) {
 
 		if ( ! strcmp(argv[i], "--in"))
 			strcpy(inpurfile, argv[i+1]); 
-	    //	inpurfile = argvdummy1;
 
 		if ( ! strcmp(argv[i], "--out"))
 			strcpy(outpufile, argv[i+1]); 
-	    	//outpufile = argv[i+1];
 
 		if ( ! strcmp(argv[i], "--depth")) 
 	    	zmax= atol(argv[i+1]);

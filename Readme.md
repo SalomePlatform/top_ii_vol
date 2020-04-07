@@ -6,63 +6,27 @@ Top2Vol meshing tool provides sequential/parallel tools for creating volumic tet
 
 ## Compilation process ##
 
-Plan is to build Automake compilation for multiplatform builds but for now the manual setup should be followed:
+Simply perform run the `make` command to compile and build all the tools. Optionally `make test-all` to test if program is working well.
 
-#### Top2Vol-preproc
-
-It has two main functions 
-
-- Provides way to coarsen the point cloud by skipping points.
-- Provides point cloud scattering (necessary for parallel for now).  
-
-To compile and build the executable 
-
-```
-g++ -c Top2Vol-preproc.cpp ; g++ -o Top2Vol-preproc Top2Vol-preproc.o
-```
-
-#### Top2Vol-Mesher
-
-This is a sequential mesher that can output `.msh` and `.mesh` format tetrahedral meshes.
-
-To compile and build the executable 
-
-```
-g++ -c Top2Vol-Mesher.cpp ; g++ -o Top2Vol-Mesher Top2Vol-Mesher.o
-```
-
-#### ParTop2Vol-Mesher
-
-This is a parallel mesher that can output `.msh` and `.mesh` format tetrahedral meshes.
-
-To compile and build the executable 
-
-```
-mpicc -c ParTop2Vol-Mesher.c; mpicc -o ParTop2Vol-Mesher ParTop2Vol-Mesher.o
-```
-
+However if for some reason `make` fails follow the manual compilation given in `ReadmeManualCompile.md`.   
 
 
 ## Running Top2Vol
 
-If the compilation went successful you should have three tools at your disposal `ParTop2Vol-Mesher` , `Top2Vol-Mesher` , and `Top2Vol-preproc`. These tools can be worked with command line inputs.
+If the compilation went successful you should have three tools at your disposal `ParTop2Vol-Mesher` , `Top2Vol-Mesher` , and `top-ii-vol-PreProc`. These tools can be worked with command line inputs.
 
-
-
-
-
-##### How to use Top2Vol-preproc ?
+##### How to use top-ii-vol-PreProc ?
 
 - For sequential meshing if you wish to coarsen your mesh 
 
   ```
-  ./Top2Vol-preproc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter no
+  ./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter no
   ```
 
 - For parallel meshing using 3 processes 
 
   ```
-  ./Top2Vol-preproc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter yes --strips 3
+  ./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter yes --strips 3
   ```
 
 *Command-line option definitions*

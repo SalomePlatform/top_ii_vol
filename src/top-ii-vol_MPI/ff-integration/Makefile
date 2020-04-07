@@ -21,5 +21,5 @@ clean:
 	@echo " Cleaning in progress ..."
 	@echo "  			            "
 	@echo "  			            "
-	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.so *.vtu *.pvd *.xyz *.info *.mesh *.meshb
+	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.so *.vtu *.pvd *.xyz *.info *.mesh *.meshb *.khi
 	rm  -rf VTUs 

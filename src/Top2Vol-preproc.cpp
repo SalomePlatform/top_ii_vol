@@ -7,6 +7,12 @@ using namespace std;
 int main(int argc, char *argv[]){
 
 //-----------------------------------------------------------------------------------//
+// ---- Logo -----
+//-----------------------------------------------------------------------------------//
+
+#include "LogoTopiiVolCpp.hpp"
+
+//-----------------------------------------------------------------------------------//
 //---- Global Variables -----
 //-----------------------------------------------------------------------------------//
 
@@ -75,17 +81,6 @@ int main(int argc, char *argv[]){
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << " *============================================================*\n" 
-         << "         ___                                            ___    \n" 
-         << "        /  /               ___________                 /  /    \n" 
-         << "     __/  /_ ___    ___   /__  __  __/__    __ ____   /  /     \n" 
-         << "    /_   __// _  \\ / _  \\   / / / /   \\ \\  / // _  \\ /  / \n" 
-         << "     /  /_ / /_/ // /_/ /__/ /_/ /__   \\ \\/ // /_/ //  /__   \n" 
-         << "     \\___/ \\____// ____//__________/    \\__/ \\____/ \\____/\n" 
-         << "                / /                                            \n" 
-         << "               /_/                                             \n"
-         << " *============================================================*\n"; 
-
     cout << " 							    \n" 
          << " *  This program  will coarsen your .xyz by skipping * \n" 
          << " *  the  specified  number of x and y points to skip.* \n" 
@@ -113,6 +108,23 @@ int main(int argc, char *argv[]){
         in.open(inpurfile);
 
     ofstream wr;
+
+
+//-----------------------------------------------------------------------------------//
+//---- Totql points after skip-----
+//-----------------------------------------------------------------------------------//
+
+    int pointsYAfterSkip , pointsXAfterSkip;
+
+    if (pnty%skipy==0)
+           pointsYAfterSkip=pnty/skipy;
+    if (pnty%skipy!=0)
+           pointsYAfterSkip=pnty/skipy+1;
+
+    if (pntx%skipx==0)
+           pointsXAfterSkip=pntx/skipx;
+    if (pntx%skipx!=0)
+           pointsXAfterSkip=pntx/skipx+1;
 
 
 //-----------------------------------------------------------------------------------//
@@ -149,9 +161,9 @@ int main(int argc, char *argv[]){
         wr   << " *===================================================* \n" 
              << " *                  INFORMATION                      * \n"  
              << " *===================================================* \n"        
-             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
-             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
-             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
+             << "\n   Total # xPoints:: "<< pointsXAfterSkip
+             << "\n   Total # yPoints:: "<< pointsYAfterSkip
              << "\n\n ==================================================== \n"  
              << 
          endl;
@@ -178,8 +190,8 @@ int main(int argc, char *argv[]){
              << " *===================================================* \n" 
              << "\n   To get perfect scaling we recommend  choosing      "
              << "\n   the striping parameter (number of partitions)      "
-             << "\n   so that it divides << "<< int((pnty/skipy+1)*(pntx/skipx+1))
-             << " >>   and << "<< int(pnty/skipy)
+             << "\n   so that it divides << "<< pointsYAfterSkip*pointsXAfterSkip
+             << " >>   and << "<< pointsYAfterSkip
              << " >>" 
              << "\n\n ==================================================== \n"  
              << 
@@ -209,9 +221,9 @@ int main(int argc, char *argv[]){
              << " *                  INFORMATION                      * \n"  
              << " *===================================================* \n"        
              << "\n   Total # strips :: "<< Nscat  
-             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
-             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
-             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
+             << "\n   Total # xPoints:: "<< pointsXAfterSkip
+             << "\n   Total # yPoints:: "<< pointsYAfterSkip
              << "\n\n ==================================================== \n"  
              << 
          endl;
@@ -237,6 +249,8 @@ int main(int argc, char *argv[]){
         }
         }
 
+        wr.close();
+
     }
 
 
@@ -245,13 +259,12 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 
     	cout << "\n\n";
-
     	cout << " *===================================================* \n" 
              << " *                  Information                      * \n"  
              << " *===================================================* \n"        
-             << "\n   Total # Points :: "<< int((pnty/skipy+1)*(pntx/skipx+1))
-             << "\n   Total # xPoints:: "<< int(pntx/skipx+1)
-             << "\n   Total # yPoints:: "<< int(pnty/skipy+1)
+             << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
+             << "\n   Total # xPoints:: "<< pointsXAfterSkip
+             << "\n   Total # yPoints:: "<< pointsYAfterSkip
              << "\n\n ==================================================== \n"
              << 
     	endl;
