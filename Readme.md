@@ -19,7 +19,7 @@ top-ii-vol consists a total of five tools:
 
 ### `top-ii-vol-PreProc` ###
 
-This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.  
+This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.
 
 
 ### `top-ii-vol-Mesher` ###
@@ -43,33 +43,63 @@ This is a tool to create embarrassingly parallel distributed meshes, using parti
 
 
 
-## Compilation process ##
+## Installation process ##
 
-Simply perform run the `make` command to compile and build all the tools. Optionally `make test-all` to test if program is working well.
+Before you begin installing top-ii-vol please check if your system meets the dependencies.
 
-However if for some reason `make` fails follow the manual compilation given in `ReadmeManualCompile.md`.   
+**Dependencies**
 
+- [automake](https://www.gnu.org/software/automake/)
+- [C++](http://www.cplusplus.com/)
+- [MPI](https://www.mcs.anl.gov/research/projects/mpi/)
 
+**Now that I have all the dependencies what next**
 
+Goto `top-ii-vol-Source` folder and
+
+- step 1
+```
+autoreconf -i
+```
+
+- step 2
+```
+./configure 
+```
+*Note*:   `./configure` will install top-ii-vol in `$HOME/top-ii-vol` to change this directory use `--prefix=Your/Own/Path` with `./configure`.
+
+- step 3
+```
+make
+```
+
+- step 4
+```
+make check
+```
+
+- step 5
+```
+make install
+```
 
 ## Running top-ii-vol
 
-If the compilation went successful you should have three tools at your disposal `top-ii-vol-ParMesher` , `top-ii-vol-Mesher` ,  `top-ii-vol-PreProc`, `top-ii-vol-Part`, and `top-ii-vol-DistMesher`. These tools can be worked with command line inputs.
-
+If the compilation went successful you should have three tools at your disposal `top-ii-vol-ParMesher` , `top-ii-vol-Mesher` ,  `top-ii-vol-PreProc`, `top-ii-vol-Part`, and `top-ii-vol-DistMesher`. These tools can be worked with command line inputs. And these tools should be present in `$HOME/top-ii-vol/bin` folder. 
 
 
 ##### How to use top-ii-vol-PreProc ?
 
-- For sequential meshing if you wish to coarsen your mesh 
+- For sequential meshing if you wish to coarsen your mesh by skipping 10 points in x and y direction 
 
   ```
-  ./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter no
+  ./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ./../etc/DEM_10m.xyz --out out-coarse.xyz --scatter no
   ```
 
-- For parallel meshing using 3 processes 
+- For parallel meshing using 2 processes 
 
   ```
-  ./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in DEM_2m_new.xyz --out out-coarse.xyz --scatter yes --strips 3
+  ./top-ii-vol-PreProc  --xpoints 32 --ypoints 29 --xskip 1 --yskip 1 --in ./../etc/DEM_160m.xyz --out out-coarse-striped.xyz --scatter yes --strips 2
   ```
 
 *Command-line option definitions*
@@ -85,7 +115,7 @@ If the compilation went successful you should have three tools at your disposal 
 | `--scatter` | `[bool]`   | Point cloud partitioner. Use `yes` for parallel and `no ` for sequential. |
 | `--strips`  | `[int]`    | Number of MPI ranks to be used in the parallel run.          |
 
-*Note that after successfully running `./Top2Vol-preproc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
+*Note that after successfully running `./top-ii-vol-PreProc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
 
 
 
@@ -98,13 +128,13 @@ This is the sequential mesher
 - For  sequential mesher producing  `*.mesh` mesh.
 
   ```
-  ./top-ii-vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+  ./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
   ```
   
 - For  sequential mesher producing  `*.msh` mesh.
 
   ```
-  ./top-ii-vol-Mesher --xpoints 11 --ypoints 10 --zpoints 11 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
+  ./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
   ```
 
 *Command-line option definitions*
@@ -119,18 +149,18 @@ This is the sequential mesher
 | `--depth`   | `[int]`    | This is the depth of the mesh needed.                |
 | `--mesh`    | `[string]` | To specify the kind of mesh needed                   |
 
-*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud.*0
+*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud.*
 
 
 
 ##### How to use top-ii-vol-ParMesher ?
 
-This is the parallel mesher 
+This is the parallel mesher (still under heavy development)
 
-- For parallel mesher producing  `*.mesh` mesh with 3 MPI ranks.
+- For parallel mesher producing  `*.mesh` mesh with 2 MPI ranks.
 
 ```
-  mpirun -n 3 ./top-ii-vol-ParMesher --xpoints 105 --ypoints 94 --depth -2000  --in out-coarse.xyz --out Tetra-ParTop2Vol.mesh
+  mpirun -n 2 ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints 5 --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
 ```
 
 *Command-line option definitions*
@@ -153,7 +183,7 @@ This is point cloud partitioning tool
 - For parallel producing a partitioned point cloud with 2 partitions.
 
 ```
-./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../../data/DEM_160m --xpoints 32 --ypoints 29
+./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../etc/DEM_160m --xpoints 32 --ypoints 29
 ```
 
 *Command-line option definitions*
@@ -176,7 +206,7 @@ This is  tool to created distributed mesh from  partitioned point cloud
 - For parallel distributed mesher producing  `*.mesh` mesh with 2 MPI ranks.
 
 ```
-  mpirun -np 2 ./top-ii-vol-DistMesher --in point-cloud-strip --out top-ii-vol-mesh --zpoints 50
+  mpirun -np 2 ./top-ii-vol-DistMesher --out top-ii-vol-mesh --zpoints 50
 ```
 
 | Option      | Type       | Comment                                              |
