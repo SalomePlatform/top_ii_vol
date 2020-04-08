@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 // ---- Logo -----
 //-----------------------------------------------------------------------------------//
 
-#include "LogoTopiiVolCpp.hpp"
+#include "./../lib/LogoTopiiVolCpp.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -81,24 +81,18 @@ int main(int argc, char *argv[]){
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << " 							    \n" 
+    cout << "\n" 
          << " *  This program  will coarsen your .xyz by skipping * \n" 
-         << " *  the  specified  number of x and y points to skip.* \n" 
-         << " 							    \n";
-
-    cout << " *===================================================* \n" 
-         << " *                  User Input                       * \n"  
+         << " *  the  specified  number of x and y points to skip.* \n\n"
          << " *===================================================* \n" 
-         << "  							    \n"; 
-
-
-    cout << "   X points are        ------ " << pntx      << endl;
-    cout << "   Y points are        ------ " << pnty      << endl;
-    cout << "   X skip points are   ------ " << skipx     << endl;
-    cout << "   Y skip points are   ------ " << skipy     << endl;
-    cout << "   Input file          ------ " << inpurfile << endl;
-    cout << "   Output file         ------ " << outpufile << endl;
-    cout << " 							    \n";
+         << " *                  User Input                       * \n"  
+         << " *===================================================* \n\n" 
+         << "   X points are        ------ " << pntx      << "\n"
+         << "   Y points are        ------ " << pnty      << "\n"
+         << "   X skip points are   ------ " << skipx     << "\n"
+         << "   Y skip points are   ------ " << skipy     << "\n"
+         << "   Input file          ------ " << inpurfile << "\n"
+         << "   Output file         ------ " << outpufile << "\n\n";
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
@@ -111,7 +105,7 @@ int main(int argc, char *argv[]){
 
 
 //-----------------------------------------------------------------------------------//
-//---- Totql points after skip-----
+//---- Total points after skip-----
 //-----------------------------------------------------------------------------------//
 
     int pointsYAfterSkip , pointsXAfterSkip;
@@ -133,28 +127,30 @@ int main(int argc, char *argv[]){
 
     if(Scatter != 1){
 
-        cout << "\n\n";
-    	cout << " *===================================================* \n" 
+        cout << "\n\n"
+    	     << " *===================================================* \n" 
              << " *                  Work in progress                 * \n"  
-             << " *===================================================* \n"
-             << " 							\n"
-             << "   Top2Vol began coarsing "+inpurfile+"                \n";
-        cout << "   ...";   
+             << " *===================================================* \n\n"
+             << "   Top2Vol began coarsing "+inpurfile+"                \n"
+             << "   ...";   
+
 
         wr.open(outpufile);
+
         for(int j = 0; j<pnty; j++){
         for(int i = 0; i<pntx; i++){
-	    in>>std::fixed>> x  >> y >> z;
+	      in>>std::fixed>> x  >> y >> z;
 
-	    if(int(j%skipy) == 0 && int(i%skipx) == 0 )
-	        wr<< std::fixed << x << "  " << y << "  "<<z << "\n";
+	      if(int(j%skipy) == 0 && int(i%skipx) == 0 )
+	          wr<< std::fixed << x << "\t" << y << "\t"<< z << "\n";
         }
         }
+
         wr.close();
 
         cout << "Finshed !!!                                               \n" 
-             << "   Top2Vol is now writing an info file                    \n";
-        cout << "   ...";    
+             << "   Top2Vol is now writing an info file                    \n"
+             << "   ...";    
 
         wr.open("info-"+outpufile+".txt");
 
@@ -164,9 +160,8 @@ int main(int argc, char *argv[]){
              << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
              << "\n   Total # xPoints:: "<< pointsXAfterSkip
              << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n"  
-             << 
-         endl;
+             << "\n\n ==================================================== \n";
+
         wr.close();
 
 
@@ -178,14 +173,11 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 
    if(Scatter == 1){
-
-        
+     
         int countme  = 0  ;
-        int countme2 = 0  ;
 
-        cout << "\n\n";
-
-        cout << " *===================================================* \n" 
+        cout << "\n\n"
+             << " *===================================================* \n" 
              << " *           !!!! IMPORTANT !!!!                     * \n"  
              << " *===================================================* \n" 
              << "\n   To get perfect scaling we recommend  choosing      "
@@ -193,27 +185,17 @@ int main(int argc, char *argv[]){
              << "\n   so that it divides << "<< pointsYAfterSkip*pointsXAfterSkip
              << " >>   and << "<< pointsYAfterSkip
              << " >>" 
-             << "\n\n ==================================================== \n"  
-             << 
-         endl;
-
-/*
-        cout << "\n\n";
-        cout << "Enter the striping parameter [int] :: ";cin  >> Nscat ;	
-        cout << "\n\n";
-*/
-
-        cout << " *===================================================* \n" 
+             << "\n\n ==================================================== \n\n"  
+             << " *===================================================* \n" 
              << " *                  IMPORTANT                        * \n"  
              << " *===================================================* \n"        
              << " *   Note that when using the parallel Top2Vol-mesher* \n" 
              << " *   please use << "<< Nscat <<" >> MPI processing units for     * \n"
              << " *   optimal performance of the mesher in parallel   * \n"
-             << " *===================================================* \n"  
-             << 
-         endl;
+             << " *===================================================* \n\n";  
 
-	int k = 0 ;
+
+	    int k = 0 ;
 
         wr.open(outpufile+"-info.txt");
 
@@ -224,9 +206,8 @@ int main(int argc, char *argv[]){
              << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
              << "\n   Total # xPoints:: "<< pointsXAfterSkip
              << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n"  
-             << 
-         endl;
+             << "\n\n ==================================================== \n\n";  
+ 
         wr.close();
 
 
@@ -235,16 +216,16 @@ int main(int argc, char *argv[]){
         for(int j = 0; j<pnty; j++){
         for(int i = 0; i<pntx; i++){
 
-	    in>>std::fixed>> x  >> y >> z;
+	        in>>std::fixed>> x  >> y >> z;
 
-	    if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
+	        if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
                 if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
-		countme=0; k++;
-    		wr.close();
-                wr.open(outpufile+"_"+std::to_string(k)+".xyz");
-		}
-	        wr << std::fixed << x << "  " << y << "  "<< z << "\n";
-	        countme++;
+		            countme=0; k++;
+    		        wr.close();
+                    wr.open(outpufile+"_"+std::to_string(k)+".xyz");
+		        }
+	            wr << std::fixed << x << "\t" << y << "\t"<< z << "\n";
+	            countme++;
             }
         }
         }
@@ -258,16 +239,15 @@ int main(int argc, char *argv[]){
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    	cout << "\n\n";
-    	cout << " *===================================================* \n" 
+    	cout << "\n\n"
+    	     << " *===================================================* \n" 
              << " *                  Information                      * \n"  
              << " *===================================================* \n"        
              << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
              << "\n   Total # xPoints:: "<< pointsXAfterSkip
              << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n"
-             << 
-    	endl;
+             << "\n\n ==================================================== \n\n";
+
 
 return 0;
 }

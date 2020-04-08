@@ -60,8 +60,8 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const {
 
 if(mpirank == 0){
 
-#include "./../LogoTopiiVolCpp.hpp"
-#include "./../TopiiVolPartAlgo.hpp"
+#include "./../lib/LogoTopiiVolCpp.hpp"
+#include "./../lib/TopiiVolPartAlgo.hpp"
 
     }
     return 0L;
@@ -129,8 +129,8 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const {
     int pntx; 
 
     if(mpirank==0)
-     #include "./../LogoTopiiVolCpp.hpp"
-     #include "./../TopiiVolMeshAlgo.hpp"
+     #include "./../lib/LogoTopiiVolCpp.hpp"
+     #include "./../lib/TopiiVolMeshAlgo.hpp"
 };
 
 static void InitFF()

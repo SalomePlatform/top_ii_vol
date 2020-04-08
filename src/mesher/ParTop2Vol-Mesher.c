@@ -98,19 +98,27 @@ int main(int argc, char *argv[]) {
     MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
     MPI_Type_commit(&num_as_string);
 
+//=============================================================================
+// ------------- Commandline logo output ------------------
+//=============================================================================
+
+    if(rank==0){
+     #include "./../lib/LogoTopiiVolC.h"
+    }
+
 //-----------------------------------------------------------------------------------//
 //---- Global Parameters -----
 //-----------------------------------------------------------------------------------//
 
     double zmax = -1920.0;
 
-    int pntx=10;//=105;
-    int pnty=9; //=94;
-    int	pntz=100;
+    int pntx = 10  ;//=105;
+    int pnty = 9   ; //=94;
+    int	pntz = 100 ;
 
 
-    char inpurfile[80]="out-coarse.xyzsd";
-    char outpufile[80]="Tetra-ParTop2Vol.mesh";
+    char inpurfile[80] = "out-coarse.xyzsd"      ;
+    char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
 
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
@@ -119,7 +127,6 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<argc-1; i++){
 
         char argvdummy=argv[i];
-        //char argvdummy1=argv[i+1];
 
 		if ( ! strcmp(argv[i], "--xpoints")) 
 	    	pntx= atoi(argv[i+1]);
@@ -154,10 +161,10 @@ int main(int argc, char *argv[]) {
 //---- Data allocation -----
 //-----------------------------------------------------------------------------------//
 
-    nrows = NPnt                   ;
-    locnrows = NPnt/size;
-    startrow = rank * locnrows;
-    endrow = startrow + locnrows - 1	;
+    nrows    = NPnt                     ;
+    locnrows = NPnt/size                ;
+    startrow = rank * locnrows          ;
+    endrow   = startrow + locnrows - 1	;
     if (rank == size-1) {
         endrow = nrows - 1;
         locnrows = endrow - startrow + 1;
@@ -165,29 +172,12 @@ int main(int argc, char *argv[]) {
 
     data = alloc2d(locnrows, 3);
 
-//=============================================================================
-// ------------- Commandline logo output ------------------
-//=============================================================================
-
-    if(rank==0){
-    printf( " *============================================================*\n"); 
-    printf( "         ___                                            ___    \n"); 
-    printf( "        /  /               ___________                 /  /    \n");
-    printf( "     __/  /_ ___    ___   /__  __  __/__    __ ____   /  /     \n"); 
-    printf( "    /_   __// _  \\ / _  \\   / / / /   \\ \\  / // _  \\ /  / \n"); 
-    printf( "     /  /_ / /_/ // /_/ /__/ /_/ /__   \\ \\/ // /_/ //  /__   \n"); 
-    printf( "     \\___/ \\____// ____//__________/    \\__/ \\____/ \\____/\n"); 
-    printf( "                / /                                            \n"); 
-    printf( "               /_/                                             \n");
-    printf( " *============================================================*\n");
-    printf( "                                                               \n");
-    }
-
 //-----------------------------------------------------------------------------------//
 //---- Gathering point data from partitioned files -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)printf("\n Reading the partitioned point cloud mesh");
+    if(rank==0)
+    printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
     snprintf (filepath, sizeof(filepath), "%s_%d.xyz", inpurfile, rank);
@@ -222,7 +212,8 @@ int main(int argc, char *argv[]) {
 //---- convert our data into txt -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)printf("\n Point cloud mesh data to parallel data conversion");
+    if(rank==0)
+    printf("\n Point cloud mesh data to parallel data conversion");
 
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
@@ -231,7 +222,7 @@ int main(int argc, char *argv[]) {
 
     for (int i=0; i<locnrows; i++) {
         for (int j=0; j<3; j++) {
-	    sprintf(&data_as_txt[i*totcar+j*charspernum], fmt, data[i][j]);	
+	       sprintf(&data_as_txt[i*totcar+j*charspernum], fmt, data[i][j]);	
         }
         sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
@@ -272,7 +263,8 @@ int main(int argc, char *argv[]) {
 //---- Header writing -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0)printf("\n Writing mesh points ");
+    if(rank==0)
+    printf("\n Writing mesh points ");
 
 
     offset = 0;
@@ -311,7 +303,8 @@ int main(int argc, char *argv[]) {
 //---- Tetdata writing -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0) printf("\n Writing mesh volumes ");
+    if(rank==0) 
+    printf("\n Writing mesh volumes ");
 
     if(rank==0){
       char testchar1[24];
@@ -328,9 +321,6 @@ int main(int argc, char *argv[]) {
     dummycount=0;
     label=rank;
 
-//    int istart=rank*(pntx-1)/size, iend=rank*(pntx-1)/size + (pntx-1)/size;
-//    for(int j=0; j<pnty-1;  j++){
-//    for(int i=istart; i<iend;  i++){
 
     int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
     for(int j=istart; j<iend;  j++){
