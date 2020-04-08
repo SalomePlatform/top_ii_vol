@@ -13,13 +13,13 @@
 
 # Introduction
 
-top-ii-vol meshing tool provides sequential/parallel tools for creating volumic tetrahedral meshes from a topology (point cloud `*.xyz`). The volumic meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.  The framework is written in C and C++, and uses MPI I/O and MPI for parallelization.
+top-ii-vol meshing tool provides sequential/parallel tools for creating volumic tetrahedral meshes from a topology (point cloud `*.xyz`). The volumic meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.  The framework is written in C and C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
 
 top-ii-vol consists a total of five tools:
 
 ### `top-ii-vol-PreProc` ###
 
-This tool is a point-cloud preprocessor. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.  
+This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.  
 
 
 ### `top-ii-vol-Mesher` ###
