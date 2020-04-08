@@ -48,7 +48,6 @@ top-ii-vol-ParMesher: ParTop2Vol-Mesher.o
 check-local:
 	./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ../../data/DEM_10m.xyz --out out-coarse.xyz --scatter no
 	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
-	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh meshb
 	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
 	./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip 24 --yskip 24 --in ../../data/DEM_2m.xyz --out out-coarse-striped.xyz --scatter yes --strips 3
 	mpirun -n 3 ./top-ii-vol-ParMesher --xpoints 105 --ypoints 94 --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh

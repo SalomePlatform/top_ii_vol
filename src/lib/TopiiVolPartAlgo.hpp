@@ -12,8 +12,8 @@
   //---- Open input & output files -----
   //-----------------------------------------// 
     ifstream in  ; in.open(*inputfile+".xyz");
-    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz", ios::binary);
-    ofstream wr1 ; wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info",ios::binary); 
+    ofstream wr  ; wr.open(*outputfile+"_"+std::to_string(fileNo)+".xyz");
+    ofstream wr1 ; wr1.open(*outputfile+"_"+std::to_string(fileNo)+".info"); 
 
 //=============================================================================
 // ------------- Commandline output ------------------

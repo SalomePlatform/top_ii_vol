@@ -24,13 +24,13 @@
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open(*inputfile+"_"+std::to_string(mpirank)+".xyz",ios::binary);
+    in.open(*inputfile+"_"+std::to_string(mpirank)+".xyz");
 
     ifstream in1;
-    in1.open(*inputfile+"_"+std::to_string(mpirank)+".info",ios::binary);
+    in1.open(*inputfile+"_"+std::to_string(mpirank)+".info");
 
     ofstream wrgmsh;
-    wrgmsh.open(*outputfile+"_"+std::to_string(mpirank)+".meshb",ios::binary);
+    wrgmsh.open(*outputfile+"_"+std::to_string(mpirank)+".mesh");
 
     in1 >> pnty >> pntx;
     in1.close() ;

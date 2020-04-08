@@ -26,7 +26,7 @@ cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
 
-    Th=readmesh3("top-ii-vol-mesh_"+mpirank+".meshb");
+    Th=readmesh3("top-ii-vol-mesh_"+mpirank+".mesh");
 
     reconstructDmesh(Th)
 

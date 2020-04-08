@@ -103,9 +103,6 @@ int main(int argc, char *argv[]){
         in.open(*inputfile)      ;
 
     ofstream wrgmsh;
-      if(meshtype == "meshb")
-        wrgmsh.open(*outputfile+"b",ios::binary)	;
-      else
         wrgmsh.open(*outputfile)	;
 
 //-----------------------------------------------------------------------------------//
@@ -139,7 +136,7 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------//
 
-   if(meshtype == "mesh" || meshtype == "meshb" ){
+   if(meshtype == "mesh"){
 
     cout << "   Meshing the topology in Medit's *.mesh format"	<< "\n";
 
