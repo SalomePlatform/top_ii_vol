@@ -219,7 +219,8 @@ int main(int argc, char *argv[]){
 	        in>>std::fixed>> x  >> y >> z;
 
 	        if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
-                if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
+                //if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
+                if(countme==(pointsYAfterSkip*pointsXAfterSkip)/Nscat){
 		            countme=0; k++;
     		        wr.close();
                     wr.open(outpufile+"_"+std::to_string(k)+".xyz");

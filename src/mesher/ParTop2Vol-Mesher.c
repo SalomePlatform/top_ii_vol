@@ -163,6 +163,11 @@ int main(int argc, char *argv[]) {
 
     nrows    = NPnt                     ;
     locnrows = NPnt/size                ;
+
+    locnrows = locNPnt * pntz           ;
+
+    printf ("size is si s_%d  ", locnrows);
+
     startrow = rank * locnrows          ;
     endrow   = startrow + locnrows - 1	;
     if (rank == size-1) {
@@ -319,13 +324,16 @@ int main(int argc, char *argv[]) {
     char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
 
     dummycount=0;
-    label=rank;
+
+//    label=rank;
+    label=0;
 
 
     int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
+//    int istart=rank*(pnty)/size, iend=rank*(pnty)/size + (pnty)/size;
+
     for(int j=istart; j<iend;  j++){
     for(int i=0; i<pntx-1;  i++){
-
     for(int k=1; k<=pntz-1; k++){
 
         IJK	    =	i*pntz  + j*pntx*pntz + k	;
@@ -428,8 +436,6 @@ int main(int argc, char *argv[]) {
 
     if(rank==0)
 	printf("\n Writing mesh surfaces ");
-
-    //NTri=(pnty-1)*(pntz-1)*4+(pnty-1)*(pntx-1)*4+(pnty-1)*(pntz-1)*4+;	
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
@@ -649,7 +655,7 @@ int main(int argc, char *argv[]) {
 	printf(" ---- Done\n");
 
     MPI_Barrier(MPI_COMM_WORLD);
-
+/**/
 
 //-----------------------------------------------------------------------------------//
 //---- Footer writing -----
