@@ -1,16 +1,11 @@
-LIST_COMPILE= top-ii-vol-partitioner.cpp top-ii-vol-MPImesher.cpp
-
-
 FILE1= top-ii-vol-MPImesher.cpp 
 FILE2= top-ii-vol-partitioner.cpp 
 
-MPICXX=mpic++
-	
-all: top-ii-vol-Part top-ii-vol-DistMesher
+all-local: top-ii-vol-Part top-ii-vol-DistMesher
 	@echo ""
 	@echo " *============================================================*"
 	@echo ""
-	@echo " Compilation list:"
+	@echo " Compilation list in:" ; pwd
 	@echo "  # $(FILE1)"
 	@echo "  # $(FILE2)"
 	@echo ""
@@ -22,33 +17,30 @@ all: top-ii-vol-Part top-ii-vol-DistMesher
 	@echo ""
 	@echo " *============================================================*"
 
-external-all: top-ii-vol-Part top-ii-vol-DistMesher
-
 top-ii-vol-partitioner.o: top-ii-vol-partitioner.cpp
 	$(CXX) -c top-ii-vol-partitioner.cpp -std=c++11	
 
 top-ii-vol-Part: top-ii-vol-partitioner.o
 	$(CXX) -o top-ii-vol-Part top-ii-vol-partitioner.o	
 
-
 top-ii-vol-MPImesher.o: top-ii-vol-MPImesher.cpp
 	$(MPICXX) -c top-ii-vol-MPImesher.cpp -std=c++11
 
 top-ii-vol-DistMesher: top-ii-vol-MPImesher.o
-	$(MPICXX) -o top-ii-vol-DistMesher top-ii-vol-MPImesher.o	
+	$(MPICXX) -o top-ii-vol-DistMesher top-ii-vol-MPImesher.o  
 
-test: top-ii-vol-partitioner.cpp top-ii-vol-MPImesher.cpp
+check-local:
 	./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../../data/DEM_160m --xpoints 32 --ypoints 29
-	mpirun -np 2 ./top-ii-vol-DistMesher --out top-ii-vol-mesh --zpoints 50  
+	mpirun -np 2 ./top-ii-vol-DistMesher --out top-ii-vol-mesh --zpoints 50
 
 test-freefem: test ./../../test/reconstruct.edp
 	ff-mpirun -np 2 ../../test/reconstruct.edp -v 0
-	paraview vtk_2.pvd   
+	paraview vtk_2.pvd  
 
-clean:
-	@echo "  			            "
-	@echo " Cleaning in progress ..."
-	@echo "  			            "
-	@echo "  			            "
-	rm  -f *~  top-ii-vol-DistMesher top-ii-vol-Part *.o *.vtu *.pvd *.xyz *.info *.mesh *.meshb *.khi
-	rm  -rf VTUs 
+clean-local:
+	@echo "*============================================================*"
+	@echo " Cleaning files in :"; pwd
+	@echo "*============================================================*"
+	rm  -f *~  top-ii-vol-Mesher top-ii-vol-PreProc  top-ii-vol-ParMesher *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh
+	rm  -rf VTUs 	
+
