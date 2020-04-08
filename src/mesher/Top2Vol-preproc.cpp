@@ -29,6 +29,7 @@ int main(int argc, char *argv[]){
 
     int pntx = 2500     ;
     int pnty = 2251     ;
+    int pntz = 7        ;
 
     int skipx = 150     ;
     int skipy = 150     ;
@@ -51,6 +52,9 @@ int main(int argc, char *argv[]){
 
 	if( argvdummy == "--ypoints") 
 	    pnty = stoi(argvdummy1);
+
+	if( argvdummy == "--zpoints") 
+	    pntz = stoi(argvdummy1);
 
 	if( argvdummy == "--xskip") 
 	    skipx = stoi(argvdummy1);
@@ -174,26 +178,7 @@ int main(int argc, char *argv[]){
 
    if(Scatter == 1){
      
-        int countme  = 0  ;
-
-        cout << "\n\n"
-             << " *===================================================* \n" 
-             << " *           !!!! IMPORTANT !!!!                     * \n"  
-             << " *===================================================* \n" 
-             << "\n   To get perfect scaling we recommend  choosing      "
-             << "\n   the striping parameter (number of partitions)      "
-             << "\n   so that it divides << "<< pointsYAfterSkip*pointsXAfterSkip
-             << " >>   and << "<< pointsYAfterSkip
-             << " >>" 
-             << "\n\n ==================================================== \n\n"  
-             << " *===================================================* \n" 
-             << " *                  IMPORTANT                        * \n"  
-             << " *===================================================* \n"        
-             << " *   Note that when using the parallel Top2Vol-mesher* \n" 
-             << " *   please use << "<< Nscat <<" >> MPI processing units for     * \n"
-             << " *   optimal performance of the mesher in parallel   * \n"
-             << " *===================================================* \n\n";  
-
+        int countme  = 0  ; 
 
 	    int k = 0 ;
 
@@ -233,7 +218,30 @@ int main(int argc, char *argv[]){
 
         wr.close();
 
+
+        int x1=pointsYAfterSkip*pointsXAfterSkip, y1=pointsYAfterSkip-1, z1=pntz-1;
+        int d1,i1;
+
+        d1=1; i1=1;
+
+        cout << "\n\n"
+             << " *===================================================* \n" 
+             << " *           !!!! IMPORTANT !!!!                     * \n"  
+             << " *===================================================* \n" 
+             << "\n   top-ii-vol at this moment does not support       "
+             << "\n   unbalanced  partitioning, please  run  the       "
+             << "\n   top-ii-vol-ParMesher only  with  the below        "
+             << "\n   given number of MPI-Processes:       "; 
+
+      for(i1=1;i1<=10000;i1++){
+          if(x1%i1==0&&y1%i1==0&&z1%i1==0){
+              d1=i1; cout << d1 <<",    ";
+             }
+     }
+        cout <<".\n";
+
     }
+
 
 
 //-----------------------------------------------------------------------------------//

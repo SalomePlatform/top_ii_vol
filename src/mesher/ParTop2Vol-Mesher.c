@@ -163,6 +163,7 @@ int main(int argc, char *argv[]) {
 
     nrows    = NPnt                     ;
     locnrows = NPnt/size                ;
+
     locnrows = locNPnt * pntz           ;
 
     startrow = rank * locnrows          ;
@@ -241,7 +242,7 @@ int main(int argc, char *argv[]) {
 //---- create a type describing our piece of the array (Points) -----
 //-----------------------------------------------------------------------------------//
 
-    nrows = NPnt		      ;
+    nrows = NPnt		              ;
     int globalsizes[2] = {nrows   , 4};
     int localsizes [2] = {locnrows, 4};
     int starts[2]      = {startrow, 0};
@@ -267,7 +268,6 @@ int main(int argc, char *argv[]) {
 
     if(rank==0)
     printf("\n Writing mesh points ");
-
 
     offset = 0;
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
@@ -322,9 +322,8 @@ int main(int argc, char *argv[]) {
 
     dummycount=0;
 
-//    label=rank;
+//  label=rank;
     label=0;
-
 
     int istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;
 //    int istart=rank*(pnty)/size, iend=rank*(pnty)/size + (pnty)/size;
@@ -446,6 +445,26 @@ int main(int argc, char *argv[]) {
     offset += 22;
 
 
+/*
+        if(((pntz-1)%size)>0){
+
+        if(rank<((pntz-1)%size))
+        for(int j = 0; j<((pntz-1)%size); j++){
+             istart = rank*(pntz-1)/size + rank ;
+             iend   = istart + (pntz-1)/size + 1;
+        }
+         
+
+        if(rank>=((pntz-1)%size)){
+             istart = rank*(pntz-1)/size  + rank*((pntz-1)%size);
+             iend   = istart + (pntz-1)/size;
+        }
+
+        }
+
+        printf("I am %d and istart is %d iend is %d", rank,istart,iend);
+*/
+
     locnrows=NTri/size;
     nrows = NTri;
     startrow = rank * locnrows;
@@ -464,6 +483,7 @@ int main(int argc, char *argv[]) {
     MPI_Datatype localarray2	;
     MPI_Type_create_subarray(2, globalsizes2, localsizes2, starts2, order2, num_as_string, &localarray2);
     MPI_Type_commit(&localarray2);
+
 
     char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char));
 
@@ -578,8 +598,28 @@ int main(int argc, char *argv[]) {
     }
 
 
-    istart=rank*(pntz-1)/size, iend=rank*(pntz-1)/size + (pntz-1)/size;  // Targeting Y points
 
+        istart=rank*(pntz-1)/size, iend=istart + (pntz-1)/size;  // Targeting Z points
+
+/*
+        if(((pntz-1)%size)>0){
+
+        if(rank<((pntz-1)%size))
+        for(int j = 0; j<((pntz-1)%size); j++){
+             istart = rank*(pntz-1)/size + rank ;
+             iend   = istart + (pntz-1)/size + 1;
+        }
+         
+
+        if(rank>=((pntz-1)%size)){
+             istart = rank*(pntz-1)/size  + rank*((pntz-1)%size);
+             iend   = istart + (pntz-1)/size;
+        }
+
+        }
+
+        printf("I am %d and istart is %d iend is %d", rank,istart,iend);
+*/
 //----Y-MAX-PLANE----//
 
     label=55;
