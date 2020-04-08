@@ -163,10 +163,7 @@ int main(int argc, char *argv[]) {
 
     nrows    = NPnt                     ;
     locnrows = NPnt/size                ;
-
     locnrows = locNPnt * pntz           ;
-
-    printf ("size is si s_%d  ", locnrows);
 
     startrow = rank * locnrows          ;
     endrow   = startrow + locnrows - 1	;
