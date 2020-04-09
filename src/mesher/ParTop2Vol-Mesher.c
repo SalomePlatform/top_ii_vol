@@ -276,9 +276,8 @@ int main(int argc, char *argv[]) {
         sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
 
-    //free(data[0]);
-  if(rank==0)
-    free(data); //CAUSING ERROR ?????
+    if( ((pntx * pnty)%size) == 0 )
+      free(data);                      //CAUSING ERROR IN SOME MPI RANKS CHECK ?????
 
     if(rank==0)
 	printf(" ---- Done\n\n");
