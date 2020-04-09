@@ -253,16 +253,16 @@ int main(int argc, char *argv[]) {
     fclose(infile);
 
     if(rank==0)
-	printf(" ---- Done\n");
+	printf(" ---- Done");
 
-    MPI_Barrier(MPI_COMM_WORLD); 
+//    MPI_Barrier(MPI_COMM_WORLD); 
 
 //====================================================================================//
 //---- convert our data into txt -----
 //====================================================================================//
 
     if(rank==0)
-    printf("\n Point cloud mesh data to parallel data conversion");
+    printf("\n Point cloud data to parallel data conversion");
 
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
@@ -276,11 +276,12 @@ int main(int argc, char *argv[]) {
         sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
 
-    free(data[0]);
-    //free(data); //CAUSING ERROR ?????
+    //free(data[0]);
+  if(rank==0)
+    free(data); //CAUSING ERROR ?????
 
     if(rank==0)
-	printf(" ---- Done\n");
+	printf(" ---- Done\n\n");
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -345,8 +346,7 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(rank==0)
-	printf(" ---- Done\n");
-
+	printf(" ---- Done\n ->  %d points written ",NPnt);
 
 //====================================================================================//
 //---- Tetdata header writing -----
@@ -372,7 +372,7 @@ int main(int argc, char *argv[]) {
 //----------------------------------//
 
    if( ((pnty-1)%size) == 0 )
-     locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size); //Nter/size
+     locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size); //NTet/size
 
 //----------------------------------//
 //     un balanced       
@@ -381,10 +381,10 @@ int main(int argc, char *argv[]) {
     if( ((pnty-1)%size) > 0 ){
 
       if( rank < ((pnty-1)%size) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size+1);  //Nter/size
+         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size+1);  //NTet/size
 
       if( rank >= ((pnty-1)%size) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size);  //Nter/size
+         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size);  //NTet/size
 
     }
 
@@ -565,7 +565,7 @@ int main(int argc, char *argv[]) {
     offset += totcar*NTet;
 
     if(rank==0)
-	printf(" ---- Done\n");
+	printf(" ---- Done\n ->  %d tetrahedra written ",NTet);
 
     free(data_as_txt1);
     MPI_Type_free(&localarray1);
@@ -987,7 +987,7 @@ int main(int argc, char *argv[]) {
     MPI_Type_free(&localarray2);
 
     if(rank==0)
-	printf(" ---- Done\n");
+	printf(" ---- Done\n ->  %d triangles written ",NTri);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -995,9 +995,6 @@ int main(int argc, char *argv[]) {
 //-----------------------------------------------------------------------------------//
 //---- Footer writing -----
 //-----------------------------------------------------------------------------------//
-
-    if(rank==0)
-	printf("\n Finalizing the file ");
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
@@ -1008,15 +1005,16 @@ int main(int argc, char *argv[]) {
       MPI_File_write(file, testchar3, sizeof(testchar3)-1, MPI_CHAR, &status);
     }
 
-    if(rank==0)
-	printf(" ---- Done\n");
 /**/
 //-----------------------------------------------------------------------------------//
 //---- Free memory -----
 //-----------------------------------------------------------------------------------//
 
     if(rank==0){
-      printf("The program finshed in : %1.2f\n",  MPI_Wtime()-t1);fflush(stdout);}
+      printf( "\n\n *============================================================*\n"); 
+      printf("  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);fflush(stdout);
+      printf( " *============================================================*\n"); 
+    }
 
     MPI_File_close(&file);
     MPI_Type_free(&num_as_string);
