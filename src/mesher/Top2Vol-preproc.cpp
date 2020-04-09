@@ -29,7 +29,6 @@ int main(int argc, char *argv[]){
 
     int pntx = 2500     ;
     int pnty = 2251     ;
-    int pntz = 7        ;
 
     int skipx = 150     ;
     int skipy = 150     ;
@@ -52,9 +51,6 @@ int main(int argc, char *argv[]){
 
 	if( argvdummy == "--ypoints") 
 	    pnty = stoi(argvdummy1);
-
-	if( argvdummy == "--zpoints") 
-	    pntz = stoi(argvdummy1);
 
 	if( argvdummy == "--xskip") 
 	    skipx = stoi(argvdummy1);
@@ -168,7 +164,6 @@ int main(int argc, char *argv[]){
 
         wr.close();
 
-
         cout << "Finshed !!!                                               \n";
     }
 
@@ -180,7 +175,7 @@ int main(int argc, char *argv[]){
      
         int countme  = 0  ; 
 
-	    int k = 0 ;
+	    int k = 0        ;
 
         wr.open(outpufile+"-info.txt");
 
@@ -195,6 +190,12 @@ int main(int argc, char *argv[]){
  
         wr.close();
 
+		int   TNPts[Nscat];
+        for(int j = 0; j<Nscat; j++)
+             TNPts[j]=pointsYAfterSkip*pointsXAfterSkip/Nscat;
+   
+        for(int j = 0; j<int(pointsYAfterSkip*pointsXAfterSkip%Nscat); j++) 
+             TNPts[j]=TNPts[j]+1; 
 
         wr.open(outpufile+"_"+std::to_string(k)+".xyz");
 
@@ -204,8 +205,7 @@ int main(int argc, char *argv[]){
 	        in>>std::fixed>> x  >> y >> z;
 
 	        if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
-                //if(countme==int(int(pntx/skipx+1)*int(pnty/skipy+1))/Nscat){
-                if(countme==(pointsYAfterSkip*pointsXAfterSkip)/Nscat){
+                if(countme==TNPts[k]){
 		            countme=0; k++;
     		        wr.close();
                     wr.open(outpufile+"_"+std::to_string(k)+".xyz");
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]){
 
         wr.close();
 
-
+/*
         int x1=pointsYAfterSkip*pointsXAfterSkip, y1=pointsYAfterSkip-1, z1=pntz-1;
         int d1,i1;
 
@@ -239,9 +239,9 @@ int main(int argc, char *argv[]){
              }
      }
         cout <<".\n";
+*/
 
     }
-
 
 
 //-----------------------------------------------------------------------------------//
