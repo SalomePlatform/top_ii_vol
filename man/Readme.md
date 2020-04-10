@@ -17,26 +17,26 @@ top-ii-vol meshing tool provides sequential/parallel tools for creating volumic 
 
 top-ii-vol consists a total of five tools:
 
-### `top-ii-vol-PreProc` ###
+### 1. `top-ii-vol-PreProc`
 
 This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.
 
 
-### `top-ii-vol-Mesher` ###
+### 2. `top-ii-vol-Mesher`
 
 This is a sequential computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.
 
 
-### `top-ii-vol-ParMesher` ###
+### 3. `top-ii-vol-ParMesher`
 
 This is a parallel computing tool. This tool takes in a stripped point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in  medit's `*.mesh` and `*.meshb` format. To use this tool one first needs to generate a stripped point-cloud by using top-ii-vol-PreProc`.
 
 
-### `top-ii-vol-Part` ###
+### 4. `top-ii-vol-Part`
 
 This is point-cloud partitioner needed for creating a distributed volumic mesh. This tool takes in a point-cloud as an input (`.xyz`). One obtains partitioned point cloud using this tool.
 
-### `top-ii-vol-DistMesher` ### 
+### 5. `top-ii-vol-DistMesher`
 
 This is a tool to create embarrassingly parallel distributed meshes, using partitioned point cloud. To generate the partitioned point cloud use `top-ii-vol-Part`.
 
