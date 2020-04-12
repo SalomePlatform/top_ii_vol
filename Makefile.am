@@ -16,12 +16,24 @@ stamp-h1 \
 depcomp  \
 .swp
 
-all-local:
+all-local: logo
 	@echo "*============================================================*"
 	@echo " 'make' finished now do 'make check'"
 	@echo "*============================================================*"
 
-install-exec-local:
+logo:
+	@echo "*============================================================*"
+	@echo "         ___                                            ___    " 
+	@echo "        /  /               ___________                 /  /    "
+	@echo "     __/  /_ ___    ___   /__  __  __/__    __ ____   /  /     " 
+	@echo "    /_   __// _  \\ / _  \\   / / / /   \\ \\  / // _  \\ /  / " 
+	@echo "     /  /_ / /_/ // /_/ /__/ /_/ /__   \\ \\/ // /_/ //  /__   " 
+	@echo "     \\___/ \\____// ____//__________/    \\__/ \\____/ \\____/" 
+	@echo "                / /                                            " 
+	@echo "               /_/                                             "
+	@echo "*============================================================*"
+
+install-exec-local: logo
 	@mkdir -p ${prefix}/top-ii-vol
 	@mkdir -p ${prefix}/top-ii-vol/bin
 	@mkdir -p ${prefix}/top-ii-vol/doc
@@ -40,11 +52,11 @@ install-exec-local:
 	@echo ""
 	@echo " # top-ii-vol documentations will be present ${prefix}/top-ii-vol/doc"
 	@echo ""
-	@echo " # top-ii-vol can be tested on a dummy .xyz file in ${prefix}/top-ii-vol/etc"
+	@echo " # top-ii-vol can be tested on a dummy .xyz files in ${prefix}/top-ii-vol/etc"
 	@echo ""
 	@echo "*============================================================*"		
 	
-check:
+check: logo
 	@echo "*============================================================*"
 	@echo " 'make check' finished now do 'make install'"
 	@echo "*============================================================*"				

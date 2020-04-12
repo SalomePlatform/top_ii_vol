@@ -14,7 +14,6 @@ all-local: top-ii-vol-Part top-ii-vol-DistMesher
 	@echo "  # top-ii-vol-Part      -> Point-cloud partioner"
 	@echo "  # top-ii-vol-DistMesher-> Point-cloud distributed volume mesher (parallel)"
 	@echo ""
-	@echo ""
 	@echo " *============================================================*"
 
 top-ii-vol-partitioner.o: top-ii-vol-partitioner.cpp

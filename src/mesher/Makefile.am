@@ -22,7 +22,6 @@ all-local:top-ii-vol-PreProc top-ii-vol-Mesher top-ii-vol-ParMesher
 	@echo "  # top-ii-vol-Mesher   -> Point-cloud volume mesher"
 	@echo "  # top-ii-vol-ParMesher-> Point-cloud volume mesher (parallel)"
 	@echo ""
-	@echo ""
 	@echo " *============================================================*"
 
 
