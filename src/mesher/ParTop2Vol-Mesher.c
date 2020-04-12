@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
 
     for(int i=0; i<argc-1; i++){
 
-        char argvdummy=argv[i];
+        char argvdummy=*argv[i];
 
 		if ( ! strcmp(argv[i], "--xpoints")) 
 	    	pntx= atoi(argv[i+1]);
