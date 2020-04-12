@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     int NTet     ;
     int label 	 ;
 
-    int	IJK	 ;
+    int	IJK	     ;
     int	Ip1JK	 ;
     int	IJp1K	 ;
     int	IJKp1	 ;

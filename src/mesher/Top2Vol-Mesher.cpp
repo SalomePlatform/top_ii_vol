@@ -9,7 +9,8 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //---- Logo -----
 //-----------------------------------------------------------------------------------//
-     #include "./../lib/LogoTopiiVolCpp.hpp" 
+ 
+    #include "./../lib/LogoTopiiVolCpp.hpp" 
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -59,7 +60,6 @@ int main(int argc, char *argv[]){
     * inputfile  = "out-coarse.xyz"	;
     * outputfile = "test.mesh"	    ;
 
-
     string meshtype  = "mesh"	    ;
 
 //-----------------------------------------------------------------------------------//
@@ -68,8 +68,8 @@ int main(int argc, char *argv[]){
 
     for(int i=0; i<argc-1; i++){
 
-        string argvdummy=argv[i];
-        string argvdummy1=argv[i+1];
+        string argvdummy  = argv[i]   ;
+        string argvdummy1 = argv[i+1] ;
 
 		if( argvdummy == "--xpoints") 
 	    	pntx= stoi(argvdummy1);
@@ -91,9 +91,7 @@ int main(int argc, char *argv[]){
 
 		if( argvdummy == "--depth") 
 	    	zmax= stod(argvdummy1);
-	
      }
-
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
@@ -120,6 +118,13 @@ int main(int argc, char *argv[]){
          << "   Z depth provided    ------ " << zmax        << "\n"
          << "   Input file          ------ " << *inputfile  << "\n"
          << "   Output file         ------ " << *outputfile << "\n\n";
+
+
+//-----------------------------------------------------------------------------------//
+//---- For timing the program -----
+//-----------------------------------------------------------------------------------//
+ 
+    std::clock_t c_start = std::clock();
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
@@ -156,7 +161,7 @@ int main(int argc, char *argv[]){
            <<  NPnt<< "\n";
 
     for(int i=0; i<pntx*pnty; i++){
-        in     >> std::fixed >> xx >>        yy        >> zz                 ;
+        in     >> std::fixed >> xx >>        yy        >> zz            ;
         wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n";
 
         zznew=zz;  delz= (zmax-zz)/(pntz-1);
@@ -167,7 +172,7 @@ int main(int argc, char *argv[]){
     }
 
     wrgmsh << "\n";
-    cout   << "   Done\n";
+    cout   << "   Done\n   #  "<<NPnt<<" points written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
@@ -201,7 +206,7 @@ int main(int argc, char *argv[]){
     }
 
     wrgmsh << "\n";
-    cout   << "   Done\n";
+    cout   << "   Done\n   #  "<<NTet<<" tetrahedra written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
@@ -300,7 +305,7 @@ int main(int argc, char *argv[]){
     }
     }
 
-    cout << "   Done\n";
+    cout << "   Done\n   #  "<<NTri<<" triangles written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----
@@ -371,7 +376,7 @@ int main(int argc, char *argv[]){
         Ip1JK	=	IJK + (pntz*pntx)	;
         Ip1JKp1	=	Ip1JK + 1		    ;
 
-        wrgmsh << std::fixed << counter1   << " 2 1 11 " << IJKp1   << " " <<  IJK << " "  << Ip1JK <<"\n"
+        wrgmsh << std::fixed << counter1   << " 2 1 11 " << IJKp1   << " " << IJK   << " " << Ip1JK <<"\n"
                              << counter1+1 << " 2 1 11 " << Ip1JKp1 << " " << IJKp1 << " " << Ip1JK <<"\n";
         counter1=counter1+2;
 
@@ -426,8 +431,8 @@ int main(int argc, char *argv[]){
         Ip1JK	=	IJK + (pntz*pntx)	                ;
         Ip1JKp1	=	Ip1JK + 1		                ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 1 44 " <<  IJK  << " " << IJKp1    << " " << Ip1JK <<"\n"
-                            << counter1+1 << " 2 1 44 " <<  IJKp1 << " " << Ip1JKp1 << " " << Ip1JK <<"\n";
+        wrgmsh<< std::fixed << counter1   << " 2 1 44 " << IJK   << " " << IJKp1    << " " << Ip1JK <<"\n"
+                            << counter1+1 << " 2 1 44 " << IJKp1 << " " << Ip1JKp1  << " " << Ip1JK <<"\n";
         counter1=counter1+2;
 
     }
@@ -444,8 +449,8 @@ int main(int argc, char *argv[]){
         IJp1K	=	IJK + pntz	                        ;
         IJp1Kp1	=	IJp1K + 1	                        ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 2 55 0 " <<  IJKp1   << " " << IJK << " "   << IJp1K <<"\n"
-                            << counter1+1 << " 2 2 55 0 " << IJp1Kp1  << " " <<IJKp1  << " " << IJp1K <<"\n";
+        wrgmsh<< std::fixed << counter1   << " 2 2 55 0 " <<  IJKp1   << " " << IJK  << " " << IJp1K <<"\n"
+                            << counter1+1 << " 2 2 55 0 " << IJp1Kp1  << " " <<IJKp1 << " " << IJp1K <<"\n";
         counter1=counter1+2;
 
     }
@@ -463,17 +468,16 @@ int main(int argc, char *argv[]){
         IJp1K	=	IJK + pntz			                ;
         Ip1Jp1K	=	Ip1JK + pntz		                ;
 
-        wrgmsh<< std::fixed << counter1    << " 2 1 66 "  << IJp1K << " " << IJK   << " " << Ip1Jp1K   <<"\n"
-                            << counter1+1  << " 2 1 66 "  << IJK   << " " << Ip1JK << " " << Ip1Jp1K   <<"\n";
+        wrgmsh<< std::fixed << counter1    << " 2 1 66 " << IJp1K << " " << IJK   << " " << Ip1Jp1K <<"\n"
+                            << counter1+1  << " 2 1 66 " << IJK   << " " << Ip1JK << " " << Ip1Jp1K <<"\n";
         counter1=counter1+2;
     }
     }
 //------------------------------------------------------------------------------------//
 
 
-    cout << "Done  "<< endl;
-
-    cout << "Generating Tetrahedrals....";
+    cout << "Done  \n"
+         << "   Generating Tetrahedrals....";
 
     for(int j=0; j<pnty-1;  j++){
     for(int i=0; i<pntx-1;  i++){
@@ -503,10 +507,8 @@ int main(int argc, char *argv[]){
     }
     }
 
-
     wrgmsh<< "EndElements\n";
     cout  << "Done\n";
-
 
     }
     else {
@@ -514,7 +516,21 @@ int main(int argc, char *argv[]){
          << " * ERROR: --mesh input is wrong only msh or mesh is accepted   * \n"  
          << " *=============================================================* \n" 
          << "  							    \n";
-  }
+    }
+
+//-----------------------------------------------------------------------------------//
+//---- For timing the program -----
+//-----------------------------------------------------------------------------------//
+
+    std::clock_t c_end = std::clock();
+
+    cout << " *============================================================*\n"
+         << "                                                               \n"
+         << std::fixed << std::setprecision(4) <<  "  The program finshed in : " << (c_end-c_start)/ CLOCKS_PER_SEC << " s\n"
+         << "                                                               \n"
+         << " *============================================================*\n"
+         << "                                                               \n";
+
 
 return 0;
 }
