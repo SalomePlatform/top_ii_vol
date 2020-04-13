@@ -10,13 +10,13 @@ macro def(u)u//
     real t0;
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
-    Th=readmesh3("Top2Vol-mesh_0.mesh");
+    Th=readmesh3("out-mesh.mesh");
 
 	buildDmesh(Th)
  
 	mpiBarrier(mpiCommWorld);
     if(mpirank == 0)
-    cout <<  "  Total time taken for Dmesh construction : " << mpiWtime()-t0 << " s"<< endl;
+    cout <<  "  Total time taken for Dmesh construction for out-mesh.mesh : " << mpiWtime()-t0 << " s"<< endl;
     fespace Wh(Th, Pk);
     Wh<real> u;
 
@@ -32,6 +32,72 @@ macro def(u)u//
 
     plotMPI(Th, u, Pk, def, real, cmm = "u"); 
     int[int] fforder=[1];
-    savevtk("vtk.vtu",Th,u,order=fforder, dataname = "u");
+    savevtk("vtk-mesh.vtu",Th,u,order=fforder, dataname = "u");
+}
+
+
+{
+    macro dimension()3// EOM
+    include "macro_ddm.idp"
+    load "gmsh"
+    mesh3 Th; 
+    real t0;
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    Th=gmshload3("out-mesh.msh");
+
+	buildDmesh(Th)
+ 
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Dmesh construction for out-mesh.msh : " << mpiWtime()-t0 << " s"<< endl;
+    fespace Wh(Th, Pk);
+    Wh<real> u;
+
+    Mat A;
+    createMat(Th, A, Pk)
+
+    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v))  + on(66, u = 15.0)+ on(33, u = 1.0);
+    real[int] rhs = vPb(0, Wh);
+
+    set(A, sparams = " ");
+    A = vPb(Wh, Wh);
+    u[] = A^-1 * rhs; 
+
+    plotMPI(Th, u, Pk, def, real, cmm = "u"); 
+    int[int] fforder=[1];
+    savevtk("vtk-msh.vtu",Th,u,order=fforder, dataname = "u");
+}
+
+{
+    macro dimension()3// EOM
+    include "macro_ddm.idp"
+    mesh3 Th; 
+    real t0;
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    Th=readmesh3("Parallel-out-mesh.mesh");
+
+	buildDmesh(Th)
+ 
+	mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Dmesh construction for Parallel-out-mesh.mesh: " << mpiWtime()-t0 << " s"<< endl;
+    fespace Wh(Th, Pk);
+    Wh<real> u;
+
+    Mat A;
+    createMat(Th, A, Pk)
+
+    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v))  + on(44, u = 15.0)+ on(22, u = 1.0);
+    real[int] rhs = vPb(0, Wh);
+
+    set(A, sparams = " ");
+    A = vPb(Wh, Wh);
+    u[] = A^-1 * rhs; 
+
+    plotMPI(Th, u, Pk, def, real, cmm = "u"); 
+    int[int] fforder=[1];
+    savevtk("vtk-mesh-par.vtu",Th,u,order=fforder, dataname = "u");
 }
 
