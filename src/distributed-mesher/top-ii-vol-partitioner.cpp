@@ -83,12 +83,11 @@ int main(int argc, char *argv[]){
 
     std::clock_t c_end = std::clock();
 
+    cout << std::fixed << std::setprecision(4) 
+         <<  "  The program finshed in : " 
+         << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms\n"
+         << " *============================================================*\n";
 
-    cout << std::fixed << std::setprecision(4) <<  "  Total time taken for point cloud stripping : " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms"<< endl;
-
-    cout << "                                                               \n"
-         << " *============================================================*\n"
-         << "                                                               \n";
 return 0;
 }
 

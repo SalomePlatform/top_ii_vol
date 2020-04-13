@@ -525,9 +525,7 @@ int main(int argc, char *argv[]){
     std::clock_t c_end = std::clock();
 
     cout << " *============================================================*\n"
-         << "                                                               \n"
          << std::fixed << std::setprecision(4) <<  "  The program finshed in : " << (c_end-c_start)/ CLOCKS_PER_SEC << " s\n"
-         << "                                                               \n"
          << " *============================================================*\n"
          << "                                                               \n";
 

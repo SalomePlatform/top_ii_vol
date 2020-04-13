@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
          << "   X skip points are   ------ " << skipx     << "\n"
          << "   Y skip points are   ------ " << skipy     << "\n"
          << "   Input file          ------ " << inpurfile << "\n"
-         << "   Output file         ------ " << outpufile << "\n\n";
+         << "   Output file         ------ " << outpufile << "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
@@ -103,6 +103,11 @@ int main(int argc, char *argv[]){
 
     ofstream wr;
 
+//-----------------------------------------------------------------------------------//
+//---- For timing the program -----
+//-----------------------------------------------------------------------------------//
+ 
+    std::clock_t c_start = std::clock();
 
 //-----------------------------------------------------------------------------------//
 //---- Total points after skip-----
@@ -186,7 +191,7 @@ int main(int argc, char *argv[]){
              << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
              << "\n   Total # xPoints:: "<< pointsXAfterSkip
              << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n\n";  
+             << "\n ==================================================== \n";  
  
         wr.close();
 
@@ -218,29 +223,6 @@ int main(int argc, char *argv[]){
 
         wr.close();
 
-/*
-        int x1=pointsYAfterSkip*pointsXAfterSkip, y1=pointsYAfterSkip-1, z1=pntz-1;
-        int d1,i1;
-
-        d1=1; i1=1;
-
-        cout << "\n\n"
-             << " *===================================================* \n" 
-             << " *           !!!! IMPORTANT !!!!                     * \n"  
-             << " *===================================================* \n" 
-             << "\n   top-ii-vol at this moment does not support       "
-             << "\n   unbalanced  partitioning, please  run  the       "
-             << "\n   top-ii-vol-ParMesher only  with  the below        "
-             << "\n   given number of MPI-Processes:       "; 
-
-      for(i1=1;i1<=10000;i1++){
-          if(x1%i1==0&&y1%i1==0&&z1%i1==0){
-              d1=i1; cout << d1 <<",    ";
-             }
-     }
-        cout <<".\n";
-*/
-
     }
 
 
@@ -248,15 +230,25 @@ int main(int argc, char *argv[]){
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    	cout << "\n\n"
+    	cout << "\n"
     	     << " *===================================================* \n" 
-             << " *                  Information                      * \n"  
+             << " *      Information on processed point cloud         * \n"  
              << " *===================================================* \n"        
              << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
              << "\n   Total # xPoints:: "<< pointsXAfterSkip
              << "\n   Total # yPoints:: "<< pointsYAfterSkip
              << "\n\n ==================================================== \n\n";
 
+//-----------------------------------------------------------------------------------//
+//---- For timing the program -----
+//-----------------------------------------------------------------------------------//
+
+    std::clock_t c_end = std::clock();
+
+    cout << " *============================================================*\n"
+         << std::fixed << std::setprecision(4) <<  "  The program finshed in : " << (c_end-c_start)/ CLOCKS_PER_SEC << " s\n"
+         << " *============================================================*\n"
+         << "                                                               \n";
 
 return 0;
 }

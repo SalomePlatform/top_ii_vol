@@ -87,10 +87,8 @@ int main(int argc, char **argv){
    if(mpirank==0){
     cout << "                                                               \n"
          << " *============================================================*\n"
-         << "                                                               \n";
-    cout << std::fixed << std::setprecision(4) <<  "  Total time taken by MPI mesher : " << MPI_Wtime()-t1 << " s"<< endl;
-
-    cout << "                                                               \n"
+         << std::fixed << std::setprecision(4) 
+         <<  "  The program finshed in : " << MPI_Wtime()-t1 << " s\n"
          << " *============================================================*\n"
          << "                                                               \n";
     }
