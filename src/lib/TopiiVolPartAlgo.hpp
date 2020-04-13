@@ -72,7 +72,7 @@
 
     }
           
-    wr1 << counter <<  "  " <<  pntx;  wr1.close(); in.close();
+    wr1 << counter <<  "  " <<  pntx;  wr.close(); wr1.close(); in.close(); 
     cout << "  done\n";
 
 
