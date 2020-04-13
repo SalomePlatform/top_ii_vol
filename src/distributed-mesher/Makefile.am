@@ -32,7 +32,7 @@ check-local:
 	./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../../data/DEM_160m --xpoints 32 --ypoints 29
 	mpirun -np 2 ./top-ii-vol-DistMesher --out top-ii-vol-mesh --zpoints 50
 
-test-freefem: test ./../../test/reconstruct.edp
+test-freefem: check-local ./../../test/reconstruct.edp
 	ff-mpirun -np 2 ../../test/reconstruct.edp -v 0
 	paraview vtk_2.pvd  
 
