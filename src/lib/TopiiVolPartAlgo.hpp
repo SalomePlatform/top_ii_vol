@@ -36,9 +36,13 @@
 // ------------- Main loop to read file and return the strips  ---------
 //=========================================================================== 
 
-    double xx[pntx] ;   
-    double yy[pntx] ;
-    double zz[pntx] ;
+    double* xx = new double[pntx]; 
+    double* yy = new double[pntx];  
+    double* zz = new double[pntx];   
+
+    //double xx[pntx] ;   
+    //double yy[pntx] ;
+    //double zz[pntx] ;
  
     int cutoff = pnty/mpisize;
 
@@ -71,6 +75,10 @@
         }
 
     }
+
+    delete[] xx;
+    delete[] yy;
+    delete[] zz;
           
     wr1 << counter <<  "  " <<  pntx;  wr.close(); wr1.close(); in.close(); 
     cout << "  done\n";
