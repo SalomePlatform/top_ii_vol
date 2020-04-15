@@ -18,44 +18,44 @@ float **alloc2d(int n, int m) {
 
 int main(int argc, char *argv[]) {
 
+//====================================================================================//
+//---- variable to calculate time -----
+//====================================================================================//
+
     double t1 = MPI_Wtime();
 
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Global Variables -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
-    int ierr 	 ;
-    int rank 	 ;
-    int size 	 ;
+    int NPnt     ;			    // # of points in the mesh
+    int NTri     ;			    // # of triangles on the mesh surfaces
+    int NTet     ;			    // # of tetrahedra in the mesh
+    int label 	 ;			    // label # of the mesh surfaces
 
-    int NPnt     ;
-    int NTri     ;
-    int NTet     ;
-    int label 	 ;
+    int	IJK	     ;			    // variable used during tera or triangle generation
+    int	Ip1JK	 ;			    // variable used during tera or triangle generation
+    int	IJp1K	 ;			    // variable used during tera or triangle generation
+    int	IJKp1	 ;			    // variable used during tera or triangle generation
+    int	Ip1JKp1	 ;			    // variable used during tera or triangle generation
+    int	IJp1Kp1	 ;			    // variable used during tera or triangle generation
+    int	Ip1Jp1K	 ;			    // variable used during tera or triangle generation
+    int	Ip1Jp1Kp1;			    // variable used during tera or triangle generation
+    int dummycount;			    // variable used during tera or triangle generation
 
-    int	IJK	     ;
-    int	Ip1JK	 ;
-    int	IJp1K	 ;
-    int	IJKp1	 ;
-    int	Ip1JKp1	 ;
-    int	IJp1Kp1	 ;
-    int	Ip1Jp1K	 ;
-    int	Ip1Jp1Kp1;
-    int dummycount;
+    int startrow ;			    // used by MPI ranks to mark their starting row 
+    int endrow   ;			    // used by MPI ranks to mark their ending  row
+    int locnrows ;			    // used by MPI ranks to know the # of rows held 
+    int locNPnt  ;			    // used by MPI ranks to know the # of points held
+    int nrows    ;			    // used by MPI ranks to know the total # of rows
 
-    int startrow ;
-    int endrow   ;
-    int locnrows ;
-    int locNPnt  ;
-    int nrows    ;
+    float **data ;			    // array to hold the input data from point cloud xyz
 
-    float **data ;
-
-    float xx	 ;
-    float yy	 ;
-    float zz	 ;
-    float delz	 ;
-    float zznew  ;
+    float xx	 ;			    // variable hold x point value
+    float yy	 ;			    // variable hold y point value
+    float zz	 ;			    // variable hold z point value
+    float delz	 ;			    // variable get delta z according to B/C (Laplacian)
+    float zznew  ;			    // variable hold z point value
 
     const int charspernum = 14 ;
 
@@ -69,34 +69,38 @@ int main(int argc, char *argv[]) {
     FILE *infile;
 
 
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- MPI variables -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
-    MPI_Offset 	 offset		;
-    MPI_File   	 file		;
-    MPI_Status 	 status		;
+    int ierr 	 ;              // MPI Variable to capture error
+    int mpirank	 ;              // MPI Variable to give MPI rank        
+    int mpisize  ;              // MPI Variable to give MPI size
+
+    MPI_Offset 	 offset		    ;
+    MPI_File   	 file		    ;
+    MPI_Status 	 status		    ;
     MPI_Datatype num_as_string	;
-    MPI_Datatype localarray	;
+    MPI_Datatype localarray	    ;
 
     ierr = MPI_Init(&argc, &argv);
-    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
-    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
+    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
 
     MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
     MPI_Type_commit(&num_as_string);
 
-//=============================================================================
-// ------------- Commandline logo output ------------------
-//=============================================================================
+//====================================================================================//
+//---- Commandline logo output -----
+//====================================================================================//
 
-    if(rank==0){
+    if(mpirank==0){
      #include "./../lib/LogoTopiiVolC.h"
     }
 
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Global Parameters -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
     double zmax    = -1920.0;
 
@@ -108,9 +112,9 @@ int main(int argc, char *argv[]) {
     char inpurfile[80] = "out-coarse.xyz"        ;
     char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
 
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Comandline Parameters -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
     for(int i=0; i<argc-1; i++){
 
@@ -136,9 +140,9 @@ int main(int argc, char *argv[]) {
 	
      }
 
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Calculating mesh attributes -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
     NPnt = pntx * pnty * pntz					      ;
     NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
@@ -153,14 +157,14 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   locNPnt = (pntx * pnty)/size ;
+   locNPnt = (pntx * pnty)/mpisize ;
 
 //----------------------------------//
 //     un balanced     
 //----------------------------------//
 
-    if( ((pntx * pnty)%size) > 0 )
-      if( rank < ((pntx * pnty)%size) )
+    if( ((pntx * pnty)%mpisize) > 0 )
+      if( mpirank < ((pntx * pnty)%mpisize) )
          locNPnt++;
 
 //====================================================================================//
@@ -178,12 +182,12 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-    if( ((pntx * pnty)%size) == 0 ){
+    if( ((pntx * pnty)%mpisize) == 0 ){
 
-      startrow = rank * locnrows            ;
+      startrow = mpirank * locnrows            ;
       endrow   = startrow + locnrows - 1	;
 
-      if (rank == size-1) {
+      if (mpirank == mpisize-1) {
         endrow = nrows - 1;
         locnrows = endrow - startrow + 1;
       }
@@ -194,25 +198,25 @@ int main(int argc, char *argv[]) {
 //     un balanced     
 //----------------------------------/
 
-    if( ((pntx * pnty)%size) > 0 ){
+    if( ((pntx * pnty)%mpisize) > 0 ){
 
-      if( rank < ((pntx * pnty)%size) ){
-        startrow = rank *  locNPnt * pntz      ;
+      if( mpirank < ((pntx * pnty)%mpisize) ){
+        startrow = mpirank *  locNPnt * pntz      ;
         endrow   = startrow + locNPnt * pntz -1;
       }
 
-      if( rank >= ((pntx * pnty)%size) ){
-        startrow = rank *  locNPnt * pntz     + ((pntx * pnty)%size) * pntz    ;
+      if( mpirank >= ((pntx * pnty)%mpisize) ){
+        startrow = mpirank *  locNPnt * pntz     + ((pntx * pnty)%mpisize) * pntz    ;
         endrow   = startrow + locNPnt * pntz -1                             	;
       }
 
    }
 
-//   if( ((pntx * pnty)%size) == 0 )
-//     printf("== I %d startrow %d endrow %d  localrow %d \n", rank,startrow,endrow,locnrows);
+//   if( ((pntx * pnty)%mpisize) == 0 )
+//     printf("== I %d startrow %d endrow %d  localrow %d \n", mpirank,startrow,endrow,locnrows);
 
-//   if( ((pntx * pnty)%size) > 0 )
-//     printf("§§§ I %d startrow %d endrow %d  localrow %d \n", rank,startrow,endrow,locnrows);
+//   if( ((pntx * pnty)%mpisize) > 0 )
+//     printf("§§§ I %d startrow %d endrow %d  localrow %d \n", mpirank,startrow,endrow,locnrows);
 
 
 //====================================================================================//
@@ -225,11 +229,11 @@ int main(int argc, char *argv[]) {
 //---- Gathering point data from partitioned files -----
 //====================================================================================//
 
-    if(rank==0)
+    if(mpirank==0)
     printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
-    snprintf (filepath, sizeof(filepath), "%s_%d.xyz", inpurfile, rank);
+    snprintf (filepath, sizeof(filepath), "%s_%d.xyz", inpurfile, mpirank);
     infile = fopen(filepath,"r"); 
 
     for (int i=0; i<locNPnt; i++){
@@ -252,7 +256,7 @@ int main(int argc, char *argv[]) {
 
     fclose(infile);
 
-    if(rank==0)
+    if(mpirank==0)
 	printf(" ---- Done");
 
 //    MPI_Barrier(MPI_COMM_WORLD); 
@@ -261,7 +265,7 @@ int main(int argc, char *argv[]) {
 //---- convert our data into txt -----
 //====================================================================================//
 
-    if(rank==0)
+    if(mpirank==0)
     printf("\n Point cloud data to parallel data conversion");
 
     char *data_as_txt = malloc(locnrows*4*charspernum*sizeof(char));
@@ -276,10 +280,10 @@ int main(int argc, char *argv[]) {
         sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
 
-    if( ((pntx * pnty)%size) == 0 )
+    if( ((pntx * pnty)%mpisize) == 0 )
       free(data);                      //CAUSING ERROR IN SOME MPI RANKS CHECK ?????
 
-    if(rank==0)
+    if(mpirank==0)
 	printf(" ---- Done\n\n");
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -312,13 +316,13 @@ int main(int argc, char *argv[]) {
 //---- Header writing -----
 //====================================================================================//
 
-    if(rank==0)
+    if(mpirank==0)
     printf("\n Writing mesh points ");
 
     offset = 0;
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
-    if(rank==0){
+    if(mpirank==0){
         char testchar[58];
         snprintf(testchar, sizeof(testchar), 
                 "MeshVersionFormatted 1\n\nDimension 3\n\nVertices\n%-10d\n", 
@@ -344,17 +348,17 @@ int main(int argc, char *argv[]) {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    if(rank==0)
+    if(mpirank==0)
 	printf(" ---- Done\n ->  %d points written ",NPnt);
 
 //====================================================================================//
 //---- Tetdata header writing -----
 //====================================================================================//
 
-    if(rank==0) 
+    if(mpirank==0) 
     printf("\n Writing mesh volumes ");
 
-    if(rank==0){
+    if(mpirank==0){
       char testchar1[24];
       snprintf (testchar1, sizeof(testchar1), "\nTetrahedra\n%-10d\n", NTet);
       MPI_File_write(file, testchar1, sizeof(testchar1), MPI_CHAR, &status);
@@ -370,20 +374,20 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 )
-     locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size); //NTet/size
+   if( ((pnty-1)%mpisize) == 0 )
+     locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize); //NTet/mpisize
 
 //----------------------------------//
 //     un balanced       
 //----------------------------------//
 
-    if( ((pnty-1)%size) > 0 ){
+    if( ((pnty-1)%mpisize) > 0 ){
 
-      if( rank < ((pnty-1)%size) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size+1);  //NTet/size
+      if( mpirank < ((pnty-1)%mpisize) )
+         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize+1);  //NTet/mpisize
 
-      if( rank >= ((pnty-1)%size) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size);  //NTet/size
+      if( mpirank >= ((pnty-1)%mpisize) )
+         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize);  //NTet/size
 
     }
 
@@ -394,7 +398,7 @@ int main(int argc, char *argv[]) {
     char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
 
     dummycount=0;
-//  label=rank;
+//  label=mpirank;
     label=0;
 
 //====================================================================================//
@@ -407,28 +411,28 @@ int main(int argc, char *argv[]) {
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 ){
-    istart=rank*(pnty-1)/size; 
-    iend=rank*(pnty-1)/size + (pnty-1)/size;
+   if( ((pnty-1)%mpisize) == 0 ){
+    istart = mpirank*(pnty-1)/mpisize; 
+    iend   = mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;
    }
 
    //----------------------------------//
    //      un balanced       
    //----------------------------------//
 
-    if( ((pnty-1)%size) > 0 ){
-      if( rank < ((pnty-1)%size) ){
-         istart=rank*((pnty-1)/size + 1) ;
-         iend=istart + ((pnty-1)/size + 1) ;
+    if( ((pnty-1)%mpisize) > 0 ){
+      if( mpirank < ((pnty-1)%mpisize) ){
+         istart = mpirank*((pnty-1)/mpisize + 1)  ;
+         iend   = istart + ((pnty-1)/mpisize + 1) ;
       }
-      if( rank >= ((pnty-1)%size) ){
-         istart=rank*((pnty-1)/size) +   ((pnty-1)%size) ;
-         iend=istart + ((pnty-1)/size);
+      if( mpirank >= ((pnty-1)%mpisize) ){
+         istart=mpirank*((pnty-1)/mpisize) +   ((pnty-1)%mpisize) ;
+         iend=istart + ((pnty-1)/mpisize);
       }
     }
        
 //     MPI_Barrier(MPI_COMM_WORLD); 
-//    int istart=rank*(pnty)/size, iend=rank*(pnty)/size + (pnty)/size;
+//    int istart=mpirank*(pnty)/mpisize, iend=mpirank*(pnty)/mpisize + (pnty)/mpisize;
 
 //====================================================================================//
 //---- Gathering tetrahedra data -----
@@ -510,12 +514,12 @@ int main(int argc, char *argv[]) {
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 ){
+   if( ((pnty-1)%mpisize) == 0 ){
 
-     startrow = rank * locnrows          ;
+     startrow = mpirank * locnrows          ;
      endrow = startrow + locnrows - 1	;
 
-     if (rank == size-1) {
+     if (mpirank == mpisize-1) {
         endrow = nrows - 1;
         locnrows = endrow - startrow + 1;
      }
@@ -526,16 +530,16 @@ int main(int argc, char *argv[]) {
    //     un balanced       
    //----------------------------------//
 
-    if( ((pnty-1)%size) > 0 ){
+    if( ((pnty-1)%mpisize) > 0 ){
 
-      if( rank < ((pnty-1)%size) ){
-        startrow = rank * ( ((pntx-1)*(pntz-1)*6) * ((pnty-1)/size+1) )         ;
-        endrow  = startrow + ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size+1) ) -1;
+      if( mpirank < ((pnty-1)%mpisize) ){
+        startrow = mpirank * ( ((pntx-1)*(pntz-1)*6) * ((pnty-1)/mpisize+1) )         ;
+        endrow  = startrow + ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize+1) ) -1;
       }
 
-      if( rank >= ((pnty-1)%size) ){
-        startrow = rank * ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size)) +   ((pnty-1)%size) * ((pntx-1)  * (pntz-1) * 6)   ;
-        endrow   = startrow +  ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/size) -1;
+      if( mpirank >= ((pnty-1)%mpisize) ){
+        startrow = mpirank * ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize)) +   ((pnty-1)%mpisize) * ((pntx-1)  * (pntz-1) * 6)   ;
+        endrow   = startrow +  ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize) -1;
       }
    }
 
@@ -563,7 +567,7 @@ int main(int argc, char *argv[]) {
 
     offset += totcar*NTet;
 
-    if(rank==0)
+    if(mpirank==0)
 	printf(" ---- Done\n ->  %d tetrahedra written ",NTet);
 
     free(data_as_txt1);
@@ -575,13 +579,13 @@ int main(int argc, char *argv[]) {
 //---- Triangle writing -----
 //====================================================================================//
 
-    if(rank==0)
+    if(mpirank==0)
 	printf("\n Writing mesh surfaces ");
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
-    if(rank==0){
+    if(mpirank==0){
       char testchar2[23];
       snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n", NTri);
       MPI_File_write(file, testchar2, sizeof(testchar2), MPI_CHAR, &status);
@@ -591,52 +595,52 @@ int main(int argc, char *argv[]) {
 
     NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
 
-    locnrows=NTri/size;  
+    locnrows=NTri/mpisize;  
    
 //====================================================================================//
-//---- local row calculation NTri/size ----
+//---- local row calculation NTri/mpisize ----
 //====================================================================================//
 
 //----------------------------------//
 //      balanced  Y part      
 //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 ){
-     locnrows= 4* ((pnty-1)/size)* ((pntz-1) + (pntx-1));
+   if( ((pnty-1)%mpisize) == 0 ){
+     locnrows= 4* ((pnty-1)/mpisize)* ((pntz-1) + (pntx-1));
    }
 
 //----------------------------------//
 //     un balanced  Y part     
 //----------------------------------//
 
-    if( ((pnty-1)%size) > 0 ){
+    if( ((pnty-1)%mpisize) > 0 ){
 
-      if( rank < ((pnty-1)%size) )
-        locnrows= 4* ((pnty-1)/size+1)* ((pntz-1) + (pntx-1));
+      if( mpirank < ((pnty-1)%mpisize) )
+        locnrows= 4* ((pnty-1)/mpisize+1)* ((pntz-1) + (pntx-1));
 
-      if( rank >= ((pnty-1)%size) )
-        locnrows= 4* ((pnty-1)/size)* ((pntz-1) + (pntx-1));
+      if( mpirank >= ((pnty-1)%mpisize) )
+        locnrows= 4* ((pnty-1)/mpisize)* ((pntz-1) + (pntx-1));
     }
 
 //----------------------------------//
 //      balanced  Z part      
 //----------------------------------//
 
-   if( ((pntz-1)%size) == 0 ){
-        locnrows += 4* ((pntz-1)/size)*(pntx-1);
+   if( ((pntz-1)%mpisize) == 0 ){
+        locnrows += 4* ((pntz-1)/mpisize)*(pntx-1);
    }
 
 //----------------------------------//
 //     un balanced  Z part     
 //----------------------------------//
 
-    if( ((pntz-1)%size) > 0 ){
+    if( ((pntz-1)%mpisize) > 0 ){
 
-      if( rank < ((pntz-1)%size) )
-        locnrows += 4* ((pntz-1)/size+1)*(pntx-1);
+      if( mpirank < ((pntz-1)%mpisize) )
+        locnrows += 4* ((pntz-1)/mpisize+1)*(pntx-1);
 
-      if( rank >= ((pntz-1)%size) )
-        locnrows += 4* ((pntz-1)/size)*(pntx-1);
+      if( mpirank >= ((pntz-1)%mpisize) )
+        locnrows += 4* ((pntz-1)/mpisize)*(pntx-1);
 
     }
 
@@ -645,7 +649,7 @@ int main(int argc, char *argv[]) {
 
 
 
-    istart=rank*(pnty-1)/size, iend=rank*(pnty-1)/size + (pnty-1)/size;  // Targeting Y points
+    istart=mpirank*(pnty-1)/mpisize, iend=mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;  // Targeting Y points
 
 
 //====================================================================================//
@@ -656,10 +660,10 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 ){
+   if( ((pnty-1)%mpisize) == 0 ){
 
-    istart=rank*(pnty-1)/size; 
-    iend=rank*(pnty-1)/size + (pnty-1)/size;
+    istart=mpirank*(pnty-1)/mpisize; 
+    iend=mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;
 
    }
 
@@ -667,16 +671,16 @@ int main(int argc, char *argv[]) {
 //      un balanced       
 //----------------------------------//
 
-    if( ((pnty-1)%size) > 0 ){
+    if( ((pnty-1)%mpisize) > 0 ){
 
-      if( rank < ((pnty-1)%size) ){
-         istart=rank*((pnty-1)/size + 1) ;
-         iend=istart + ((pnty-1)/size + 1) ;
+      if( mpirank < ((pnty-1)%mpisize) ){
+         istart=mpirank*((pnty-1)/mpisize + 1) ;
+         iend=istart + ((pnty-1)/mpisize + 1) ;
       }
 
-      if( rank >= ((pnty-1)%size) ){
-         istart=rank*((pnty-1)/size) +   ((pnty-1)%size) ;
-         iend=istart + ((pnty-1)/size);
+      if( mpirank >= ((pnty-1)%mpisize) ){
+         istart=mpirank*((pnty-1)/mpisize) +   ((pnty-1)%mpisize) ;
+         iend=istart + ((pnty-1)/mpisize);
       }
     }
 
@@ -795,7 +799,7 @@ int main(int argc, char *argv[]) {
 
 
 
-        istart=rank*(pntz-1)/size, iend=istart + (pntz-1)/size;  // Targeting Z points
+        istart=mpirank*(pntz-1)/mpisize, iend=istart + (pntz-1)/mpisize;  // Targeting Z points
 
 
 //====================================================================================//
@@ -806,26 +810,26 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   if( ((pntz-1)%size) == 0 ){
+   if( ((pntz-1)%mpisize) == 0 ){
 
-    istart=rank*(pntz-1)/size; 
-    iend=rank*(pntz-1)/size + (pntz-1)/size;
+    istart=mpirank*(pntz-1)/mpisize; 
+    iend=mpirank*(pntz-1)/mpisize + (pntz-1)/mpisize;
    }
 
    //----------------------------------//
    //      un balanced       
    //----------------------------------//
 
-    if( ((pntz-1)%size) > 0 ){
+    if( ((pntz-1)%mpisize) > 0 ){
 
-      if( rank < ((pntz-1)%size) ){
-         istart=rank*((pntz-1)/size + 1) ;
-         iend=istart + ((pntz-1)/size + 1) ;
+      if( mpirank < ((pntz-1)%mpisize) ){
+         istart=mpirank*((pntz-1)/mpisize + 1) ;
+         iend=istart + ((pntz-1)/mpisize + 1) ;
       }
 
-      if( rank >= ((pntz-1)%size) ){
-         istart=rank*((pntz-1)/size) +   ((pntz-1)%size) ;
-         iend=istart + ((pntz-1)/size);
+      if( mpirank >= ((pntz-1)%mpisize) ){
+         istart=mpirank*((pntz-1)/mpisize) +   ((pntz-1)%mpisize) ;
+         iend=istart + ((pntz-1)/mpisize);
       }
     }
 
@@ -902,43 +906,43 @@ int main(int argc, char *argv[]) {
 
     NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
 
-    if(  ((pnty-1)%size) == 0 ){
-      startrow = rank * 4 * ((pnty-1)/size) * ((pntx-1)+(pntz-1));
-      endrow  = startrow + (4 * ((pnty-1)/size) * ((pntx-1)+(pntz-1))) 	;
+    if(  ((pnty-1)%mpisize) == 0 ){
+      startrow = mpirank * 4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1));
+      endrow  = startrow + (4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))) 	;
     }
 
-    if( ((pnty-1)%size) > 0 ){
+    if( ((pnty-1)%mpisize) > 0 ){
 
-    if( rank < ((pnty-1)%size) ){
-      startrow = rank * 4 * ((pnty-1)/size+1) * ((pntx-1)+(pntz-1));
-      endrow  = startrow + (4 * ((pnty-1)/size+1) * ((pntx-1)+(pntz-1))) 	;
+    if( mpirank < ((pnty-1)%mpisize) ){
+      startrow = mpirank * 4 * ((pnty-1)/mpisize+1) * ((pntx-1)+(pntz-1));
+      endrow  = startrow + (4 * ((pnty-1)/mpisize+1) * ((pntx-1)+(pntz-1))) 	;
     }
 
-    if( rank >= ((pnty-1)%size) ){
-      startrow = rank * 4 * ((pnty-1)/size) * ((pntx-1)+(pntz-1))  + ((pnty-1)%size)* (4 * ((pntx-1)+(pntz-1)));
-      endrow  = startrow + (4 * ((pnty-1)/size) * ((pntx-1)+(pntz-1))) 	;
+    if( mpirank >= ((pnty-1)%mpisize) ){
+      startrow = mpirank * 4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))  + ((pnty-1)%mpisize)* (4 * ((pntx-1)+(pntz-1)));
+      endrow  = startrow + (4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))) 	;
     }
 
    }
 
 
-    if( ((pntz-1)%size) == 0 ){
+    if( ((pntz-1)%mpisize) == 0 ){
 
-      startrow += rank * 4 * ((pntz-1)/size) * ((pntx-1));
-      endrow  += startrow + (4 * ((pntz-1)/size) * ((pntx-1))) 	;
+      startrow += mpirank * 4 * ((pntz-1)/mpisize) * ((pntx-1));
+      endrow  += startrow + (4 * ((pntz-1)/mpisize) * ((pntx-1))) 	;
     }
 
 
-    if( ((pntz-1)%size) > 0 ){
+    if( ((pntz-1)%mpisize) > 0 ){
 
-    if( rank < ((pntz-1)%size) ){
-      startrow += rank * 4 * ((pntz-1)/size+1) * ((pntx-1)) ; 
-      endrow  += startrow + (4 * ((pntz-1)/size+1) * ((pntx-1))) 	;
+    if( mpirank < ((pntz-1)%mpisize) ){
+      startrow += mpirank * 4 * ((pntz-1)/mpisize+1) * ((pntx-1)) ; 
+      endrow  += startrow + (4 * ((pntz-1)/mpisize+1) * ((pntx-1))) 	;
     }
 
-    if( rank >= ((pntz-1)%size) ){
-      startrow += rank * 4 * ((pntz-1)/size) * ((pntx-1))  + ((pntz-1)%size) * ( 4 *  ((pntx-1)) );
-      endrow  += startrow + (4 * ((pntz-1)/size) * ((pntx-1))) 	;
+    if( mpirank >= ((pntz-1)%mpisize) ){
+      startrow += mpirank * 4 * ((pntz-1)/mpisize) * ((pntx-1))  + ((pntz-1)%mpisize) * ( 4 *  ((pntx-1)) );
+      endrow  += startrow + (4 * ((pntz-1)/mpisize) * ((pntx-1))) 	;
     }
    }
 
@@ -950,10 +954,10 @@ int main(int argc, char *argv[]) {
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%size) == 0 &&  ((pntz-1)%size) == 0 ){
-    startrow = rank * locnrows;
+   if( ((pnty-1)%mpisize) == 0 &&  ((pntz-1)%mpisize) == 0 ){
+    startrow = mpirank * locnrows;
     endrow = startrow + locnrows - 1	;
-    if (rank == size-1) {
+    if (mpirank == mpisize-1) {
         endrow = nrows - 1;
         locnrows = endrow - startrow + 1;
     }
@@ -985,7 +989,7 @@ int main(int argc, char *argv[]) {
     free(data_as_txt2);
     MPI_Type_free(&localarray2);
 
-    if(rank==0)
+    if(mpirank==0)
 	printf(" ---- Done\n ->  %d triangles written ",NTri);
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -998,7 +1002,7 @@ int main(int argc, char *argv[]) {
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
-    if(rank==0){
+    if(mpirank==0){
       char testchar3[5];
       snprintf (testchar3, sizeof(testchar3), "\nEnd");
       MPI_File_write(file, testchar3, sizeof(testchar3)-1, MPI_CHAR, &status);
@@ -1009,11 +1013,12 @@ int main(int argc, char *argv[]) {
 //---- Free memory -----
 //-----------------------------------------------------------------------------------//
 
-    if(rank==0){
+    if(mpirank==0){
       printf( "\n\n *============================================================*\n"); 
-      printf("  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);fflush(stdout);
+      printf("  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);
       printf( " *============================================================*\n"); 
     }
+    fflush(stdout);
 
     MPI_File_close(&file);
     MPI_Type_free(&num_as_string);
