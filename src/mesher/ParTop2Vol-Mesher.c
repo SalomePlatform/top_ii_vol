@@ -1,29 +1,28 @@
-/***********************************************************************
-
-     This file is a part of top-ii-vol meshing tools.
-
-     -------------------------------------------------------------------
-
-     Author(s): Mohd Afeef Badri 
-     Email    : mohd-afeef.badri@hotmail.fr
-     Date     : 2019‑10‑09
-
+/*****************************************************************************
+                                                                             
+             This file is a part of top-ii-vol meshing tools.                         
+                                                                             
+     -------------------------------------------------------------------     
+                                                                             
+     Author(s): Mohd Afeef Badri                                             
+     Email    : mohd-afeef.badri@hotmail.com                                                              
+     Date     : 2019‑10‑09                                                  
+                                                                           
      -------------------------------------------------------------------
 
      top-ii-vol  provides  sequential  and  parallel tools for  creating  
-     volumic tetrahedral meshes from a topology defined by apoint cloud.
+     volumic tetrahedral meshes from a topology defined by a point cloud.
      top-ii-vol  is  distributed in the hope that it will be useful, but 
      WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of 
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-************************************************************************/
+*******************************************************************************/
 
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mpi.h>
-
 
 
 float **alloc2d(int n, int m) {

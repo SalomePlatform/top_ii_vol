@@ -1,13 +1,13 @@
-/***********************************************************************
-
-     This file is a part of top-ii-vol meshing tools.
-
-     -------------------------------------------------------------------
-
-     Author(s): Mohd Afeef Badri 
-     Email    : mohd-afeef.badri@hotmail.fr
+/*****************************************************************************
+                                                                             
+             This file is a part of top-ii-vol meshing tools.                         
+                                                                             
+     -------------------------------------------------------------------     
+                                                                             
+     Author(s): Mohd Afeef Badri                                             
+     Email    : mohd-afeef.badri@hotmail.com                                                              
      Date     : 2019‑03‑29
-
+                                                                           
      -------------------------------------------------------------------
 
      top-ii-vol  provides  sequential  and  parallel tools for  creating  
@@ -16,7 +16,8 @@
      WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of 
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-************************************************************************/
+*******************************************************************************/
+
 
 #include "ff++.hpp"
 
