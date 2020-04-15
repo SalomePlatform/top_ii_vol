@@ -665,16 +665,14 @@ int main(int argc, char *argv[]) {
     }
 
 
-    char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char));
-
-
-
-    istart=mpirank*(pnty-1)/mpisize, iend=mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;  // Targeting Y points
-
+    char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
 
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
+
+   istart = mpirank*(pnty-1)/mpisize;
+   iend   = istart +(pnty-1)/mpisize;
 
 //----------------------------------//
 //      balanced       
@@ -817,14 +815,12 @@ int main(int argc, char *argv[]) {
     }
     }
 
-
-
-        istart=mpirank*(pntz-1)/mpisize, iend=istart + (pntz-1)/mpisize;  // Targeting Z points
-
-
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
+
+   istart = mpirank*(pntz-1)/mpisize;
+   iend   = istart +(pntz-1)/mpisize;
 
 //----------------------------------//
 //      balanced       
@@ -836,9 +832,9 @@ int main(int argc, char *argv[]) {
     iend=mpirank*(pntz-1)/mpisize + (pntz-1)/mpisize;
    }
 
-   //----------------------------------//
-   //      un balanced       
-   //----------------------------------//
+//----------------------------------//
+//      un balanced       
+//----------------------------------//
 
     if( ((pntz-1)%mpisize) > 0 ){
 
@@ -949,7 +945,7 @@ int main(int argc, char *argv[]) {
     if( ((pntz-1)%mpisize) == 0 ){
 
       startrow += mpirank * 4 * ((pntz-1)/mpisize) * ((pntx-1));
-      endrow  += startrow + (4 * ((pntz-1)/mpisize) * ((pntx-1))) 	;
+      endrow   += startrow+(4 * ((pntz-1)/mpisize) * ((pntx-1)));
     }
 
 
