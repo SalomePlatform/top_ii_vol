@@ -163,12 +163,22 @@ int main(int argc, char *argv[]) {
      }
 
 //====================================================================================//
+//---- pntz-1  pnty-1 pntx-1 -----
+//====================================================================================//
+
+    int pntxM1 = pntx-1;
+    int pntyM1 = pnty-1;
+    int pntzM1 = pntz-1;
+    int pntxXpnty = pntx * pnty; 
+    int pntxXpntz = pntz * pntx;           
+
+//====================================================================================//
 //---- Calculating mesh attributes -----
 //====================================================================================//
 
-    NPnt = pntx * pnty * pntz					      ;
-    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
-    NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			      ;
+    NPnt = pntx * pnty * pntz					              ;
+    NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1);
+    NTet = pntxM1 * pntyM1 * pntzM1 * 6			              ;
 
 
 //====================================================================================//
@@ -179,14 +189,14 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   locNPnt = (pntx * pnty)/mpisize ;
+   locNPnt = pntxXpnty/mpisize ;
 
 //----------------------------------//
 //     un balanced     
 //----------------------------------//
 
-    if( ((pntx * pnty)%mpisize) > 0 )
-      if( mpirank < ((pntx * pnty)%mpisize) )
+    if( (pntxXpnty%mpisize) > 0 )
+      if( mpirank < (pntxXpnty%mpisize) )
          locNPnt++;
 
 //====================================================================================//
@@ -204,13 +214,13 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-    if( ((pntx * pnty)%mpisize) == 0 ){
+    if( (pntxXpnty%mpisize) == 0 ){
 
       startrow = mpirank * locnrows         ;
       endrow   = startrow + locnrows - 1	;
 
       if (mpirank == mpisize-1) {
-        endrow = nrows - 1;
+        endrow   = nrows - 1            ;
         locnrows = endrow - startrow + 1;
       }
 
@@ -220,24 +230,24 @@ int main(int argc, char *argv[]) {
 //     un balanced     
 //----------------------------------/
 
-    if( ((pntx * pnty)%mpisize) > 0 ){
+    if( (pntxXpnty%mpisize) > 0 ){
 
-      if( mpirank < ((pntx * pnty)%mpisize) ){
+      if( mpirank < (pntxXpnty%mpisize) ){
         startrow = mpirank *  locNPnt * pntz   ;
         endrow   = startrow + locNPnt * pntz -1;
       }
 
-      if( mpirank >= ((pntx * pnty)%mpisize) ){
-        startrow = mpirank *  locNPnt * pntz     + ((pntx * pnty)%mpisize) * pntz    ;
+      if( mpirank >= (pntxXpnty%mpisize) ){
+        startrow = mpirank *  locNPnt * pntz     + (pntxXpnty%mpisize) * pntz    ;
         endrow   = startrow + locNPnt * pntz -1                             	     ;
       }
 
    }
 
-//   if( ((pntx * pnty)%mpisize) == 0 )
+//   if( (pntxXpnty%mpisize) == 0 )
 //     printf("== I %d startrow %d endrow %d  localrow %d \n", mpirank,startrow,endrow,locnrows);
 
-//   if( ((pntx * pnty)%mpisize) > 0 )
+//   if( (pntxXpnty%mpisize) > 0 )
 //     printf("§§§ I %d startrow %d endrow %d  localrow %d \n", mpirank,startrow,endrow,locnrows);
 
 
@@ -264,7 +274,7 @@ int main(int argc, char *argv[]) {
                 fscanf(infile,"%f",&data[i*pntz][0]) ;
                 fscanf(infile,"%f",&data[i*pntz][1]) ;
                 fscanf(infile,"%f",&data[i*pntz][2]) ;
-                delz= (zmax-data[i*pntz][2])/(pntz-1);
+                delz= (zmax-data[i*pntz][2])/pntzM1  ;
                 zznew=data[i*pntz][2]                ;
             }
 	    else{ 
@@ -302,7 +312,7 @@ int main(int argc, char *argv[]) {
         sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
     }
 
-    if( ((pntx * pnty)%mpisize) == 0 )
+    if( (pntxXpnty%mpisize) == 0 )
       free(data);                      //CAUSING ERROR IN SOME MPI RANKS CHECK ?????
 
     if(mpirank==0)
@@ -358,8 +368,7 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 
     offset += 57;
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray,"native", MPI_INFO_NULL);
 
     MPI_File_write_all(file, data_as_txt, locnrows*4, num_as_string, &status);
 
@@ -396,20 +405,20 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 )
-     locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize); //NTet/mpisize
+   if( (pntyM1%mpisize) == 0 )
+     locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize); //NTet/mpisize
 
 //----------------------------------//
 //     un balanced       
 //----------------------------------//
 
-    if( ((pnty-1)%mpisize) > 0 ){
+    if( (pntyM1%mpisize) > 0 ){
 
-      if( mpirank < ((pnty-1)%mpisize) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize+1);  //NTet/mpisize
+      if( mpirank < (pntyM1%mpisize) )
+         locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize+1);  //NTet/mpisize
 
-      if( mpirank >= ((pnty-1)%mpisize) )
-         locnrows=((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize);  //NTet/size
+      if( mpirank >= (pntyM1%mpisize) )
+         locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize);  //NTet/size
 
     }
 
@@ -433,23 +442,23 @@ int main(int argc, char *argv[]) {
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 ){
-    istart = mpirank*(pnty-1)/mpisize; 
-    iend   = mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;
+   if( (pntyM1%mpisize) == 0 ){
+    istart = mpirank*pntyM1/mpisize; 
+    iend   = mpirank*pntyM1/mpisize + pntyM1/mpisize;
    }
 
    //----------------------------------//
    //      un balanced       
    //----------------------------------//
 
-    if( ((pnty-1)%mpisize) > 0 ){
-      if( mpirank < ((pnty-1)%mpisize) ){
-         istart = mpirank*((pnty-1)/mpisize + 1)  ;
-         iend   = istart + ((pnty-1)/mpisize + 1) ;
+    if( (pntyM1%mpisize) > 0 ){
+      if( mpirank < (pntyM1%mpisize) ){
+         istart = mpirank*(pntyM1/mpisize + 1)  ;
+         iend   = istart + (pntyM1/mpisize + 1) ;
       }
-      if( mpirank >= ((pnty-1)%mpisize) ){
-         istart=mpirank*((pnty-1)/mpisize) +   ((pnty-1)%mpisize) ;
-         iend=istart + ((pnty-1)/mpisize);
+      if( mpirank >= (pntyM1%mpisize) ){
+         istart=mpirank*(pntyM1/mpisize) +   (pntyM1%mpisize) ;
+         iend=istart + (pntyM1/mpisize);
       }
     }
        
@@ -461,13 +470,13 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 
     for(int j=istart; j<iend;  j++){
-    for(int i=0; i<pntx-1;  i++){
-    for(int k=1; k<=pntz-1; k++){
+    for(int i=0; i<pntxM1;  i++){
+    for(int k=1; k<=pntzM1; k++){
 
-        IJK	      =	i*pntz  + j*pntx*pntz + k	;
-        Ip1JK	  =	IJK 	+ (pntx*pntz)		;
+        IJK	      =	i*pntz  + j*pntxXpntz + k	;
+        Ip1JK	  =	IJK 	+ pntxXpntz  		;
         IJp1K	  =	IJK 	+ pntz		        ;
-        Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
+        Ip1Jp1K   =	IJK 	+ pntxXpntz + pntz	;
         IJKp1     =	IJK 	+ 1			;
         Ip1JKp1   =	Ip1JK 	+ 1			;
         IJp1Kp1   =	IJp1K   + 1			;
@@ -536,7 +545,7 @@ int main(int argc, char *argv[]) {
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 ){
+   if( (pntyM1%mpisize) == 0 ){
 
      startrow = mpirank * locnrows      ;
      endrow   = startrow + locnrows - 1	;
@@ -552,16 +561,16 @@ int main(int argc, char *argv[]) {
    //     un balanced       
    //----------------------------------//
 
-    if( ((pnty-1)%mpisize) > 0 ){
+    if( (pntyM1%mpisize) > 0 ){
 
-      if( mpirank < ((pnty-1)%mpisize) ){
-        startrow = mpirank * ( ((pntx-1)*(pntz-1)*6) * ((pnty-1)/mpisize+1) )         ;
-        endrow  = startrow + ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize+1) ) -1;
+      if( mpirank < (pntyM1%mpisize) ){
+        startrow = mpirank * ( (pntxM1*pntzM1*6) * (pntyM1/mpisize+1) )         ;
+        endrow   = startrow + ( (pntxM1  * pntzM1 * 6)*(pntyM1/mpisize+1) ) -1  ;
       }
 
-      if( mpirank >= ((pnty-1)%mpisize) ){
-        startrow = mpirank * ( ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize)) +   ((pnty-1)%mpisize) * ((pntx-1)  * (pntz-1) * 6)   ;
-        endrow   = startrow +  ((pntx-1)  * (pntz-1) * 6)*((pnty-1)/mpisize) -1;
+      if( mpirank >= (pntyM1%mpisize) ){
+        startrow = mpirank  * ( (pntxM1*pntzM1*6)*(pntyM1/mpisize)) +   (pntyM1%mpisize)*(pntxM1*pntzM1*6);
+        endrow   = startrow +  (pntxM1*pntzM1*6)*(pntyM1/mpisize) -1;
       }
    }
 
@@ -582,8 +591,7 @@ int main(int argc, char *argv[]) {
     MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1, order1, num_as_string, &localarray1);
     MPI_Type_commit(&localarray1);
 
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray1, 
-                           "native", MPI_INFO_NULL);
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
 
     MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
 
@@ -615,57 +623,53 @@ int main(int argc, char *argv[]) {
 
     offset += 22;
 
-    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
-
-    locnrows=NTri/mpisize;  
-   
 //====================================================================================//
 //---- local row calculation NTri/mpisize ----
 //====================================================================================//
 
+    locnrows=NTri/mpisize;  
+    
 //----------------------------------//
 //      balanced  Y part      
 //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 ){
-     locnrows= 4* ((pnty-1)/mpisize)* ((pntz-1) + (pntx-1));
+   if( (pntyM1%mpisize) == 0 ){
+     locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
    }
 
 //----------------------------------//
 //     un balanced  Y part     
 //----------------------------------//
 
-    if( ((pnty-1)%mpisize) > 0 ){
+    if( (pntyM1%mpisize) > 0 ){
 
-      if( mpirank < ((pnty-1)%mpisize) )
-        locnrows= 4* ((pnty-1)/mpisize+1)* ((pntz-1) + (pntx-1));
+      if( mpirank < (pntyM1%mpisize) )
+        locnrows= 4* (pntyM1/mpisize+1)* (pntzM1 + pntxM1);
 
-      if( mpirank >= ((pnty-1)%mpisize) )
-        locnrows= 4* ((pnty-1)/mpisize)* ((pntz-1) + (pntx-1));
+      if( mpirank >= (pntyM1%mpisize) )
+        locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
     }
 
 //----------------------------------//
 //      balanced  Z part      
 //----------------------------------//
 
-   if( ((pntz-1)%mpisize) == 0 ){
-        locnrows += 4* ((pntz-1)/mpisize)*(pntx-1);
+   if( (pntzM1%mpisize) == 0 ){
+        locnrows += 4* (pntzM1/mpisize)*pntxM1;
    }
 
 //----------------------------------//
 //     un balanced  Z part     
 //----------------------------------//
 
-    if( ((pntz-1)%mpisize) > 0 ){
+    if( (pntzM1%mpisize) > 0 ){
 
-      if( mpirank < ((pntz-1)%mpisize) )
-        locnrows += 4* ((pntz-1)/mpisize+1)*(pntx-1);
+      if( mpirank < (pntzM1%mpisize) )
+        locnrows += 4* (pntzM1/mpisize+1)*pntxM1;
 
-      if( mpirank >= ((pntz-1)%mpisize) )
-        locnrows += 4* ((pntz-1)/mpisize)*(pntx-1);
-
+      if( mpirank >= (pntzM1%mpisize) )
+        locnrows += 4* (pntzM1/mpisize)*pntxM1;
     }
-
 
     char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
 
@@ -673,17 +677,17 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
-   istart = mpirank*(pnty-1)/mpisize;
-   iend   = istart +(pnty-1)/mpisize;
+   istart = mpirank*pntyM1/mpisize;
+   iend   = istart +pntyM1/mpisize;
 
 //----------------------------------//
 //      balanced       
 //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 ){
+   if( (pntyM1%mpisize) == 0 ){
 
-    istart=mpirank*(pnty-1)/mpisize; 
-    iend=mpirank*(pnty-1)/mpisize + (pnty-1)/mpisize;
+    istart=mpirank*pntyM1/mpisize; 
+    iend=mpirank*pntyM1/mpisize + pntyM1/mpisize;
 
    }
 
@@ -691,16 +695,16 @@ int main(int argc, char *argv[]) {
 //      un balanced       
 //----------------------------------//
 
-    if( ((pnty-1)%mpisize) > 0 ){
+    if( (pntyM1%mpisize) > 0 ){
 
-      if( mpirank < ((pnty-1)%mpisize) ){
-         istart=mpirank*((pnty-1)/mpisize + 1) ;
-         iend=istart + ((pnty-1)/mpisize + 1) ;
+      if( mpirank < (pntyM1%mpisize) ){
+         istart=mpirank*(pntyM1/mpisize + 1) ;
+         iend=istart + (pntyM1/mpisize + 1) ;
       }
 
-      if( mpirank >= ((pnty-1)%mpisize) ){
-         istart=mpirank*((pnty-1)/mpisize) +   ((pnty-1)%mpisize) ;
-         iend=istart + ((pnty-1)/mpisize);
+      if( mpirank >= (pntyM1%mpisize) ){
+         istart=mpirank*(pntyM1/mpisize) +   (pntyM1%mpisize) ;
+         iend=istart + (pntyM1/mpisize);
       }
     }
 
@@ -714,11 +718,11 @@ int main(int argc, char *argv[]) {
     label=11;
 
     for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int j=0; j<pntzM1;  j++){
 
-        IJK	      =	i*(pntz*pntx) + j+1	;
+        IJK	      =	i*pntxXpntz + j+1	;
         IJKp1	  =	IJK + 1			    ;
-        Ip1JK	  =	IJK + (pntz*pntx)	;
+        Ip1JK	  =	IJK + pntxXpntz    	;
         Ip1JKp1   =	Ip1JK + 1		    ;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
@@ -741,10 +745,10 @@ int main(int argc, char *argv[]) {
 //----Z-MIN-PLANE----//
     label = 22;
     for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntx-1;  j++){
+    for(int j=0; j<pntxM1;  j++){
 
-        IJK	      =	i*(pntz*pntx) + j*(pntz)+1	;
-        Ip1JK	  =	IJK + (pntz*pntx)		;
+        IJK	      =	i*pntxXpntz + j*pntz + 1;
+        Ip1JK	  =	IJK + pntxXpntz 		;
         IJp1K	  =	IJK + pntz			    ;
         Ip1Jp1K   =	Ip1JK + pntz			;
 
@@ -767,11 +771,11 @@ int main(int argc, char *argv[]) {
 //----X-MAX-PLANE----//
     label=33;
     for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntz-1;  j++){
+    for(int j=0; j<pntzM1;  j++){
 
-        IJK	      =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
+        IJK	      =	i*pntxXpntz + j+1 + pntxM1*pntz	;
         IJKp1	  =	IJK + 1					;
-        Ip1JK	  =	IJK + (pntz*pntx)		;
+        Ip1JK	  =	IJK + pntxXpntz 		;
         Ip1JKp1   =	Ip1JK + 1				;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
@@ -794,10 +798,10 @@ int main(int argc, char *argv[]) {
 //----Z-MAX-PLANE----//
     label=44;
     for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntx-1;  j++){
+    for(int j=0; j<pntxM1;  j++){
 
-        IJK	      =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
+        IJK	      =	i*pntxXpntz + j*pntz + 1 + pntzM1	;
+        Ip1JK	  =	IJK + pntxXpntz 			;
         IJp1K	  =	IJK + pntz				    ;
         Ip1Jp1K   =	Ip1JK + pntz				;
 
@@ -821,47 +825,44 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
-   istart = mpirank*(pntz-1)/mpisize;
-   iend   = istart +(pntz-1)/mpisize;
+   istart = mpirank*pntzM1/mpisize;
+   iend   = istart +pntzM1/mpisize;
 
 //----------------------------------//
 //      balanced       
 //----------------------------------//
 
-   if( ((pntz-1)%mpisize) == 0 ){
-
-    istart=mpirank*(pntz-1)/mpisize; 
-    iend=mpirank*(pntz-1)/mpisize + (pntz-1)/mpisize;
+   if( (pntzM1%mpisize) == 0 ){
+    istart = mpirank*pntzM1/mpisize ; 
+    iend   = istart + pntzM1/mpisize;
    }
 
 //----------------------------------//
 //      un balanced       
 //----------------------------------//
 
-    if( ((pntz-1)%mpisize) > 0 ){
+    if( (pntzM1%mpisize) > 0 ){
 
-      if( mpirank < ((pntz-1)%mpisize) ){
-         istart=mpirank*((pntz-1)/mpisize + 1) ;
-         iend=istart + ((pntz-1)/mpisize + 1) ;
+      if( mpirank < (pntzM1%mpisize) ){
+         istart = mpirank*(pntzM1/mpisize + 1);
+         iend   = istart +(pntzM1/mpisize + 1);
       }
 
-      if( mpirank >= ((pntz-1)%mpisize) ){
-         istart=mpirank*((pntz-1)/mpisize) +   ((pntz-1)%mpisize) ;
-         iend=istart + ((pntz-1)/mpisize);
+      if( mpirank >= (pntzM1%mpisize) ){
+         istart = mpirank*(pntzM1/mpisize) +   (pntzM1%mpisize) ;
+         iend   = istart +(pntzM1/mpisize);
       }
     }
-
-
 
 
 //----Y-MAX-PLANE----//
 
     label=55;
 
-    for(int i=0; i<pntx-1;  i++){
+    for(int i=0; i<pntxM1;  i++){
     for(int j=istart; j<iend;  j++){
 
-        IJK	      =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
+        IJK	      =	i*pntz + j+1 + (pntxXpntz*pntyM1)	;
         IJKp1	  =	IJK + 1					;
         IJp1K	  =	IJK + pntz				;
         IJp1Kp1   =	IJp1K + 1				;
@@ -887,7 +888,7 @@ int main(int argc, char *argv[]) {
 
     label=66;
 
-    for(int i=0; i<pntx-1;  i++){
+    for(int i=0; i<pntxM1;  i++){
     for(int j=istart; j<iend;  j++){
 
         IJK	      =	i*pntz + j+1;
@@ -922,70 +923,66 @@ int main(int argc, char *argv[]) {
    //     un balanced       
    //----------------------------------//
 
-    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
+    NTri = 4*(pntzM1*pntxM1+pntyM1*pntzM1+pntxM1*pntyM1)  ;
 
-    if(  ((pnty-1)%mpisize) == 0 ){
-      startrow = mpirank * 4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1));
-      endrow  = startrow + (4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))) 	;
+    if(  (pntyM1%mpisize) == 0 ){
+      startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1);
+      endrow   = startrow+ (4 *(pntyM1/mpisize)* (pntxM1+pntzM1));
     }
 
-    if( ((pnty-1)%mpisize) > 0 ){
+    if( (pntyM1%mpisize) > 0 ){
 
-    if( mpirank < ((pnty-1)%mpisize) ){
-      startrow = mpirank * 4 * ((pnty-1)/mpisize+1) * ((pntx-1)+(pntz-1));
-      endrow  = startrow + (4 * ((pnty-1)/mpisize+1) * ((pntx-1)+(pntz-1))) 	;
+    if( mpirank < (pntyM1%mpisize) ){
+      startrow = mpirank * 4 * (pntyM1/mpisize+1) * (pntxM1+pntzM1);
+      endrow  = startrow + (4 *(pntyM1/mpisize+1) * (pntxM1+pntzM1)) 	;
     }
 
-    if( mpirank >= ((pnty-1)%mpisize) ){
-      startrow = mpirank * 4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))  + ((pnty-1)%mpisize)* (4 * ((pntx-1)+(pntz-1)));
-      endrow  = startrow + (4 * ((pnty-1)/mpisize) * ((pntx-1)+(pntz-1))) 	;
+    if( mpirank >= (pntyM1%mpisize) ){
+      startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1)  + (pntyM1%mpisize)* (4 * (pntxM1+pntzM1));
+      endrow  = startrow + (4 *(pntyM1/mpisize) * (pntxM1+pntzM1)) 	;
     }
 
    }
 
 
-    if( ((pntz-1)%mpisize) == 0 ){
+    if( (pntzM1%mpisize) == 0 ){
 
-      startrow += mpirank * 4 * ((pntz-1)/mpisize) * ((pntx-1));
-      endrow   += startrow+(4 * ((pntz-1)/mpisize) * ((pntx-1)));
+      startrow += mpirank * 4 * (pntzM1/mpisize) * pntxM1;
+      endrow   += startrow+(4 * (pntzM1/mpisize) * pntxM1);
     }
 
 
-    if( ((pntz-1)%mpisize) > 0 ){
+    if( (pntzM1%mpisize) > 0 ){
 
-    if( mpirank < ((pntz-1)%mpisize) ){
-      startrow += mpirank * 4 * ((pntz-1)/mpisize+1) * ((pntx-1)) ; 
-      endrow  += startrow + (4 * ((pntz-1)/mpisize+1) * ((pntx-1))) 	;
+    if( mpirank < (pntzM1%mpisize) ){
+      startrow += mpirank * 4 * (pntzM1/mpisize+1) * pntxM1 ; 
+      endrow  += startrow + (4 * (pntzM1/mpisize+1) *pntxM1 ) 	;
     }
 
-    if( mpirank >= ((pntz-1)%mpisize) ){
-      startrow += mpirank * 4 * ((pntz-1)/mpisize) * ((pntx-1))  + ((pntz-1)%mpisize) * ( 4 *  ((pntx-1)) );
-      endrow  += startrow + (4 * ((pntz-1)/mpisize) * ((pntx-1))) 	;
+    if( mpirank >= (pntzM1%mpisize) ){
+      startrow += mpirank * 4 * (pntzM1/mpisize) * pntxM1  + (pntzM1%mpisize) * (4*pntxM1);
+      endrow  += startrow + (4* (pntzM1/mpisize) *pntxM1) 	;
     }
    }
 
    endrow--;
 
-
-
    //----------------------------------//
    //      balanced       
    //----------------------------------//
 
-   if( ((pnty-1)%mpisize) == 0 &&  ((pntz-1)%mpisize) == 0 ){
+   if( (pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0 ){
     startrow = mpirank * locnrows;
-    endrow = startrow + locnrows - 1	;
+    endrow   = startrow + locnrows - 1	;
     if (mpirank == mpisize-1) {
-        endrow = nrows - 1;
+        endrow   = nrows - 1;
         locnrows = endrow - startrow + 1;
     }
    }
 
-
 //====================================================================================//
 //---- Triangle writing -----
 //====================================================================================//
-
 
     int globalsizes2[2] = {nrows   , 4};
     int localsizes2 [2] = {locnrows, 4};
@@ -996,10 +993,8 @@ int main(int argc, char *argv[]) {
     MPI_Type_create_subarray(2, globalsizes2, localsizes2, starts2, order2, num_as_string, &localarray2);
     MPI_Type_commit(&localarray2);
 
-
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray2, 
-                           "native", MPI_INFO_NULL);
-
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray2,"native", MPI_INFO_NULL);
+    
     MPI_File_write_all(file, data_as_txt2, locnrows*4, num_as_string, &status);
 
     offset += totcar*NTet;
@@ -1012,13 +1007,11 @@ int main(int argc, char *argv[]) {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Footer writing -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
+    MPI_File_set_view(file, offset,  MPI_CHAR, localarray,"native", MPI_INFO_NULL);
 
     if(mpirank==0){
       char testchar3[5];
@@ -1026,10 +1019,9 @@ int main(int argc, char *argv[]) {
       MPI_File_write(file, testchar3, sizeof(testchar3)-1, MPI_CHAR, &status);
     }
 
-/**/
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 //---- Free memory -----
-//-----------------------------------------------------------------------------------//
+//====================================================================================//
 
     if(mpirank==0){
       printf( "\n\n *============================================================*\n"); 
