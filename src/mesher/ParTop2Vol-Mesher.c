@@ -27,10 +27,12 @@
 
 float **alloc2d(int n, int m) {
 
-    float *data = malloc(n*m*sizeof(float));
+    float *data   = malloc(n*m*sizeof(float));
     float **array = malloc(n*sizeof(float *));
+
     for (int i=0; i<n; i++)
         array[i] = &(data[i*m]);
+
     return array;
 
 }
@@ -124,8 +126,8 @@ int main(int argc, char *argv[]) {
 
     double zmax    = -1920.0;
 
-    int pntx = 10  ;//=105;
-    int pnty = 9   ; //=94;
+    int pntx = 10  ;
+    int pnty = 9   ;
     int	pntz = 100 ;
 
 
@@ -204,7 +206,7 @@ int main(int argc, char *argv[]) {
 
     if( ((pntx * pnty)%mpisize) == 0 ){
 
-      startrow = mpirank * locnrows            ;
+      startrow = mpirank * locnrows         ;
       endrow   = startrow + locnrows - 1	;
 
       if (mpirank == mpisize-1) {
@@ -221,13 +223,13 @@ int main(int argc, char *argv[]) {
     if( ((pntx * pnty)%mpisize) > 0 ){
 
       if( mpirank < ((pntx * pnty)%mpisize) ){
-        startrow = mpirank *  locNPnt * pntz      ;
+        startrow = mpirank *  locNPnt * pntz   ;
         endrow   = startrow + locNPnt * pntz -1;
       }
 
       if( mpirank >= ((pntx * pnty)%mpisize) ){
         startrow = mpirank *  locNPnt * pntz     + ((pntx * pnty)%mpisize) * pntz    ;
-        endrow   = startrow + locNPnt * pntz -1                             	;
+        endrow   = startrow + locNPnt * pntz -1                             	     ;
       }
 
    }
@@ -462,9 +464,9 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<pntx-1;  i++){
     for(int k=1; k<=pntz-1; k++){
 
-        IJK	    =	i*pntz  + j*pntx*pntz + k	;
-        Ip1JK	    =	IJK 	+ (pntx*pntz)		;
-        IJp1K	    =	IJK 	+ (pntz)		;
+        IJK	      =	i*pntz  + j*pntx*pntz + k	;
+        Ip1JK	  =	IJK 	+ (pntx*pntz)		;
+        IJp1K	  =	IJK 	+ pntz		        ;
         Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
         IJKp1     =	IJK 	+ 1			;
         Ip1JKp1   =	Ip1JK 	+ 1			;
@@ -536,8 +538,8 @@ int main(int argc, char *argv[]) {
 
    if( ((pnty-1)%mpisize) == 0 ){
 
-     startrow = mpirank * locnrows          ;
-     endrow = startrow + locnrows - 1	;
+     startrow = mpirank * locnrows      ;
+     endrow   = startrow + locnrows - 1	;
 
      if (mpirank == mpisize-1) {
         endrow = nrows - 1;
@@ -714,10 +716,10 @@ int main(int argc, char *argv[]) {
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntz-1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j+1	;
-        IJKp1	  =	IJK + 1			;
+        IJK	      =	i*(pntz*pntx) + j+1	;
+        IJKp1	  =	IJK + 1			    ;
         Ip1JK	  =	IJK + (pntz*pntx)	;
-        Ip1JKp1 =	Ip1JK + 1		;
+        Ip1JKp1   =	Ip1JK + 1		    ;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -741,10 +743,10 @@ int main(int argc, char *argv[]) {
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntx-1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1	;
+        IJK	      =	i*(pntz*pntx) + j*(pntz)+1	;
         Ip1JK	  =	IJK + (pntz*pntx)		;
-        IJp1K	  =	IJK + pntz			;
-        Ip1Jp1K =	Ip1JK + pntz			;
+        IJp1K	  =	IJK + pntz			    ;
+        Ip1Jp1K   =	Ip1JK + pntz			;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
@@ -767,10 +769,10 @@ int main(int argc, char *argv[]) {
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntz-1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
+        IJK	      =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
         IJKp1	  =	IJK + 1					;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
-        Ip1JKp1 =	Ip1JK + 1				;
+        Ip1JK	  =	IJK + (pntz*pntx)		;
+        Ip1JKp1   =	Ip1JK + 1				;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
@@ -794,10 +796,10 @@ int main(int argc, char *argv[]) {
     for(int i=istart; i<iend;  i++){
     for(int j=0; j<pntx-1;  j++){
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
+        IJK	      =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
         Ip1JK	  =	IJK + (pntz*pntx)			;
-        IJp1K	  =	IJK + pntz				;
-        Ip1Jp1K =	Ip1JK + pntz				;
+        IJp1K	  =	IJK + pntz				    ;
+        Ip1Jp1K   =	Ip1JK + pntz				;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -859,10 +861,10 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<pntx-1;  i++){
     for(int j=istart; j<iend;  j++){
 
-        IJK	  =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
+        IJK	      =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
         IJKp1	  =	IJK + 1					;
         IJp1K	  =	IJK + pntz				;
-        IJp1Kp1 =	IJp1K + 1				;
+        IJp1Kp1   =	IJp1K + 1				;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -888,10 +890,10 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<pntx-1;  i++){
     for(int j=istart; j<iend;  j++){
 
-        IJK	  =	i*pntz + j+1	;
+        IJK	      =	i*pntz + j+1;
         IJKp1	  =	IJK + 1		;
         IJp1K	  =	IJK + pntz	;
-        IJp1Kp1 =	IJp1K + 1	;
+        IJp1Kp1   =	IJp1K + 1	;
 
         sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
         sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
