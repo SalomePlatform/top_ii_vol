@@ -43,3 +43,7 @@ src/mesher/top-ii-vol-Mesher
 src/mesher/top-ii-vol-ParMesher
 src/mesher/top-ii-vol-PreProc
 
+## ALLOWED FILES ##
+!/data/DEM_10m.xyz
+!/data/DEM_160m.xyz
+

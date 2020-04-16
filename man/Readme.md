@@ -34,8 +34,7 @@ This is a parallel computing tool. This tool takes in a stripped point-cloud as 
 
 ### 4. `top-ii-vol-DistMesher`
 
-This is a tool to create embarrassingly parallel distributed meshes, using partitioned point cloud. To generate the partitioned point cloud use `top-ii-vol-Part`.
-
+This is a tool to create embarrassingly parallel distributed meshes. The mesher takes in a point-cloud as an input (`.xyz`) and outputs distributed mesh. 
 
 
 
@@ -81,7 +80,7 @@ make install
 
 ## Running top-ii-vol
 
-If the compilation went successful you should have three tools at your disposal `top-ii-vol-ParMesher` , `top-ii-vol-Mesher` ,  `top-ii-vol-PreProc`, `top-ii-vol-Part`, and `top-ii-vol-DistMesher`. These tools can be worked with command line inputs. And these tools should be present in `$HOME/top-ii-vol/bin` folder. 
+If the compilation went successful you should have three tools at your disposal `top-ii-vol-ParMesher`, `top-ii-vol-Mesher`,  `top-ii-vol-PreProc`, and `top-ii-vol-DistMesher`. These tools can be worked with command line inputs. And these tools should be present in `$HOME/top-ii-vol/bin` folder. 
 
 
 ##### How to use top-ii-vol-PreProc ?
@@ -149,6 +148,8 @@ This is the sequential mesher
 
 
 
+
+
 ##### How to use top-ii-vol-ParMesher ?
 
 This is the parallel mesher (still under heavy development)
@@ -169,6 +170,9 @@ This is the parallel mesher (still under heavy development)
 | `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`   |
 | `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
 | `-n`        | `[int]`    | Provide the # of MPI ranks.                          |
+
+
+
 
 
 ##### How to use top-ii-vol-DistMesher ?
