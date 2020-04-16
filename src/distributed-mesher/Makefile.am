@@ -40,6 +40,6 @@ clean-local:
 	@echo "*============================================================*"
 	@echo " Cleaning files in :"; pwd
 	@echo "*============================================================*"
-	rm  -f *~  top-ii-vol-Mesher top-ii-vol-PreProc  top-ii-vol-ParMesher *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh *.khi
+	rm  -f *~  top-ii-vol-DistMesher top-ii-vol-Part *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh *.khi
 	rm  -rf VTUs 	
 
