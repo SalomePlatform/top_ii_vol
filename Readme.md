@@ -15,7 +15,7 @@
 
 top-ii-vol meshing tool provides sequential/parallel tools for creating volumic tetrahedral meshes from a topology (point cloud `*.xyz`). The volumic meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.  The framework is written in C and C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
 
-top-ii-vol consists a total of five tools:
+top-ii-vol consists a total of four tools:
 
 ### 1. `top-ii-vol-PreProc`
 
@@ -32,11 +32,7 @@ This is a sequential computing tool. This tool takes in a point-cloud as an inpu
 This is a parallel computing tool. This tool takes in a stripped point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in  medit's `*.mesh` and `*.meshb` format. To use this tool one first needs to generate a stripped point-cloud by using top-ii-vol-PreProc`.
 
 
-### 4. `top-ii-vol-Part`
-
-This is point-cloud partitioner needed for creating a distributed volumic mesh. This tool takes in a point-cloud as an input (`.xyz`). One obtains partitioned point cloud using this tool.
-
-### 5. `top-ii-vol-DistMesher`
+### 4. `top-ii-vol-DistMesher`
 
 This is a tool to create embarrassingly parallel distributed meshes, using partitioned point cloud. To generate the partitioned point cloud use `top-ii-vol-Part`.
 
@@ -175,30 +171,6 @@ This is the parallel mesher (still under heavy development)
 | `-n`        | `[int]`    | Provide the # of MPI ranks.                          |
 
 
-
-##### How to use top-ii-vol-Part ?
-
-This is point cloud partitioning tool
-
-- For parallel producing a partitioned point cloud with 2 partitions.
-
-```
-./top-ii-vol-Part --strips 2 --out point-cloud-strip --in ./../etc/DEM_160m --xpoints 32 --ypoints 29
-```
-
-*Command-line option definitions*
-
-| Option      | Type       | Comment                                              |
-| ----------- | ---------- | :--------------------------------------------------- |
-| `--strips`  | `[int]`    | Number of partitions of the point cloud needed.      |
-| `--ypoints` | `[int]`    | These are # of y points present in your point cloud. |
-| `--zpoints` | `[int]`    | These are # of z points intended in the z direction. |
-| `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`   |
-| `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
-
-
-
-
 ##### How to use top-ii-vol-DistMesher ?
 
 This is  tool to created distributed mesh from  partitioned point cloud
@@ -206,11 +178,15 @@ This is  tool to created distributed mesh from  partitioned point cloud
 - For parallel distributed mesher producing  `*.mesh` mesh with 2 MPI ranks.
 
 ```
-  mpirun -np 2 ./top-ii-vol-DistMesher --out top-ii-vol-mesh --zpoints 50
+ mpirun -np 2 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
 ```
+
+*Command-line option definitions*
 
 | Option      | Type       | Comment                                              |
 | ----------- | ---------- | :--------------------------------------------------- |
+| `--xpoints` | `[int]`    | These are # of x points present in your point cloud. |
+| `--ypoints` | `[int]`    | These are # of y points present in your point cloud. |
 | `--zpoints` | `[int]`    | These are # of z points intended in the z direction. |
 | `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`   |
 | `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
@@ -218,16 +194,8 @@ This is  tool to created distributed mesh from  partitioned point cloud
 
 
 
-
-
-*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud. Also note that the volume will be tagged according to the MPI-Rank*
-
-
-
-
-
 To report bugs, issues, feature-requests contact:* 
 
 - **mohd-afeef.badri@cea.fr**
-- **mohd-afeef.badri@outlook.com**
+- **mohd-afeef.badri@hotmail.com**
 - **mohd-afeef.badri@etu.univ-nantes.fr** 
