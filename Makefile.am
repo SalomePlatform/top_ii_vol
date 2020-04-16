@@ -41,7 +41,6 @@ install-exec-local: logo
 	@cp  ./src/mesher/top-ii-vol-PreProc   ${prefix}/top-ii-vol/bin/.
 	@cp  ./src/mesher/top-ii-vol-Mesher    ${prefix}/top-ii-vol/bin/.
 	@cp  ./src/mesher/top-ii-vol-ParMesher ${prefix}/top-ii-vol/bin/.
-	@cp  ./src/distributed-mesher/top-ii-vol-Part   ${prefix}/top-ii-vol/bin/.
 	@cp  ./src/distributed-mesher/top-ii-vol-DistMesher   ${prefix}/top-ii-vol/bin/.
 	@cp  ./data/DEM_160m.xyz ${prefix}/top-ii-vol/etc/.
 	@cp  ./man/Readme.html   ${prefix}/top-ii-vol/doc/.
