@@ -46,9 +46,6 @@ int main(int argc, char *argv[]){
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    int Scatter = 0     ;
-    int Nscat   = 1     ;
-
     int pntx = 2500     ;
     int pnty = 2251     ;
 
@@ -57,7 +54,6 @@ int main(int argc, char *argv[]){
 
     string inpurfile = "./../data/DEM_2m_new.xyz" ;
     string outpufile = "out-coarse.xyz"           ;
-
 
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
@@ -84,17 +80,7 @@ int main(int argc, char *argv[]){
 	    inpurfile = argvdummy1;
 
 	if( argvdummy == "--out") 
-	    outpufile = argvdummy1;
-
-	if( argvdummy == "--scatter"){
-		if(argvdummy1 == "yes" ) 
-	    		Scatter = 1;
-		if(argvdummy1 == "no" ) 
-	    		Scatter = 0;
-	}
-
-	if( argvdummy == "--strips")
-		Nscat = stoi(argvdummy1);		
+	    outpufile = argvdummy1;		
      
    }
 
@@ -147,12 +133,9 @@ int main(int argc, char *argv[]){
     if (pntx%skipx!=0)
            pointsXAfterSkip=pntx/skipx+1;
 
-
 //-----------------------------------------------------------------------------------//
-//---- Skipmeshing with scatter-----
+//---- Skipmeshing ----
 //-----------------------------------------------------------------------------------//
-
-    if(Scatter != 1){
 
         cout << "\n\n"
     	     << " *===================================================* \n" 
@@ -192,62 +175,7 @@ int main(int argc, char *argv[]){
         wr.close();
 
         cout << "Finshed !!!                                               \n";
-    }
-
-//-----------------------------------------------------------------------------------//
-//---- Skip mesh with partitioning -----
-//-----------------------------------------------------------------------------------//
-
-   if(Scatter == 1){
-     
-        int countme  = 0  ; 
-
-	    int k = 0        ;
-
-        wr.open(outpufile+"-info.txt");
-
-        wr   << " *===================================================* \n" 
-             << " *                  INFORMATION                      * \n"  
-             << " *===================================================* \n"        
-             << "\n   Total # strips :: "<< Nscat  
-             << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
-             << "\n   Total # xPoints:: "<< pointsXAfterSkip
-             << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n ==================================================== \n";  
- 
-        wr.close();
-
-		int   TNPts[Nscat];
-        for(int j = 0; j<Nscat; j++)
-             TNPts[j]=pointsYAfterSkip*pointsXAfterSkip/Nscat;
-   
-        for(int j = 0; j<int(pointsYAfterSkip*pointsXAfterSkip%Nscat); j++) 
-             TNPts[j]=TNPts[j]+1; 
-
-        wr.open(outpufile+"_"+std::to_string(k)+".xyz");
-
-        for(int j = 0; j<pnty; j++){
-        for(int i = 0; i<pntx; i++){
-
-	        in>>std::fixed>> x  >> y >> z;
-
-	        if(int(j%skipy) == 0 && int(i%skipx) == 0 ){
-                if(countme==TNPts[k]){
-		            countme=0; k++;
-    		        wr.close();
-                    wr.open(outpufile+"_"+std::to_string(k)+".xyz");
-		        }
-	            wr << std::fixed << x << "\t" << y << "\t"<< z << "\n";
-	            countme++;
-            }
-        }
-        }
-
-        wr.close();
-
-    }
-
-
+    
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//

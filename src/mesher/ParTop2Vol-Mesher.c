@@ -115,12 +115,12 @@ int main(int argc, char *argv[]) {
 
     double zmax    = -1920.0;
 
-    int pntx = 10  ;
-    int pnty = 9   ;
+    int pntx = 32  ;
+    int pnty = 29  ;
     int	pntz = 100 ;
 
 
-    char inpurfile[80] = "out-coarse.xyz"        ;
+    char inpurfile[80] = "./../../data/DEM_160m.xyz";
     char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
 
 //====================================================================================//
@@ -150,6 +150,17 @@ int main(int argc, char *argv[]) {
 	    	zmax= atol(argv[i+1]);
 	
      }
+
+//====================================================================================//
+//---- partition input point cloud -----
+//====================================================================================//
+ if(mpirank==0){
+   #include "./../lib/TopiiVolPartitionPointCloudAlgo.h"
+ }
+ 
+ char partCloudName[80] = "pc_part";
+ MPI_Barrier(MPI_COMM_WORLD); 
+ 
 
 //====================================================================================//
 //---- pntz-1  pnty-1 pntx-1 -----
@@ -254,7 +265,7 @@ int main(int argc, char *argv[]) {
     printf("\n Reading the partitioned point cloud mesh");
 
     char filepath[256];
-    snprintf (filepath, sizeof(filepath), "%s_%d.xyz", inpurfile, mpirank);
+    snprintf (filepath, sizeof(filepath), "%s_%d.xyz", partCloudName, mpirank);
     infile = fopen(filepath,"r"); 
 
     for (int i=0; i<locNPnt; i++){

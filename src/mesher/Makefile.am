@@ -35,13 +35,13 @@ Top2Vol-Mesher.o: Top2Vol-Mesher.cpp
 top-ii-vol-Mesher: Top2Vol-Mesher.o
 	$(CXX) -o top-ii-vol-Mesher Top2Vol-Mesher.o 
 
-ParTop2Vol-Mesher.o: ParTop2Vol-Mesher.c
+ParTop2Vol-Mesher.o: ParTop2Vol-Mesher.c ./../lib/TopiiVolPartitionPointCloudAlgo.h
 	$(MPICC) -c ParTop2Vol-Mesher.c -std=c99
 
 top-ii-vol-ParMesher: ParTop2Vol-Mesher.o
 	$(MPICC) -o top-ii-vol-ParMesher ParTop2Vol-Mesher.o
 
-NP=2
+NP=3
 SX=24
 SY=24
 PZ=15
@@ -49,12 +49,10 @@ SX1=105
 SY1=94
 
 check-local:
-	./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --zpoints 7 --xskip 10 --yskip 10 --in ../../data/DEM_10m.xyz --out out-coarse.xyz --scatter no
+	./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --zpoints 7 --xskip 10 --yskip 10 --in ../../data/DEM_10m.xyz --out out-coarse.xyz
 	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
 	./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
-	./top-ii-vol-PreProc  --xpoints 32 --ypoints 29 --xskip 1 --yskip 1 --in ../../data/DEM_160m.xyz --out out-coarse-striped.xyz --scatter yes --strips $(NP)
-	mpirun -n $(NP) ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints $(PZ) --depth -1000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
-##	./top-ii-vol-PreProc  --xpoints 2500 --ypoints 2251 --xskip $(SX) --yskip $(SY) --in ../../data/DEM_2m.xyz --out out-coarse-striped.xyz --scatter yes --strips $(NP)
+	mpirun -n $(NP) ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints $(PZ) --depth -3000  --in ./../../data/DEM_160m.xyz --out Parallel-out-mesh.mesh
 ##	mpirun -n $(NP) ./top-ii-vol-ParMesher --xpoints $(SX1) --ypoints $(SY1) --zpoints $(PZ) --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
 
 test-freefem: check-local

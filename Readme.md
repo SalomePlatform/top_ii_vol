@@ -19,7 +19,7 @@ top-ii-vol consists a total of four tools:
 
 ### 1. `top-ii-vol-PreProc`
 
-This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points. Another role of `top-ii-vol-PreProc` is to slice up a point cloud (stripping) into n number of strips, hence generating a stripped point-cloud. This stripping can be considered analogous to point-cloud partitioning.
+This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points.
 
 
 ### 2. `top-ii-vol-Mesher`
@@ -29,7 +29,7 @@ This is a sequential computing tool. This tool takes in a point-cloud as an inpu
 
 ### 3. `top-ii-vol-ParMesher`
 
-This is a parallel computing tool. This tool takes in a stripped point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in  medit's `*.mesh` and `*.meshb` format. To use this tool one first needs to generate a stripped point-cloud by using top-ii-vol-PreProc`.
+This is a parallel computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in  medit's `*.mesh` and `*.meshb` format.
 
 
 ### 4. `top-ii-vol-DistMesher`
@@ -85,16 +85,10 @@ If the compilation went successful you should have three tools at your disposal 
 
 ##### How to use top-ii-vol-PreProc ?
 
-- For sequential meshing if you wish to coarsen your mesh by skipping 10 points in x and y direction 
+- If you wish to coarsen your mesh by skipping 10 points in x and y direction 
 
   ```
-  ./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ./../etc/DEM_10m.xyz --out out-coarse.xyz --scatter no
-  ```
-
-- For parallel meshing using 2 processes 
-
-  ```
-  ./top-ii-vol-PreProc  --xpoints 32 --ypoints 29 --xskip 1 --yskip 1 --in ./../etc/DEM_160m.xyz --out out-coarse-striped.xyz --scatter yes --strips 2
+  ./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ./../etc/DEM_10m.xyz --out out-coarse.xyz
   ```
 
 *Command-line option definitions*
@@ -107,8 +101,6 @@ If the compilation went successful you should have three tools at your disposal 
 | `--yskip`   | `[int]`    | These are # of periodic y points you would like to skip.     |
 | `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`           |
 | `--out`     | `[string]` | Sting to provide the  output coarsend/stripped point cloud file `.xyz |
-| `--scatter` | `[bool]`   | Point cloud partitioner. Use `yes` for parallel and `no ` for sequential. |
-| `--strips`  | `[int]`    | Number of MPI ranks to be used in the parallel run.          |
 
 *Note that after successfully running `./top-ii-vol-PreProc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
 
@@ -123,13 +115,13 @@ This is the sequential mesher
 - For  sequential mesher producing  `*.mesh` mesh.
 
   ```
-  ./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+  ./top-ii-vol-Mesher --xpoints 31 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
   ```
   
 - For  sequential mesher producing  `*.msh` mesh.
 
   ```
-  ./top-ii-vol-Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
+  ./top-ii-vol-Mesher ---xpoints 31 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.msh --depth -1000 --mesh msh
   ```
 
 *Command-line option definitions*
@@ -144,8 +136,6 @@ This is the sequential mesher
 | `--depth`   | `[int]`    | This is the depth of the mesh needed.                |
 | `--mesh`    | `[string]` | To specify the kind of mesh needed                   |
 
-*Note that if one is using the coarsened mesh # of x points and # of y points should be the one  that are in the info file `info-<out-coarse.xyz>.txt` of the coarsened mesh cloud.*
-
 
 
 
@@ -157,7 +147,7 @@ This is the parallel mesher (still under heavy development)
 - For parallel mesher producing  `*.mesh` mesh with 2 MPI ranks.
 
 ```
-  mpirun -n 2 ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints 5 --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
+  mpirun -n 2 ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -2000  --in ./../etc/DEM_160m.xyz  --out Parallel-out-mesh.mesh
 ```
 
 *Command-line option definitions*
