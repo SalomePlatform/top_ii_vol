@@ -41,33 +41,33 @@ int main(int argc, char *argv[]) {
 //---- Global Variables -----
 //====================================================================================//
 
- int NPnt     ;			    // # of points in the mesh
- int NTri     ;			    // # of triangles on the mesh surfaces
- int NTet     ;			    // # of tetrahedra in the mesh
- int label 	  ;			    // label # of the mesh surfaces
+ int NPnt  ;             // # of points in the mesh
+ int NTri  ;             // # of triangles on the mesh surfaces
+ int NTet  ;             // # of tetrahedra in the mesh
+ int label ;             // label # of the mesh surfaces
 
- int	IJK	     ;		    // variable used during tera or triangle generation
- int	Ip1JK	   ;		    // variable used during tera or triangle generation
- int	IJp1K	   ;		    // variable used during tera or triangle generation
- int	IJKp1	   ;		    // variable used during tera or triangle generation
- int	Ip1JKp1	 ;		    // variable used during tera or triangle generation
- int	IJp1Kp1	 ;		    // variable used during tera or triangle generation
- int	Ip1Jp1K	 ;		    // variable used during tera or triangle generation
- int	Ip1Jp1Kp1;		    // variable used during tera or triangle generation
- int  dummycount;		    // variable used during tera or triangle generation
+ int  IJK        ;       // variable used during tera or triangle generation
+ int  Ip1JK      ;       // variable used during tera or triangle generation
+ int  IJp1K      ;       // variable used during tera or triangle generation
+ int  IJKp1      ;       // variable used during tera or triangle generation
+ int  Ip1JKp1    ;       // variable used during tera or triangle generation
+ int  IJp1Kp1    ;       // variable used during tera or triangle generation
+ int  Ip1Jp1K    ;       // variable used during tera or triangle generation
+ int  Ip1Jp1Kp1  ;       // variable used during tera or triangle generation
+ int  dummycount ;       // variable used during tera or triangle generation
 
- int startrow ;			    // used by MPI ranks to mark their starting row 
- int locnrows ;			    // used by MPI ranks to know the # of rows held 
- int locNPnt  ;			    // used by MPI ranks to know the # of points held
- int nrows    ;			    // used by MPI ranks to know the total # of rows
+ int startrow ;          // used by MPI ranks to mark their starting row 
+ int locnrows ;          // used by MPI ranks to know the # of rows held 
+ int locNPnt  ;          // used by MPI ranks to know the # of points held
+ int nrows    ;          // used by MPI ranks to know the total # of rows
 
- float **data ;			    // array to hold the input data from point cloud xyz
+ float **data ;          // array to hold the input data from point cloud xyz
   
- float xx	   ;			    // variable hold x point value
- float yy	   ;			    // variable hold y point value
- float zz	   ;			    // variable hold z point value
- float delz	 ;			    // variable get delta z according to B/C (Laplacian)
- float zznew ;			    // variable hold z point value
+ float xx    ;           // variable hold x point value
+ float yy    ;           // variable hold y point value
+ float zz    ;           // variable hold z point value
+ float delz  ;           // variable get delta z according to B/C (Laplacian)
+ float zznew ;           // variable hold z point value
 
  const int charspernum = 14 ;
 
@@ -85,28 +85,28 @@ int main(int argc, char *argv[]) {
 //---- MPI variables -----
 //====================================================================================//
 
- int ierr 	     ;              // MPI Variable to capture error
- int mpirank	 ;              // MPI Variable to give MPI rank        
- int mpisize     ;              // MPI Variable to give MPI size
+ int ierr    ;                  // MPI Variable to capture error
+ int mpirank ;                  // MPI Variable to give MPI rank        
+ int mpisize ;                  // MPI Variable to give MPI size
 
- MPI_Offset 	 offset		    ;
- MPI_File   	 file		    ;
- MPI_Status 	 status		    ;
- MPI_Datatype num_as_string	;
- MPI_Datatype localarray	    ;
+ MPI_Offset    offset       ;
+ MPI_File      file         ;
+ MPI_Status    status       ;
+ MPI_Datatype num_as_string ;
+ MPI_Datatype localarray    ;
 
- ierr = MPI_Init(&argc, &argv);
- ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
- ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
+ ierr = MPI_Init(&argc, &argv)                  ;
+ ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize) ;
+ ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank) ;
 
- MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
- MPI_Type_commit(&num_as_string);
+ MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string) ; 
+ MPI_Type_commit(&num_as_string)                            ;
 
 //====================================================================================//
 //---- Commandline logo output -----
 //====================================================================================//
 
- if(mpirank==0){
+ if(mpirank == 0){
    #include "./../lib/LogoTopiiVolC.h"
  }
 
@@ -114,15 +114,15 @@ int main(int argc, char *argv[]) {
 //---- Global Parameters -----
 //====================================================================================//
 
- double zmax    = -1920.0;
+ double zmax = -1920.0 ;
 
  int pntx = 32  ;
  int pnty = 29  ;
  int pntz = 100 ;
 
 
- char inpurfile[80] = "./../../data/DEM_160m.xyz";
- char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
+ char inpurfile[80] = "./../../data/DEM_160m.xyz" ;
+ char outpufile[80] = "Tetra-ParTop2Vol.mesh"     ;
 
 //====================================================================================//
 //---- Comandline Parameters -----
@@ -130,16 +130,16 @@ int main(int argc, char *argv[]) {
 
  for(int i=0; i<argc-1; i++){
 
-   char argvdummy=*argv[i];
+   char argvdummy = *argv[i] ;
 
    if (!strcmp(argv[i], "--xpoints")) 
-     pntx= atoi(argv[i+1]);
+     pntx = atoi(argv[i+1]);
 
    if (!strcmp(argv[i], "--ypoints")) 
-     pnty= atoi(argv[i+1]);
+     pnty = atoi(argv[i+1]);
 
    if (!strcmp(argv[i], "--zpoints")) 
-     pntz= atoi(argv[i+1]);
+     pntz = atoi(argv[i+1]);
 
    if (!strcmp(argv[i], "--in"))
      strcpy(inpurfile, argv[i+1]); 
@@ -149,14 +149,14 @@ int main(int argc, char *argv[]) {
 
    if (!strcmp(argv[i], "--depth")) 
      zmax= atol(argv[i+1]);
-	
+  
  }
 
 //====================================================================================//
 //---- partition input point cloud -----
 //====================================================================================//
 
- if(mpirank==0){
+ if(mpirank == 0){
    #include "./../lib/TopiiVolPartitionPointCloudAlgo.h"
  }
  
@@ -169,19 +169,19 @@ int main(int argc, char *argv[]) {
 //---- pntz-1  pnty-1 pntx-1 -----
 //====================================================================================//
 
- int pntxM1 = pntx-1;
- int pntyM1 = pnty-1;
- int pntzM1 = pntz-1;
- int pntxXpnty = pntx * pnty; 
- int pntxXpntz = pntz * pntx;           
+ int pntxM1    = pntx-1      ;
+ int pntyM1    = pnty-1      ;
+ int pntzM1    = pntz-1      ;
+ int pntxXpnty = pntx * pnty ; 
+ int pntxXpntz = pntz * pntx ;           
 
 //====================================================================================//
 //---- Calculating mesh attributes -----
 //====================================================================================//
 
- NPnt = pntx * pnty * pntz					              ;
- NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1);
- NTet = pntxM1 * pntyM1 * pntzM1 * 6			              ;
+ NPnt = pntx * pnty * pntz                                  ;
+ NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1) ;
+ NTet = pntxM1 * pntyM1 * pntzM1 * 6                        ;
 
 //====================================================================================//
 //---- local point calculation -----
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
 
  if((pntxXpnty%mpisize) > 0)
    if(mpirank < (pntxXpnty%mpisize))
-     locNPnt++;
+     locNPnt++ ;
 
 //====================================================================================//
 //---- local rows calculation -----
@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
 
  for (int i=0; i<locnrows; i++) {
    for (int j=0; j<3; j++) {
-     sprintf(&data_as_txt[i*totcar+j*charspernum], fmt, data[i][j]);	
+     sprintf(&data_as_txt[i*totcar+j*charspernum], fmt, data[i][j]);  
    }
    sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
  }
@@ -305,7 +305,7 @@ int main(int argc, char *argv[]) {
 //---- create a type describing our piece of the array (Points) -----
 //====================================================================================//
 
- nrows = NPnt		                   ;
+ nrows = NPnt                      ;
  
  int globalsizes[2] = {nrows   , 4};
  int localsizes [2] = {locnrows, 4};
@@ -453,14 +453,14 @@ int main(int argc, char *argv[]) {
  for(int i=0; i<pntxM1;  i++){
  for(int k=1; k<=pntzM1; k++){
 
-   IJK	      =	i*pntz  + j*pntxXpntz + k	;
-   Ip1JK	  =	IJK 	+ pntxXpntz  		;
-   IJp1K	  =	IJK 	+ pntz		        ;
-   Ip1Jp1K   =	IJK 	+ pntxXpntz + pntz	;
-   IJKp1     =	IJK 	+ 1			;
-   Ip1JKp1   =	Ip1JK 	+ 1			;
-   IJp1Kp1   =	IJp1K   + 1			;
-   Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
+   IJK        =  i*pntz  + j*pntxXpntz + k  ;
+   Ip1JK    =  IJK   + pntxXpntz      ;
+   IJp1K    =  IJK   + pntz            ;
+   Ip1Jp1K   =  IJK   + pntxXpntz + pntz  ;
+   IJKp1     =  IJK   + 1      ;
+   Ip1JKp1   =  Ip1JK   + 1      ;
+   IJp1Kp1   =  IJp1K   + 1      ;
+   Ip1Jp1Kp1 =  Ip1Jp1K + 1      ;
 
    sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJK);
    sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
@@ -553,7 +553,7 @@ int main(int argc, char *argv[]) {
 //---- Tetdata writing -----
 //====================================================================================//
 
- MPI_Datatype localarray1	;
+ MPI_Datatype localarray1  ;
  MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1,
                           order1, num_as_string, &localarray1);
  MPI_Type_commit(&localarray1);
@@ -665,10 +665,10 @@ int main(int argc, char *argv[]) {
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-   IJK	      =	i*pntxXpntz + j+1	;
-   IJKp1	  =	IJK + 1			    ;
-   Ip1JK	  =	IJK + pntxXpntz    	;
-   Ip1JKp1   =	Ip1JK + 1		    ;
+   IJK        =  i*pntxXpntz + j+1  ;
+   IJKp1    =  IJK + 1          ;
+   Ip1JK    =  IJK + pntxXpntz      ;
+   Ip1JKp1   =  Ip1JK + 1        ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -692,10 +692,10 @@ int main(int argc, char *argv[]) {
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=xLocalStart; j<xLocalEnd;  j++){
 
-   IJK	      =	i*pntxXpntz + j*pntz + 1;
-   Ip1JK	  =	IJK + pntxXpntz 		;
-   IJp1K	  =	IJK + pntz			    ;
-   Ip1Jp1K   =	Ip1JK + pntz			;
+   IJK        =  i*pntxXpntz + j*pntz + 1;
+   Ip1JK    =  IJK + pntxXpntz     ;
+   IJp1K    =  IJK + pntz          ;
+   Ip1Jp1K   =  Ip1JK + pntz      ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
@@ -718,10 +718,10 @@ int main(int argc, char *argv[]) {
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-   IJK	      =	i*pntxXpntz + j+1 + pntxM1*pntz	;
-   IJKp1	  =	IJK + 1					;
-   Ip1JK	  =	IJK + pntxXpntz 		;
-   Ip1JKp1   =	Ip1JK + 1				;
+   IJK        =  i*pntxXpntz + j+1 + pntxM1*pntz  ;
+   IJKp1    =  IJK + 1          ;
+   Ip1JK    =  IJK + pntxXpntz     ;
+   Ip1JKp1   =  Ip1JK + 1        ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
@@ -745,10 +745,10 @@ int main(int argc, char *argv[]) {
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=xLocalStart; j<xLocalEnd;  j++){
 
-   IJK	      =	i*pntxXpntz + j*pntz + 1 + pntzM1	;
-   Ip1JK	    =	IJK + pntxXpntz 		;
-   IJp1K	    =	IJK + pntz				  ;
-   Ip1Jp1K    =	Ip1JK + pntz				;
+   IJK        =  i*pntxXpntz + j*pntz + 1 + pntzM1  ;
+   Ip1JK      =  IJK + pntxXpntz     ;
+   IJp1K      =  IJK + pntz          ;
+   Ip1Jp1K    =  Ip1JK + pntz        ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -780,10 +780,10 @@ int main(int argc, char *argv[]) {
  for(int i=xLocalStart; i<xLocalEnd;  i++){
  for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-   IJK	      =	i*pntz + j+1 + (pntxXpntz*pntyM1)	;
-   IJKp1	    =	IJK + 1					;
-   IJp1K	    =	IJK + pntz			;
-   IJp1Kp1    =	IJp1K + 1				;
+   IJK        =  i*pntz + j+1 + (pntxXpntz*pntyM1)  ;
+   IJKp1      =  IJK + 1          ;
+   IJp1K      =  IJK + pntz      ;
+   IJp1Kp1    =  IJp1K + 1        ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -808,10 +808,10 @@ int main(int argc, char *argv[]) {
  for(int i=xLocalStart; i<xLocalEnd;  i++){
  for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-   IJK	      =	i*pntz + j+1;
-   IJKp1	  =	IJK + 1		;
-   IJp1K	  =	IJK + pntz	;
-   IJp1Kp1   =	IJp1K + 1	;
+   IJK        =  i*pntz + j+1;
+   IJKp1    =  IJK + 1    ;
+   IJp1K    =  IJK + pntz  ;
+   IJp1Kp1   =  IJp1K + 1  ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
@@ -884,7 +884,7 @@ int main(int argc, char *argv[]) {
     int starts2[2]      = {startrow, 0};
     int order2          = MPI_ORDER_C  ;
 
-    MPI_Datatype localarray2	;
+    MPI_Datatype localarray2  ;
     MPI_Type_create_subarray(2, globalsizes2, localsizes2, starts2, order2, num_as_string, &localarray2);
     MPI_Type_commit(&localarray2);
 
@@ -898,7 +898,7 @@ int main(int argc, char *argv[]) {
     MPI_Type_free(&localarray2);
 
     if(mpirank==0)
-	printf(" ---- Done\n ->  %d triangles written ",NTri);
+  printf(" ---- Done\n ->  %d triangles written ",NTri);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
