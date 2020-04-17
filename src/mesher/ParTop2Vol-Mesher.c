@@ -26,6 +26,7 @@
 
 
  float **alloc2d(int , int);
+ 
  void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
 int main(int argc, char *argv[]) {
@@ -43,31 +44,30 @@ int main(int argc, char *argv[]) {
  int NPnt     ;			    // # of points in the mesh
  int NTri     ;			    // # of triangles on the mesh surfaces
  int NTet     ;			    // # of tetrahedra in the mesh
- int label 	 ;			    // label # of the mesh surfaces
+ int label 	  ;			    // label # of the mesh surfaces
 
  int	IJK	     ;		    // variable used during tera or triangle generation
- int	Ip1JK	 ;		    // variable used during tera or triangle generation
- int	IJp1K	 ;		    // variable used during tera or triangle generation
- int	IJKp1	 ;		    // variable used during tera or triangle generation
+ int	Ip1JK	   ;		    // variable used during tera or triangle generation
+ int	IJp1K	   ;		    // variable used during tera or triangle generation
+ int	IJKp1	   ;		    // variable used during tera or triangle generation
  int	Ip1JKp1	 ;		    // variable used during tera or triangle generation
  int	IJp1Kp1	 ;		    // variable used during tera or triangle generation
  int	Ip1Jp1K	 ;		    // variable used during tera or triangle generation
  int	Ip1Jp1Kp1;		    // variable used during tera or triangle generation
- int    dummycount;		    // variable used during tera or triangle generation
+ int  dummycount;		    // variable used during tera or triangle generation
 
  int startrow ;			    // used by MPI ranks to mark their starting row 
- int endrow   ;			    // used by MPI ranks to mark their ending  row
  int locnrows ;			    // used by MPI ranks to know the # of rows held 
  int locNPnt  ;			    // used by MPI ranks to know the # of points held
  int nrows    ;			    // used by MPI ranks to know the total # of rows
 
  float **data ;			    // array to hold the input data from point cloud xyz
   
- float xx	 ;			    // variable hold x point value
- float yy	 ;			    // variable hold y point value
- float zz	 ;			    // variable hold z point value
+ float xx	   ;			    // variable hold x point value
+ float yy	   ;			    // variable hold y point value
+ float zz	   ;			    // variable hold z point value
  float delz	 ;			    // variable get delta z according to B/C (Laplacian)
- float zznew  ;			    // variable hold z point value
+ float zznew ;			    // variable hold z point value
 
  const int charspernum = 14 ;
 
@@ -85,9 +85,9 @@ int main(int argc, char *argv[]) {
 //---- MPI variables -----
 //====================================================================================//
 
- int ierr 	 ;              // MPI Variable to capture error
+ int ierr 	     ;              // MPI Variable to capture error
  int mpirank	 ;              // MPI Variable to give MPI rank        
- int mpisize  ;              // MPI Variable to give MPI size
+ int mpisize     ;              // MPI Variable to give MPI size
 
  MPI_Offset 	 offset		    ;
  MPI_File   	 file		    ;
@@ -183,7 +183,6 @@ int main(int argc, char *argv[]) {
  NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1);
  NTet = pntxM1 * pntyM1 * pntzM1 * 6			              ;
 
-
 //====================================================================================//
 //---- local point calculation -----
 //====================================================================================//
@@ -217,42 +216,21 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
- if( (pntxXpnty%mpisize) == 0 ){
-
-   startrow = mpirank * locnrows         ;
-   endrow   = startrow + locnrows - 1	;
-
-   if (mpirank == mpisize-1) {
-     endrow   = nrows - 1            ;
-     locnrows = endrow - startrow + 1;
-   }
-
+ if((pntxXpnty%mpisize) == 0){
+   startrow = mpirank*locNPnt*pntz;
  }
 
 //----------------------------------//
 //     un balanced     
 //----------------------------------/
 
- if( (pntxXpnty%mpisize) > 0 ){
+ if((pntxXpnty%mpisize) > 0){
 
-   if( mpirank < (pntxXpnty%mpisize) ){
-     startrow = mpirank *  locNPnt * pntz   ;
-     endrow   = startrow + locNPnt * pntz -1;
-   }
-
-   if( mpirank >= (pntxXpnty%mpisize) ){
-     startrow = mpirank *  locNPnt * pntz     + (pntxXpnty%mpisize) * pntz    ;
-     endrow   = startrow + locNPnt * pntz -1                             	  ;
-   }
-
+   if(mpirank < (pntxXpnty%mpisize))
+     startrow = mpirank*locNPnt*pntz   ;
+   else
+     startrow = mpirank*locNPnt*pntz + (pntxXpnty%mpisize)*pntz    ;
  }
-
-//if( (pntxXpnty%mpisize) == 0 )
-//printf("=I %d startr %d endr %d  localr %d\n", mpirank,startrow,endrow,locnrows);
-
-//if( (pntxXpnty%mpisize) > 0 )
-//printf("§I %d startr %d endr %d  localr %d\n", mpirank,startrow,endrow,locnrows);
-
 
 //====================================================================================//
 //---- Data allocation -----
@@ -327,7 +305,8 @@ int main(int argc, char *argv[]) {
 //---- create a type describing our piece of the array (Points) -----
 //====================================================================================//
 
- nrows = NPnt		              ;
+ nrows = NPnt		                   ;
+ 
  int globalsizes[2] = {nrows   , 4};
  int localsizes [2] = {locnrows, 4};
  int starts[2]      = {startrow, 0};
@@ -418,8 +397,7 @@ int main(int argc, char *argv[]) {
 
    if( mpirank < (pntyM1%mpisize) )
      locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize+1);  //NTet/mpisize
-
-   if( mpirank >= (pntyM1%mpisize) )
+   else
      locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize);  //NTet/size
 
  }
@@ -547,17 +525,8 @@ int main(int argc, char *argv[]) {
 //      balanced       
 //----------------------------------//
 
- if( (pntyM1%mpisize) == 0 ){
-
-   startrow = mpirank * locnrows      ;
-   endrow   = startrow + locnrows - 1	;
-
-   if(mpirank == mpisize-1) {
-     endrow = nrows - 1;
-     locnrows = endrow - startrow + 1;
-   }
-
- }
+ if( (pntyM1%mpisize) == 0 )
+   startrow = mpirank*locnrows;
 
 //----------------------------------//
 //     un balanced       
@@ -565,15 +534,10 @@ int main(int argc, char *argv[]) {
 
  if( (pntyM1%mpisize) > 0 ){
 
-   if( mpirank < (pntyM1%mpisize) ){
-     startrow = mpirank * ( (pntxM1*pntzM1*6) * (pntyM1/mpisize+1) )         ;
-     endrow   = startrow + ( (pntxM1  * pntzM1 * 6)*(pntyM1/mpisize+1) ) -1  ;
-   }
-
-   if( mpirank >= (pntyM1%mpisize) ){
-     startrow = mpirank*((pntxM1*pntzM1*6)*(pntyM1/mpisize)) + (pntyM1%mpisize)*(pntxM1*pntzM1*6);
-     endrow   = startrow +  (pntxM1*pntzM1*6)*(pntyM1/mpisize) -1;
-   }
+   if( mpirank < (pntyM1%mpisize) )
+     startrow = mpirank * (pntxM1*pntzM1*6) * (pntyM1/mpisize+1) ;
+   else
+     startrow = mpirank * (pntxM1*pntzM1*6) * (pntyM1/mpisize) + (pntyM1%mpisize)*(pntxM1*pntzM1*6);
  }
 
 //====================================================================================//
@@ -872,66 +836,44 @@ int main(int argc, char *argv[]) {
 
  nrows = NTri;
 
-   //----------------------------------//
-   //     un balanced       
-   //----------------------------------//
+//----------------------------------//
+//     un balanced       
+//----------------------------------//
 
-    NTri = 4*(pntzM1*pntxM1+pntyM1*pntzM1+pntxM1*pntyM1)  ;
+ NTri = 4*(pntzM1*pntxM1+pntyM1*pntzM1+pntxM1*pntyM1)  ;
 
-    if(  (pntyM1%mpisize) == 0 ){
-      startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1);
-      endrow   = startrow+ (4 *(pntyM1/mpisize)* (pntxM1+pntzM1));
-    }
+ if((pntyM1%mpisize) == 0)
+   startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1);
 
-    if( (pntyM1%mpisize) > 0 ){
+ if((pntyM1%mpisize)>0){
 
-    if( mpirank < (pntyM1%mpisize) ){
-      startrow = mpirank * 4 * (pntyM1/mpisize+1) * (pntxM1+pntzM1);
-      endrow  = startrow + (4 *(pntyM1/mpisize+1) * (pntxM1+pntzM1)) 	;
-    }
-
-    if( mpirank >= (pntyM1%mpisize) ){
-      startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1)  + (pntyM1%mpisize)* (4 * (pntxM1+pntzM1));
-      endrow  = startrow + (4 *(pntyM1/mpisize) * (pntxM1+pntzM1)) 	;
-    }
-
-   }
+   if( mpirank < (pntyM1%mpisize) )
+     startrow = mpirank * 4 * (pntyM1/mpisize+1) * (pntxM1+pntzM1);
+   else
+     startrow = mpirank * 4 * (pntyM1/mpisize) * (pntxM1+pntzM1)  + (pntyM1%mpisize)* (4 * (pntxM1+pntzM1));
+ }
 
 
-    if( (pntzM1%mpisize) == 0 ){
-
-      startrow += mpirank * 4 * (pntzM1/mpisize) * pntxM1;
-      endrow   += startrow+(4 * (pntzM1/mpisize) * pntxM1);
-    }
+ if( (pntzM1%mpisize) == 0 )
+   startrow += mpirank * 4 * (pntzM1/mpisize) * pntxM1;
 
 
-    if( (pntzM1%mpisize) > 0 ){
-
-    if( mpirank < (pntzM1%mpisize) ){
+ if( (pntzM1%mpisize) > 0 ){
+ 
+    if( mpirank < (pntzM1%mpisize) )
       startrow += mpirank * 4 * (pntzM1/mpisize+1) * pntxM1 ; 
-      endrow  += startrow + (4 * (pntzM1/mpisize+1) *pntxM1 ) 	;
-    }
-
-    if( mpirank >= (pntzM1%mpisize) ){
+    else
       startrow += mpirank * 4 * (pntzM1/mpisize) * pntxM1  + (pntzM1%mpisize) * (4*pntxM1);
-      endrow  += startrow + (4* (pntzM1/mpisize) *pntxM1) 	;
-    }
-   }
+   
+ }
 
-   endrow--;
 
-   //----------------------------------//
-   //      balanced       
-   //----------------------------------//
+//----------------------------------//
+//      balanced       
+//----------------------------------//
 
-   if( (pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0 ){
+ if( (pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0 )
     startrow = mpirank * locnrows;
-    endrow   = startrow + locnrows - 1	;
-    if (mpirank == mpisize-1) {
-        endrow   = nrows - 1;
-        locnrows = endrow - startrow + 1;
-    }
-   }
 
 //====================================================================================//
 //---- Triangle writing -----
@@ -1019,29 +961,26 @@ void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend) {
 
  int pntM1=*iend;
  
-//----------------------------------//
-//      balanced       
-//----------------------------------//
+//-----------------balanced---------------------//
 
  if( (pntM1%mpisize) == 0 ){
-   *istart = mpirank*pntM1/mpisize ; 
+   *istart = mpirank*pntM1/mpisize  ; 
    *iend   = *istart + pntM1/mpisize;
  }
 
-//----------------------------------//
-//      un balanced       
-//----------------------------------//
+//-----------------un balanced------------------//
 
-    if( (pntM1%mpisize) > 0 ){
+ if( (pntM1%mpisize) > 0 ){
 
-      if( mpirank < (pntM1%mpisize) ){
-         *istart = mpirank*(pntM1/mpisize + 1);
-         *iend   = *istart +(pntM1/mpisize + 1);
-      }
+   if( mpirank < (pntM1%mpisize) ){
+      *istart = mpirank*(pntM1/mpisize + 1);
+      *iend   = *istart +(pntM1/mpisize + 1);
+   }
 
-      if( mpirank >= (pntM1%mpisize) ){
-         *istart = mpirank*(pntM1/mpisize) +   (pntM1%mpisize) ;
-         *iend   = *istart +(pntM1/mpisize);
-      }
-    }
+   if( mpirank >= (pntM1%mpisize) ){
+      *istart = mpirank*(pntM1/mpisize) +   (pntM1%mpisize) ;
+      *iend   = *istart +(pntM1/mpisize);
+   }
+ }
+ 
 }    
