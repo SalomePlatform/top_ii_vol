@@ -27,6 +27,7 @@
 
  float **alloc2d(int , int);
  int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM); 
+ int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM);
  void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
 int main(int argc, char *argv[]) {
@@ -202,17 +203,11 @@ int main(int argc, char *argv[]) {
  locnrows = fetchLocalRows( mpirank, mpisize, pntz, pntxXpnty); 
 
 //====================================================================================//
-//---- start and endrow local array : balanced (if)  unbalanced (else) -----
+//---- local startrows calculation -----
 //====================================================================================//
 
- if((pntxXpnty%mpisize) == 0)
-   startrow = mpirank*pntz*(pntxXpnty/mpisize);
- else
-   if(mpirank < (pntxXpnty%mpisize))
-     startrow = mpirank*pntz*(pntxXpnty/mpisize + 1)   ;
-   else
-     startrow = mpirank*pntz*(pntxXpnty/mpisize) + (pntxXpnty%mpisize)*pntz    ;
-
+ startrow = fetchStartRows(mpirank, mpisize, pntz, pntxXpnty);
+ 
 //====================================================================================//
 //---- Data allocation -----
 //====================================================================================//
@@ -456,17 +451,11 @@ int main(int argc, char *argv[]) {
 
 
 //====================================================================================//
-//---- start and endrow local array : balanced (if)  unbalanced (else) -----
+//---- local startrows calculation -----
 //====================================================================================//
 
- if( (pntyM1%mpisize) == 0 )
-   startrow = mpirank * (pntxM1  * pntzM1 * 6) * (pntyM1/mpisize) ;
- else
-   if( mpirank < (pntyM1%mpisize) )
-     startrow = mpirank * (pntxM1*pntzM1*6) * (pntyM1/mpisize+1) ;
-   else
-     startrow = mpirank * (pntxM1*pntzM1*6) * (pntyM1/mpisize) + (pntyM1%mpisize)*(pntxM1*pntzM1*6);
-
+ startrow = fetchStartRows(mpirank, mpisize, pntxM1*pntzM1*6, pntyM1);
+ 
 //====================================================================================//
 //---- Data allocation -----
 //====================================================================================//
@@ -735,38 +724,26 @@ int main(int argc, char *argv[]) {
  }
 
 //====================================================================================//
-//---- start and endrow local array -----
+//---- local startrows calculation -----
 //====================================================================================//
 
 //----------------------------------//
 //     Y Part       
 //----------------------------------//
 
- if((pntyM1%mpisize) == 0)
-   startrow = mpirank * 4 * (pntxM1+pntzM1) * (pntyM1/mpisize) ;
- else
-   if( mpirank < (pntyM1%mpisize) )
-     startrow = mpirank * 4 * (pntxM1+pntzM1) * (pntyM1/mpisize+1) ;
-   else
-     startrow = mpirank * 4 * (pntxM1+pntzM1) * (pntyM1/mpisize)   + (pntyM1%mpisize)* (4 * (pntxM1+pntzM1));
+ startrow = fetchStartRows(mpirank, mpisize, 4*(pntxM1+pntzM1), pntyM1);
 
 //----------------------------------//
 //     Z Part       
 //----------------------------------//
 
- if( (pntzM1%mpisize) == 0 )
-   startrow += mpirank * 4  * pntxM1 * (pntzM1/mpisize);
- else
-    if( mpirank < (pntzM1%mpisize) )
-      startrow += mpirank * 4 * pntxM1 * (pntzM1/mpisize+1)  ; 
-    else
-      startrow += mpirank * 4 * pntxM1 * (pntzM1/mpisize)   + (pntzM1%mpisize) * (4*pntxM1);
+ startrow += fetchStartRows(mpirank, mpisize, 4*pntxM1, pntzM1);
 
 //----------------------------------//
 //      Y & Z perfect balance       
 //----------------------------------//
 
- if( (pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0 )
+ if((pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0)
     startrow = mpirank * locnrows;
 
 //====================================================================================//
@@ -874,6 +851,9 @@ void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend) {
  }
 }   
 
+//====================================================================================//
+//---- function to set localrow -----
+//====================================================================================//
 
 int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM) {
 
@@ -891,4 +871,26 @@ int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM) {
        
  return locnrows;   
  
-}     
+} 
+
+//====================================================================================//
+//---- function to set startrow -----
+//====================================================================================/
+
+int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM) {
+
+ int startrow;
+ int Remainder = pntM%mpisize ;
+ int Quotient  = pntM/mpisize ; 
+
+ if(Remainder == 0)
+   startrow = mpirank * multipyFactor * Quotient;
+ else
+   if(mpirank < Remainder)
+     startrow = mpirank * multipyFactor * (Quotient + 1)   ;
+   else
+     startrow = mpirank * multipyFactor * Quotient + Remainder * multipyFactor    ;
+       
+ return startrow;   
+ 
+}        
