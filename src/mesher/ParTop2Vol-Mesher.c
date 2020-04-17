@@ -26,8 +26,11 @@
 
 
  float **alloc2d(int , int);
+ 
  int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM); 
  int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM);
+ 
+ void initializeThreeIntegers(int *int1, int *int2, int *int3, int val1, int val2, int val3); 
  void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
 int main(int argc, char *argv[]) {
@@ -61,6 +64,13 @@ int main(int argc, char *argv[]) {
  int locnrows ;          // used by MPI ranks to know the # of rows held 
  int locNPnt  ;          // used by MPI ranks to know the # of points held
  int nrows    ;          // used by MPI ranks to know the total # of rows
+
+ int xLocalStart ;       // used by MPI ranks to mark the x starting row 
+ int xLocalEnd   ;       // used by MPI ranks to mark the x ending row
+ int yLocalStart ;       // used by MPI ranks to mark the y starting row 
+ int yLocalEnd   ;       // used by MPI ranks to mark the y ending row
+ int zLocalStart ;       // used by MPI ranks to mark the z starting row 
+ int zLocalEnd   ;       // used by MPI ranks to mark the z ending row
 
  float **data ;          // array to hold the input data from point cloud xyz
   
@@ -350,19 +360,51 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 //---- local : rows, startrow #, istart #, and iend # calculations ----
 //====================================================================================//
-     
- locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1);
- startrow = fetchStartRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1); 
- 
- int xLocalStart = 0      ;
- int xLocalEnd   = pntxM1 ;
- int yLocalStart = 0      ;
- int yLocalEnd   = pntyM1 ;
- int zLocalStart = 0      ;
- int zLocalEnd   = pntzM1 ;
 
- fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+ initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
+ initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
+
+//----- get localrow and startrow for highest number ---------//
+ int max     ;
+ int highest ;
  
+//Case 1: Xpoints are highest 
+     max     = pntxM1 ; 
+     highest = 1      ;
+
+//Case 2: Ypoints are highest  
+ if(pntyM1 > max){ 
+     max     = pntyM1 ;
+     highest = 2      ;
+ } 
+
+//Case 3: Ypoints are highest  
+ if(pntzM1 > max){ 
+     max     = pntzM1 ;
+     highest = 3      ;
+ }      
+ highest = 3;
+ switch(highest)
+ {
+   case 1:
+     locnrows = fetchLocalRows( mpirank, mpisize, pntzM1 * pntyM1 * 6, pntxM1);
+     startrow = fetchStartRows( mpirank, mpisize, pntzM1 * pntyM1 * 6, pntxM1); 
+     fetchIstartIend(mpirank, mpisize, &xLocalStart, &xLocalEnd);
+     break;
+
+   case 2:
+     locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1);
+     startrow = fetchStartRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1); 
+     fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);     
+     break;
+
+   case 3:
+     locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * pntyM1 * 6, pntzM1);
+     startrow = fetchStartRows( mpirank, mpisize, pntxM1 * pntyM1 * 6, pntzM1); 
+     fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);       
+     break;
+ } 
+
 //====================================================================================//
 //---- Data allocation -----
 //====================================================================================//
@@ -878,4 +920,16 @@ int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM) {
        
  return startrow;   
  
-}        
+}
+
+//====================================================================================//
+//---- function to set initialize three ints -----
+//====================================================================================/
+
+void initializeThreeIntegers(int *int1, int *int2, int *int3, int val1, int val2, int val3) {
+
+ *int1=val1;
+ *int2=val2;
+ *int3=val3;  
+ 
+}       
