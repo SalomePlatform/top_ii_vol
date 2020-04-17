@@ -197,15 +197,10 @@ int main(int argc, char *argv[]) {
      locNPnt = pntxXpnty/mpisize ;
 
 //====================================================================================//
-//---- local rows calculation -----
+//---- local: rows and startrow # calculation -----
 //====================================================================================//
      
  locnrows = fetchLocalRows( mpirank, mpisize, pntz, pntxXpnty); 
-
-//====================================================================================//
-//---- local startrows calculation -----
-//====================================================================================//
-
  startrow = fetchStartRows(mpirank, mpisize, pntz, pntxXpnty);
  
 //====================================================================================//
@@ -323,8 +318,8 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 
  offset += 57;
+ 
  MPI_File_set_view(file, offset,  MPI_CHAR, localarray,"native", MPI_INFO_NULL);
-
  MPI_File_write_all(file, data_as_txt, locnrows*4, num_as_string, &status);
 
  offset += totcar*NPnt;
@@ -353,24 +348,12 @@ int main(int argc, char *argv[]) {
  offset += 23;
 
 //====================================================================================//
-//---- local row calculation : balanced (if)  unbalanced (else) ----
+//---- local : rows, startrow #, istart #, and iend # calculations ----
 //====================================================================================//
      
- locnrows = fetchLocalRows( mpirank, mpisize, pntxM1  * pntzM1 * 6, pntyM1); 
+ locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1);
+ startrow = fetchStartRows( mpirank, mpisize, pntxM1 * pntzM1 * 6, pntyM1); 
  
-//====================================================================================//
-//---- Data allocation -----
-//====================================================================================//
-
- char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
-
- dummycount = 0 ;
- label      = 0 ;
-
-//====================================================================================//
-//---- start and endrow local array : balanced (if)  unbalanced (else) -----
-//====================================================================================//
-
  int xLocalStart = 0      ;
  int xLocalEnd   = pntxM1 ;
  int yLocalStart = 0      ;
@@ -379,10 +362,19 @@ int main(int argc, char *argv[]) {
  int zLocalEnd   = pntzM1 ;
 
  fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+ 
+//====================================================================================//
+//---- Data allocation -----
+//====================================================================================//
+
+ char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
 
 //====================================================================================//
 //---- Gathering tetrahedra data -----
 //====================================================================================//
+
+ dummycount = 0 ;
+ label      = 0 ;
 
  for(int j=yLocalStart; j<yLocalEnd;  j++){
  for(int i=xLocalStart; i<xLocalEnd;  i++){
@@ -448,13 +440,6 @@ int main(int argc, char *argv[]) {
  }
  }
  }
-
-
-//====================================================================================//
-//---- local startrows calculation -----
-//====================================================================================//
-
- startrow = fetchStartRows(mpirank, mpisize, pntxM1*pntzM1*6, pntyM1);
  
 //====================================================================================//
 //---- Data allocation -----
