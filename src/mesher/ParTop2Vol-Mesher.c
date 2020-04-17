@@ -19,13 +19,13 @@
 *******************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <mpi.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+ #include <mpi.h>
 
 
-float **alloc2d(int , int);
+ float **alloc2d(int , int);
 
 int main(int argc, char *argv[]) {
 
@@ -33,95 +33,95 @@ int main(int argc, char *argv[]) {
 //---- variable to calculate time -----
 //====================================================================================//
 
-    double t1 = MPI_Wtime();
+ double t1 = MPI_Wtime();
 
 //====================================================================================//
 //---- Global Variables -----
 //====================================================================================//
 
-    int NPnt     ;			    // # of points in the mesh
-    int NTri     ;			    // # of triangles on the mesh surfaces
-    int NTet     ;			    // # of tetrahedra in the mesh
-    int label 	 ;			    // label # of the mesh surfaces
+ int NPnt     ;			    // # of points in the mesh
+ int NTri     ;			    // # of triangles on the mesh surfaces
+ int NTet     ;			    // # of tetrahedra in the mesh
+ int label 	 ;			    // label # of the mesh surfaces
 
-    int	IJK	     ;			    // variable used during tera or triangle generation
-    int	Ip1JK	 ;			    // variable used during tera or triangle generation
-    int	IJp1K	 ;			    // variable used during tera or triangle generation
-    int	IJKp1	 ;			    // variable used during tera or triangle generation
-    int	Ip1JKp1	 ;			    // variable used during tera or triangle generation
-    int	IJp1Kp1	 ;			    // variable used during tera or triangle generation
-    int	Ip1Jp1K	 ;			    // variable used during tera or triangle generation
-    int	Ip1Jp1Kp1;			    // variable used during tera or triangle generation
-    int dummycount;			    // variable used during tera or triangle generation
+ int	IJK	     ;		    // variable used during tera or triangle generation
+ int	Ip1JK	 ;		    // variable used during tera or triangle generation
+ int	IJp1K	 ;		    // variable used during tera or triangle generation
+ int	IJKp1	 ;		    // variable used during tera or triangle generation
+ int	Ip1JKp1	 ;		    // variable used during tera or triangle generation
+ int	IJp1Kp1	 ;		    // variable used during tera or triangle generation
+ int	Ip1Jp1K	 ;		    // variable used during tera or triangle generation
+ int	Ip1Jp1Kp1;		    // variable used during tera or triangle generation
+ int    dummycount;		    // variable used during tera or triangle generation
 
-    int startrow ;			    // used by MPI ranks to mark their starting row 
-    int endrow   ;			    // used by MPI ranks to mark their ending  row
-    int locnrows ;			    // used by MPI ranks to know the # of rows held 
-    int locNPnt  ;			    // used by MPI ranks to know the # of points held
-    int nrows    ;			    // used by MPI ranks to know the total # of rows
+ int startrow ;			    // used by MPI ranks to mark their starting row 
+ int endrow   ;			    // used by MPI ranks to mark their ending  row
+ int locnrows ;			    // used by MPI ranks to know the # of rows held 
+ int locNPnt  ;			    // used by MPI ranks to know the # of points held
+ int nrows    ;			    // used by MPI ranks to know the total # of rows
 
-    float **data ;			    // array to hold the input data from point cloud xyz
+ float **data ;			    // array to hold the input data from point cloud xyz
+  
+ float xx	 ;			    // variable hold x point value
+ float yy	 ;			    // variable hold y point value
+ float zz	 ;			    // variable hold z point value
+ float delz	 ;			    // variable get delta z according to B/C (Laplacian)
+ float zznew  ;			    // variable hold z point value
 
-    float xx	 ;			    // variable hold x point value
-    float yy	 ;			    // variable hold y point value
-    float zz	 ;			    // variable hold z point value
-    float delz	 ;			    // variable get delta z according to B/C (Laplacian)
-    float zznew  ;			    // variable hold z point value
+ const int charspernum = 14 ;
 
-    const int charspernum = 14 ;
+ char *const fmt1      = "%-13d "     ;
+ char *const endfmt1   = "%-13d\n"    ;
+ char *const fmt       = "%-13.6f   " ;
+ char *const endfmt    = "%-13d\n"    ;
+ char *const fmtint    = "%-11d "     ;
+ char *const endfmtint = "%-7d\n"     ;
 
-    char *const fmt1      = "%-13d "     ;
-    char *const endfmt1   = "%-13d\n"    ;
-    char *const fmt       = "%-13.6f   " ;
-    char *const endfmt    = "%-13d\n"    ;
-    char *const fmtint    = "%-11d "     ;
-    char *const endfmtint = "%-7d\n"     ;
-
-    FILE *infile;
+ FILE *infile;
 
 
 //====================================================================================//
 //---- MPI variables -----
 //====================================================================================//
 
-    int ierr 	 ;              // MPI Variable to capture error
-    int mpirank	 ;              // MPI Variable to give MPI rank        
-    int mpisize  ;              // MPI Variable to give MPI size
+ int ierr 	 ;              // MPI Variable to capture error
+ int mpirank	 ;              // MPI Variable to give MPI rank        
+ int mpisize  ;              // MPI Variable to give MPI size
 
-    MPI_Offset 	 offset		    ;
-    MPI_File   	 file		    ;
-    MPI_Status 	 status		    ;
-    MPI_Datatype num_as_string	;
-    MPI_Datatype localarray	    ;
+ MPI_Offset 	 offset		    ;
+ MPI_File   	 file		    ;
+ MPI_Status 	 status		    ;
+ MPI_Datatype num_as_string	;
+ MPI_Datatype localarray	    ;
 
-    ierr = MPI_Init(&argc, &argv);
-    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
-    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
+ ierr = MPI_Init(&argc, &argv);
+ ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
+ ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
 
-    MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
-    MPI_Type_commit(&num_as_string);
+ MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
+ MPI_Type_commit(&num_as_string);
 
 //====================================================================================//
 //---- Commandline logo output -----
 //====================================================================================//
 
-    if(mpirank==0){
-     #include "./../lib/LogoTopiiVolC.h"
-    }
+ if(mpirank==0){
+   #include "./../lib/LogoTopiiVolC.h"
+ }
 
 //====================================================================================//
 //---- Global Parameters -----
 //====================================================================================//
 
-    double zmax    = -1920.0;
+ double zmax    = -1920.0;
 
-    int pntx = 32  ;
-    int pnty = 29  ;
-    int	pntz = 100 ;
+ int pntx = 32  ;
+ int pnty = 29  ;
+ int pntz = 100 ;
 
 
-    char inpurfile[80] = "./../../data/DEM_160m.xyz";
-    char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
+ char inpurfile[80] = "./../../data/DEM_160m.xyz";
+ char outpufile[80] = "Tetra-ParTop2Vol.mesh" ;
 
 //====================================================================================//
 //---- Comandline Parameters -----
