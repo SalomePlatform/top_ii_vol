@@ -383,32 +383,26 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array : balanced (if)  unbalanced (else) -----
 //====================================================================================//
 
- int istart,iend;
+ int xLocalStart = 0      ;
+ int xLocalEnd   = pntxM1 ;
+ int yLocalStart = 0      ;
+ int yLocalEnd   = pntyM1 ;
+ int zLocalStart = 0      ;
+ int zLocalEnd   = pntzM1 ;
 
- if( (pntyM1%mpisize) == 0 ){
-   istart = mpirank * pntyM1/mpisize ; 
-   iend   = istart  + pntyM1/mpisize ;
- }
- else{
-   if( mpirank < (pntyM1%mpisize) ){
-     istart = mpirank * (pntyM1/mpisize + 1) ;
-     iend   = istart  + (pntyM1/mpisize + 1) ;
-   }
-   if( mpirank >= (pntyM1%mpisize) ){
-     istart = mpirank * (pntyM1/mpisize) +   (pntyM1%mpisize) ;
-     iend   = istart  + (pntyM1/mpisize);
-   }
- }
+ fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+
+// printf("####I %d istart %d iend %d \n\n",mpirank,yLocalStart,yLocalEnd);
 
 //====================================================================================//
 //---- Gathering tetrahedra data -----
 //====================================================================================//
 
- for(int j=istart; j<iend;  j++){
- for(int i=0; i<pntxM1;  i++){
- for(int k=1; k<=pntzM1; k++){
+ for(int j=yLocalStart; j<yLocalEnd;  j++){
+ for(int i=xLocalStart; i<xLocalEnd;  i++){
+ for(int k=zLocalStart; k<zLocalEnd;  k++){
 
-   IJK       =  i*pntz  + j*pntxXpntz + k    ;
+   IJK       =  i*pntz  + j*pntxXpntz + k +1 ;
    Ip1JK     =  IJK     + pntxXpntz          ;
    IJp1K     =  IJK     + pntz               ;
    Ip1Jp1K   =  IJK     + pntxXpntz   + pntz ;
@@ -568,12 +562,12 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
- int xLocalStart = 0;
- int xLocalEnd = pntxM1;
- int yLocalStart = 0;
- int yLocalEnd = pntyM1;
- int zLocalStart = 0;
- int zLocalEnd = pntzM1;
+ xLocalStart = 0      ;
+ xLocalEnd   = pntxM1 ;
+ yLocalStart = 0      ;
+ yLocalEnd   = pntyM1 ;
+ zLocalStart = 0      ;
+ zLocalEnd   = pntzM1 ;
 
  fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
    
@@ -694,6 +688,12 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
+ xLocalStart = 0      ;
+ xLocalEnd   = pntxM1 ;
+ yLocalStart = 0      ;
+ yLocalEnd   = pntyM1 ;
+ zLocalStart = 0      ;
+ zLocalEnd   = pntzM1 ;
 
  fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
 
@@ -757,8 +757,6 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
-
-
 
 //----------------------------------//
 //     Y Part       
@@ -879,27 +877,19 @@ float **alloc2d(int n, int m) {
 void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend) {
 
  int pntM1=*iend;
- 
-//-----------------balanced---------------------//
 
- if( (pntM1%mpisize) == 0 ){
-   *istart = mpirank*pntM1/mpisize  ; 
-   *iend   = *istart + pntM1/mpisize;
+ if( (pntM1%mpisize) == 0 ){                  // balanced (if)
+   *istart = mpirank * pntM1/mpisize ; 
+   *iend   = *istart + pntM1/mpisize ;
  }
-
-//-----------------un balanced------------------//
-
- if( (pntM1%mpisize) > 0 ){
-
+ else{                                       // un balanced (else)
    if( mpirank < (pntM1%mpisize) ){
-      *istart = mpirank*(pntM1/mpisize + 1);
-      *iend   = *istart +(pntM1/mpisize + 1);
+      *istart = mpirank * (pntM1/mpisize + 1) ;
+      *iend   = *istart + (pntM1/mpisize + 1) ;
    }
-
-   if( mpirank >= (pntM1%mpisize) ){
-      *istart = mpirank*(pntM1/mpisize) +   (pntM1%mpisize) ;
-      *iend   = *istart +(pntM1/mpisize);
+   else{
+      *istart = mpirank * (pntM1/mpisize) +  (pntM1%mpisize) ;
+      *iend   = *istart + (pntM1/mpisize) ;
    }
  }
- 
 }    
