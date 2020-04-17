@@ -26,6 +26,7 @@
 
 
  float **alloc2d(int , int);
+ void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
 int main(int argc, char *argv[]) {
 
@@ -168,19 +169,19 @@ int main(int argc, char *argv[]) {
 //---- pntz-1  pnty-1 pntx-1 -----
 //====================================================================================//
 
-    int pntxM1 = pntx-1;
-    int pntyM1 = pnty-1;
-    int pntzM1 = pntz-1;
-    int pntxXpnty = pntx * pnty; 
-    int pntxXpntz = pntz * pntx;           
+ int pntxM1 = pntx-1;
+ int pntyM1 = pnty-1;
+ int pntzM1 = pntz-1;
+ int pntxXpnty = pntx * pnty; 
+ int pntxXpntz = pntz * pntx;           
 
 //====================================================================================//
 //---- Calculating mesh attributes -----
 //====================================================================================//
 
-    NPnt = pntx * pnty * pntz					              ;
-    NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1);
-    NTet = pntxM1 * pntyM1 * pntzM1 * 6			              ;
+ NPnt = pntx * pnty * pntz					              ;
+ NTri = 4 * (pntzM1*pntxM1 + pntyM1*pntzM1 + pntxM1*pntyM1);
+ NTet = pntxM1 * pntyM1 * pntzM1 * 6			              ;
 
 
 //====================================================================================//
@@ -474,62 +475,62 @@ int main(int argc, char *argv[]) {
  for(int i=0; i<pntxM1;  i++){
  for(int k=1; k<=pntzM1; k++){
 
-        IJK	      =	i*pntz  + j*pntxXpntz + k	;
-        Ip1JK	  =	IJK 	+ pntxXpntz  		;
-        IJp1K	  =	IJK 	+ pntz		        ;
-        Ip1Jp1K   =	IJK 	+ pntxXpntz + pntz	;
-        IJKp1     =	IJK 	+ 1			;
-        Ip1JKp1   =	Ip1JK 	+ 1			;
-        IJp1Kp1   =	IJp1K   + 1			;
-        Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
+   IJK	      =	i*pntz  + j*pntxXpntz + k	;
+   Ip1JK	  =	IJK 	+ pntxXpntz  		;
+   IJp1K	  =	IJK 	+ pntz		        ;
+   Ip1Jp1K   =	IJK 	+ pntxXpntz + pntz	;
+   IJKp1     =	IJK 	+ 1			;
+   Ip1JKp1   =	Ip1JK 	+ 1			;
+   IJp1Kp1   =	IJp1K   + 1			;
+   Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJK);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJK);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJK);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJK);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, Ip1JKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, Ip1JKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1JK);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, Ip1JKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, Ip1JKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJp1Kp1);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, Ip1Jp1Kp1);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
-        sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJp1Kp1);
-        sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
-        sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
+   sprintf(&data_as_txt1[dummycount*totcar+0*12], fmtint, IJKp1);
+   sprintf(&data_as_txt1[dummycount*totcar+1*12], fmtint, IJp1Kp1);
+   sprintf(&data_as_txt1[dummycount*totcar+2*12], fmtint, IJp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+3*12], fmtint, Ip1Jp1K);
+   sprintf(&data_as_txt1[dummycount*totcar+4*12], endfmtint, label);
 
-        dummycount++;
+   dummycount++;
 
  }
  }
@@ -579,346 +580,297 @@ int main(int argc, char *argv[]) {
 //---- Data allocation -----
 //====================================================================================//
 
-    int globalsizes1[2] = {nrows   , 4};
-    int localsizes1 [2] = {locnrows, 4};
-    int starts1[2]      = {startrow, 0};
-    int order1          = MPI_ORDER_C  ;
+ int globalsizes1[2] = {nrows   , 4};
+ int localsizes1 [2] = {locnrows, 4};
+ int starts1[2]      = {startrow, 0};
+ int order1          = MPI_ORDER_C  ;
 
 //====================================================================================//
 //---- Tetdata writing -----
 //====================================================================================//
 
-    MPI_Datatype localarray1	;
-    MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1, order1, num_as_string, &localarray1);
-    MPI_Type_commit(&localarray1);
+ MPI_Datatype localarray1	;
+ MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1,
+                          order1, num_as_string, &localarray1);
+ MPI_Type_commit(&localarray1);
 
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
+ MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
 
-    MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
+ MPI_File_write_all(file, data_as_txt1, locnrows*4, num_as_string, &status);
 
-    offset += totcar*NTet;
+ offset += totcar*NTet;
 
-    if(mpirank==0)
-	printf(" ---- Done\n ->  %d tetrahedra written ",NTet);
+ if(mpirank==0)
+   printf(" ---- Done\n ->  %d tetrahedra written ",NTet);
 
-    free(data_as_txt1);
-    MPI_Type_free(&localarray1);
+ free(data_as_txt1);
+ MPI_Type_free(&localarray1);
 
-    MPI_Barrier(MPI_COMM_WORLD);
+ MPI_Barrier(MPI_COMM_WORLD);
 
 //====================================================================================//
 //---- Triangle writing -----
 //====================================================================================//
 
-    if(mpirank==0)
-	printf("\n Writing mesh surfaces ");
+ if(mpirank==0)
+   printf("\n Writing mesh surfaces ");
 
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
+ MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
                            "native", MPI_INFO_NULL);
 
-    if(mpirank==0){
-      char testchar2[23];
-      snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n", NTri);
-      MPI_File_write(file, testchar2, sizeof(testchar2), MPI_CHAR, &status);
-    }
+ if(mpirank==0){
+   char testchar2[23];
+   snprintf (testchar2, sizeof(testchar2), "\nTriangles\n%-10d\n", NTri);
+   MPI_File_write(file, testchar2, sizeof(testchar2), MPI_CHAR, &status);
+ }
 
-    offset += 22;
+ offset += 22;
 
 //====================================================================================//
 //---- local row calculation NTri/mpisize ----
 //====================================================================================//
 
-    locnrows=NTri/mpisize;  
+ locnrows=NTri/mpisize;  
     
 //----------------------------------//
 //      balanced  Y part      
 //----------------------------------//
 
-   if( (pntyM1%mpisize) == 0 ){
-     locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
-   }
+ if( (pntyM1%mpisize) == 0 ){
+   locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
+ }
 
 //----------------------------------//
 //     un balanced  Y part     
 //----------------------------------//
 
-    if( (pntyM1%mpisize) > 0 ){
+ if( (pntyM1%mpisize) > 0 ){
 
-      if( mpirank < (pntyM1%mpisize) )
-        locnrows= 4* (pntyM1/mpisize+1)* (pntzM1 + pntxM1);
+   if( mpirank < (pntyM1%mpisize) )
+     locnrows= 4* (pntyM1/mpisize+1)* (pntzM1 + pntxM1);
 
-      if( mpirank >= (pntyM1%mpisize) )
-        locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
-    }
+   if( mpirank >= (pntyM1%mpisize) )
+     locnrows= 4* (pntyM1/mpisize)* (pntzM1 + pntxM1);
+ }
 
 //----------------------------------//
 //      balanced  Z part      
 //----------------------------------//
 
-   if( (pntzM1%mpisize) == 0 ){
-        locnrows += 4* (pntzM1/mpisize)*pntxM1;
-   }
+ if( (pntzM1%mpisize) == 0 ){
+   locnrows += 4* (pntzM1/mpisize)*pntxM1;
+ }
 
 //----------------------------------//
 //     un balanced  Z part     
 //----------------------------------//
 
-    if( (pntzM1%mpisize) > 0 ){
+ if( (pntzM1%mpisize) > 0 ){
 
-      if( mpirank < (pntzM1%mpisize) )
-        locnrows += 4* (pntzM1/mpisize+1)*pntxM1;
+   if( mpirank < (pntzM1%mpisize) )
+     locnrows += 4* (pntzM1/mpisize+1)*pntxM1;
 
-      if( mpirank >= (pntzM1%mpisize) )
-        locnrows += 4* (pntzM1/mpisize)*pntxM1;
-    }
+   if( mpirank >= (pntzM1%mpisize) )
+     locnrows += 4* (pntzM1/mpisize)*pntxM1;
+ }
 
-    char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
+ char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
 
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
 
-   istart = mpirank*pntyM1/mpisize;
-   iend   = istart +pntyM1/mpisize;
+ int xLocalStart = 0;
+ int xLocalEnd = pntxM1;
+ int yLocalStart = 0;
+ int yLocalEnd = pntyM1;
+ int zLocalStart = 0;
+ int zLocalEnd = pntzM1;
 
-//----------------------------------//
-//      balanced       
-//----------------------------------//
-
-   if( (pntyM1%mpisize) == 0 ){
-
-    istart=mpirank*pntyM1/mpisize; 
-    iend=mpirank*pntyM1/mpisize + pntyM1/mpisize;
-
-   }
-
-//----------------------------------//
-//      un balanced       
-//----------------------------------//
-
-    if( (pntyM1%mpisize) > 0 ){
-
-      if( mpirank < (pntyM1%mpisize) ){
-         istart=mpirank*(pntyM1/mpisize + 1) ;
-         iend=istart + (pntyM1/mpisize + 1) ;
-      }
-
-      if( mpirank >= (pntyM1%mpisize) ){
-         istart=mpirank*(pntyM1/mpisize) +   (pntyM1%mpisize) ;
-         iend=istart + (pntyM1/mpisize);
-      }
-    }
-
+ fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+   
 //====================================================================================//
 //---- writing triangles -----
 //====================================================================================//
 
 //----X-MIN-PLANE---//
-    dummycount=0;
+ dummycount=0;
 
-    label=11;
+ label=11;
 
-    for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntzM1;  j++){
+ for(int i=yLocalStart; i<yLocalEnd;  i++){
+ for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-        IJK	      =	i*pntxXpntz + j+1	;
-        IJKp1	  =	IJK + 1			    ;
-        Ip1JK	  =	IJK + pntxXpntz    	;
-        Ip1JKp1   =	Ip1JK + 1		    ;
+   IJK	      =	i*pntxXpntz + j+1	;
+   IJKp1	  =	IJK + 1			    ;
+   Ip1JK	  =	IJK + pntxXpntz    	;
+   Ip1JKp1   =	Ip1JK + 1		    ;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
-    }
-    }
+   dummycount++;
+ }
+ }
 
 
 //----Z-MIN-PLANE----//
-    label = 22;
-    for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntxM1;  j++){
+ label = 22;
+ for(int i=yLocalStart; i<yLocalEnd;  i++){
+ for(int j=xLocalStart; j<xLocalEnd;  j++){
 
-        IJK	      =	i*pntxXpntz + j*pntz + 1;
-        Ip1JK	  =	IJK + pntxXpntz 		;
-        IJp1K	  =	IJK + pntz			    ;
-        Ip1Jp1K   =	Ip1JK + pntz			;
+   IJK	      =	i*pntxXpntz + j*pntz + 1;
+   Ip1JK	  =	IJK + pntxXpntz 		;
+   IJp1K	  =	IJK + pntz			    ;
+   Ip1Jp1K   =	Ip1JK + pntz			;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
-    }
-    }
+   dummycount++;
+ }
+ }
 
 //----X-MAX-PLANE----//
-    label=33;
-    for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntzM1;  j++){
+ label=33;
+ for(int i=yLocalStart; i<yLocalEnd;  i++){
+ for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-        IJK	      =	i*pntxXpntz + j+1 + pntxM1*pntz	;
-        IJKp1	  =	IJK + 1					;
-        Ip1JK	  =	IJK + pntxXpntz 		;
-        Ip1JKp1   =	Ip1JK + 1				;
+   IJK	      =	i*pntxXpntz + j+1 + pntxM1*pntz	;
+   IJKp1	  =	IJK + 1					;
+   Ip1JK	  =	IJK + pntxXpntz 		;
+   Ip1JKp1   =	Ip1JK + 1				;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
+   dummycount++;
 
-    }
-    }
+ }
+ }
 
 //----Z-MAX-PLANE----//
-    label=44;
-    for(int i=istart; i<iend;  i++){
-    for(int j=0; j<pntxM1;  j++){
+ label=44;
+ for(int i=yLocalStart; i<yLocalEnd;  i++){
+ for(int j=xLocalStart; j<xLocalEnd;  j++){
 
-        IJK	      =	i*pntxXpntz + j*pntz + 1 + pntzM1	;
-        Ip1JK	  =	IJK + pntxXpntz 			;
-        IJp1K	  =	IJK + pntz				    ;
-        Ip1Jp1K   =	Ip1JK + pntz				;
+   IJK	      =	i*pntxXpntz + j*pntz + 1 + pntzM1	;
+   Ip1JK	  =	IJK + pntxXpntz 			;
+   IJp1K	  =	IJK + pntz				    ;
+   Ip1Jp1K   =	Ip1JK + pntz				;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
+   dummycount++;
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JK);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        dummycount++;
-    }
-    }
+   dummycount++;
+ }
+ }
 
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
 
-   istart = mpirank*pntzM1/mpisize;
-   iend   = istart +pntzM1/mpisize;
 
-//----------------------------------//
-//      balanced       
-//----------------------------------//
-
-   if( (pntzM1%mpisize) == 0 ){
-    istart = mpirank*pntzM1/mpisize ; 
-    iend   = istart + pntzM1/mpisize;
-   }
-
-//----------------------------------//
-//      un balanced       
-//----------------------------------//
-
-    if( (pntzM1%mpisize) > 0 ){
-
-      if( mpirank < (pntzM1%mpisize) ){
-         istart = mpirank*(pntzM1/mpisize + 1);
-         iend   = istart +(pntzM1/mpisize + 1);
-      }
-
-      if( mpirank >= (pntzM1%mpisize) ){
-         istart = mpirank*(pntzM1/mpisize) +   (pntzM1%mpisize) ;
-         iend   = istart +(pntzM1/mpisize);
-      }
-    }
+ fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
 
 
 //----Y-MAX-PLANE----//
+ label=55;
 
-    label=55;
+ for(int i=xLocalStart; i<xLocalEnd;  i++){
+ for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-    for(int i=0; i<pntxM1;  i++){
-    for(int j=istart; j<iend;  j++){
+   IJK	      =	i*pntz + j+1 + (pntxXpntz*pntyM1)	;
+   IJKp1	  =	IJK + 1					;
+   IJp1K	  =	IJK + pntz				;
+   IJp1Kp1   =	IJp1K + 1				;
 
-        IJK	      =	i*pntz + j+1 + (pntxXpntz*pntyM1)	;
-        IJKp1	  =	IJK + 1					;
-        IJp1K	  =	IJK + pntz				;
-        IJp1Kp1   =	IJp1K + 1				;
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   dummycount++;
 
-        dummycount++;
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1Kp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJp1Kp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   dummycount++;
 
-        dummycount++;
-
-    }
-    }
+ }
+ }
 
 //----Y-MIN-PLANE----//
+ label=66;
 
-    label=66;
+ for(int i=xLocalStart; i<xLocalEnd;  i++){
+ for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-    for(int i=0; i<pntxM1;  i++){
-    for(int j=istart; j<iend;  j++){
+   IJK	      =	i*pntz + j+1;
+   IJKp1	  =	IJK + 1		;
+   IJp1K	  =	IJK + pntz	;
+   IJp1Kp1   =	IJp1K + 1	;
 
-        IJK	      =	i*pntz + j+1;
-        IJKp1	  =	IJK + 1		;
-        IJp1K	  =	IJK + pntz	;
-        IJp1Kp1   =	IJp1K + 1	;
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   dummycount++;
 
-        dummycount++;
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1Kp1);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
-        sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
-        sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1Kp1);
-        sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, IJp1K);
-        sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+   dummycount++;
 
-        dummycount++;
-
-    }
-    }
+ }
+ }
 
 //====================================================================================//
 //---- start and endrow local array -----
 //====================================================================================//
 
-    nrows = NTri;
+ nrows = NTri;
 
    //----------------------------------//
    //     un balanced       
@@ -1037,6 +989,15 @@ int main(int argc, char *argv[]) {
     MPI_Finalize();
     return 0;
 }
+//----------------------------- END OF PROGRAM ---------------------------------------//
+
+
+
+
+//====================================================================================//
+//---- function to allocate array -----
+//====================================================================================//
+
 
 float **alloc2d(int n, int m) {
 
@@ -1049,3 +1010,38 @@ float **alloc2d(int n, int m) {
  return array;
 
 }
+
+//====================================================================================//
+//---- function to set istart and iend -----
+//====================================================================================//
+
+void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend) {
+
+ int pntM1=*iend;
+ 
+//----------------------------------//
+//      balanced       
+//----------------------------------//
+
+ if( (pntM1%mpisize) == 0 ){
+   *istart = mpirank*pntM1/mpisize ; 
+   *iend   = *istart + pntM1/mpisize;
+ }
+
+//----------------------------------//
+//      un balanced       
+//----------------------------------//
+
+    if( (pntM1%mpisize) > 0 ){
+
+      if( mpirank < (pntM1%mpisize) ){
+         *istart = mpirank*(pntM1/mpisize + 1);
+         *iend   = *istart +(pntM1/mpisize + 1);
+      }
+
+      if( mpirank >= (pntM1%mpisize) ){
+         *istart = mpirank*(pntM1/mpisize) +   (pntM1%mpisize) ;
+         *iend   = *istart +(pntM1/mpisize);
+      }
+    }
+}    
