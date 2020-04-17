@@ -25,18 +25,7 @@
 #include <mpi.h>
 
 
-float **alloc2d(int n, int m) {
-
-    float *data   = malloc(n*m*sizeof(float));
-    float **array = malloc(n*sizeof(float *));
-
-    for (int i=0; i<n; i++)
-        array[i] = &(data[i*m]);
-
-    return array;
-
-}
-
+float **alloc2d(int , int);
 
 int main(int argc, char *argv[]) {
 
@@ -1025,7 +1014,7 @@ int main(int argc, char *argv[]) {
 
     if(mpirank==0){
       printf( "\n\n *============================================================*\n"); 
-      printf("  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);
+      printf( "  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);
       printf( " *============================================================*\n"); 
     }
     fflush(stdout);
@@ -1035,4 +1024,16 @@ int main(int argc, char *argv[]) {
 
     MPI_Finalize();
     return 0;
+}
+
+float **alloc2d(int n, int m) {
+
+ float *data   = malloc(n*m*sizeof(float));
+ float **array = malloc(n*sizeof(float *));
+
+ for (int i=0; i<n; i++)
+   array[i] = &(data[i*m]);
+
+ return array;
+
 }
