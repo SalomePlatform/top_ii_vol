@@ -71,10 +71,8 @@ int main(int argc, char *argv[]){
     double zmax = -1920.0  	;
 
     int pntx = 11          	;
-    int pnty = 10		    ;
-    int	pntz = 10		    ;
-
-    int binfile = 0         ;
+    int pnty = 10		        ;
+    int	pntz = 10		        ;
 
     string * inputfile  = new string();
     string * outputfile = new string();
