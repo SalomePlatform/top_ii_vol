@@ -539,26 +539,91 @@ int main(int argc, char *argv[]) {
 //---- local row calculation NTri/mpisize : balanced (if)  unbalanced (else) ----
 //====================================================================================//
 
+ int highestx, highesty, highestz;
+  
+
 //----------------------------------//
-//  Xmin Xmax  plane  (Y max)     
+//  Xmin & Xmax  planes    
 //----------------------------------//
 
- locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntyM1);
- startrow = fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntyM1);   
+//Case 1: Ypoints are highest 
+     max      = pntyM1 ; 
+     highestx = 1      ;
+
+//Case 2: Zpoints are highest  
+ if(pntzM1 > max){ 
+     max      = pntzM1 ;
+     highestx = 2      ;
+ }
+
+ switch(highestx)
+ {
+   case 1:
+     locnrows = fetchLocalRows( mpirank, mpisize, pntzM1 * 4, pntyM1);
+     startrow = fetchStartRows( mpirank, mpisize, pntzM1 * 4, pntyM1); 
+     break;
+     
+   case 2:
+     locnrows = fetchLocalRows( mpirank, mpisize, pntyM1 * 4, pntzM1);
+     startrow = fetchStartRows( mpirank, mpisize, pntyM1 * 4, pntzM1); 
+     break;     
+ }
+
+//----------------------------------//
+//  Zmin & Zmax plane   
+//----------------------------------//
+
+//Case 1: Xpoints are highest 
+     max      = pntxM1 ; 
+     highestz = 1      ;
+
+//Case 2: Ypoints are highest  
+ if(pntyM1 > max){ 
+     max      = pntyM1 ;
+     highestz = 2      ;
+ }
+
+ switch(highestz)
+ {
+   case 1:
+     locnrows += fetchLocalRows( mpirank, mpisize, pntyM1 * 4, pntxM1);
+     startrow += fetchStartRows( mpirank, mpisize, pntyM1 * 4, pntxM1); 
+     break;
+     
+   case 2:
+     locnrows += fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntyM1);
+     startrow += fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntyM1); 
+     break;     
+ }  
  
 //----------------------------------//
-//  Zmin Zmax plane  (Y max)   
+//  Ymin & Ymax plane  
 //----------------------------------//
 
- locnrows += fetchLocalRows( mpirank, mpisize, pntzM1 * 4, pntyM1);
- startrow += fetchStartRows( mpirank, mpisize, pntzM1 * 4, pntyM1);  
+//Case 1: Xpoints are highest 
+     max      = pntxM1 ; 
+     highesty = 1      ;
+
+//Case 2: Zpoints are highest  
+ if(pntzM1 > max){ 
+     max      = pntzM1 ;
+     highesty = 2      ;
+ }
  
-//----------------------------------//
-//  Ymin Xmax plane (Z max)   
-//----------------------------------//
+//highesty = 2;
 
- locnrows += fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
- startrow += fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntzM1); 
+ switch(highesty)
+ {
+   case 1:
+     locnrows += fetchLocalRows( mpirank, mpisize, pntzM1 * 4, pntxM1);
+     startrow += fetchStartRows( mpirank, mpisize, pntzM1 * 4, pntxM1); 
+     break;
+     
+   case 2:
+     locnrows += fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
+     startrow += fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntzM1); 
+     break;     
+ } 
  
 //====================================================================================//
 //---- Data allocation -----
@@ -572,7 +637,18 @@ int main(int argc, char *argv[]) {
 
  initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
  initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
- fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+
+ switch(highestx)
+ {
+   case 1:
+     fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd); 
+     break;
+     
+   case 2:
+     fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
+     break;     
+ }
+
  
 //----X-MIN-PLANE---//
  dummycount=0;
@@ -636,7 +712,17 @@ int main(int argc, char *argv[]) {
 
  initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
  initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
- fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+ 
+ switch(highestz)
+ {
+   case 1:
+     fetchIstartIend(mpirank, mpisize, &xLocalStart, &xLocalEnd); 
+     break;
+     
+   case 2:
+     fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+     break;     
+ }
 
 //----Z-MIN-PLANE----//
  label = 22;
@@ -697,7 +783,17 @@ int main(int argc, char *argv[]) {
 
  initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
  initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
- fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
+
+ switch(highesty)
+ {
+   case 1:
+     fetchIstartIend(mpirank, mpisize, &xLocalStart, &xLocalEnd); 
+     break;
+     
+   case 2:
+     fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
+     break;     
+ }
 
 //----Y-MAX-PLANE----//
  label=55;
@@ -759,7 +855,7 @@ int main(int argc, char *argv[]) {
 //---- Triangle writing -----
 //====================================================================================//
 
- nrows = NTri;
+ nrows = NTri                       ;
  int globalsizes2[2] = {nrows   , 4};
  int localsizes2 [2] = {locnrows, 4};
  int starts2[2]      = {startrow, 0};
