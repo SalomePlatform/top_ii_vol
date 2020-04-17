@@ -540,17 +540,21 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 
 //----------------------------------//
-//      Y part      
+//  Xmin Xmax and Zmin Zmax plane  (Y)     
 //----------------------------------//
      
  locnrows = fetchLocalRows( mpirank, mpisize, (pntzM1 + pntxM1) * 4, pntyM1); 
  
 //----------------------------------//
-//      Z part      
+//      Ymin Xmax plane            (Z)   
 //----------------------------------//
 
  locnrows = locnrows + fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
-  
+ 
+ 
+//====================================================================================//
+//---- Data allocation -----
+//====================================================================================//  
 
  char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
 
@@ -558,12 +562,8 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
- xLocalStart = 0      ;
- xLocalEnd   = pntxM1 ;
- yLocalStart = 0      ;
- yLocalEnd   = pntyM1 ;
- zLocalStart = 0      ;
- zLocalEnd   = pntzM1 ;
+ initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
+ initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
 
  fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
    
@@ -579,10 +579,10 @@ int main(int argc, char *argv[]) {
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=zLocalStart; j<zLocalEnd;  j++){
 
-   IJK        =  i*pntxXpntz + j+1  ;
-   IJKp1    =  IJK + 1          ;
-   Ip1JK    =  IJK + pntxXpntz      ;
-   Ip1JKp1   =  Ip1JK + 1        ;
+   IJK        =  i*pntxXpntz + j+1 ;
+   IJKp1      =  IJK + 1           ;
+   Ip1JK      =  IJK + pntxXpntz   ;
+   Ip1JKp1    =  Ip1JK + 1         ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJKp1);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
@@ -594,33 +594,6 @@ int main(int argc, char *argv[]) {
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JKp1);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJKp1);
    sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1JK);
-   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
-
-   dummycount++;
- }
- }
-
-
-//----Z-MIN-PLANE----//
- label = 22;
- for(int i=yLocalStart; i<yLocalEnd;  i++){
- for(int j=xLocalStart; j<xLocalEnd;  j++){
-
-   IJK        =  i*pntxXpntz + j*pntz + 1;
-   Ip1JK    =  IJK + pntxXpntz     ;
-   IJp1K    =  IJK + pntz          ;
-   Ip1Jp1K   =  Ip1JK + pntz      ;
-
-   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
-   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
-   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
-   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
-
-   dummycount++;
-
-   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
-   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
-   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
    sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
 
    dummycount++;
@@ -654,6 +627,33 @@ int main(int argc, char *argv[]) {
  }
  }
 
+//----Z-MIN-PLANE----//
+ label = 22;
+ for(int i=yLocalStart; i<yLocalEnd;  i++){
+ for(int j=xLocalStart; j<xLocalEnd;  j++){
+
+   IJK        =  i*pntxXpntz + j*pntz + 1;
+   Ip1JK    =  IJK + pntxXpntz     ;
+   IJp1K    =  IJK + pntz          ;
+   Ip1Jp1K   =  Ip1JK + pntz      ;
+
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+   dummycount++;
+
+   sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, Ip1JK);
+   sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJK);
+   sprintf(&data_as_txt2[dummycount*totcar+2*charspernum], fmt1, Ip1Jp1K);
+   sprintf(&data_as_txt2[dummycount*totcar+3*charspernum], endfmt1, label);
+
+   dummycount++;
+ }
+ }
+
+
 //----Z-MAX-PLANE----//
  label=44;
  for(int i=yLocalStart; i<yLocalEnd;  i++){
@@ -684,12 +684,8 @@ int main(int argc, char *argv[]) {
 //---- start and endrow local array -----
 //====================================================================================//
 
- xLocalStart = 0      ;
- xLocalEnd   = pntxM1 ;
- yLocalStart = 0      ;
- yLocalEnd   = pntyM1 ;
- zLocalStart = 0      ;
- zLocalEnd   = pntzM1 ;
+ initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
+ initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
 
  fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
 
