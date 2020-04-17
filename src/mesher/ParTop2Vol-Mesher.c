@@ -26,7 +26,7 @@
 
 
  float **alloc2d(int , int);
- 
+ int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM); 
  void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
 int main(int argc, char *argv[]) {
@@ -198,8 +198,8 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 //---- local rows calculation -----
 //====================================================================================//
-
- locnrows = locNPnt * pntz           ;
+     
+ locnrows = fetchLocalRows( mpirank, mpisize, pntz, pntxXpnty); 
 
 //====================================================================================//
 //---- start and endrow local array : balanced (if)  unbalanced (else) -----
@@ -360,24 +360,17 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 //---- local row calculation : balanced (if)  unbalanced (else) ----
 //====================================================================================//
-
- if( (pntyM1%mpisize) == 0 )
-   locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize);      //NTet/mpisize
- else
-   if( mpirank < (pntyM1%mpisize) )
-     locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize+1);  //NTet/mpisize
-   else
-     locnrows=(pntxM1  * pntzM1 * 6)*(pntyM1/mpisize);    //NTet/size
-
+     
+ locnrows = fetchLocalRows( mpirank, mpisize, pntxM1  * pntzM1 * 6, pntyM1); 
+ 
 //====================================================================================//
 //---- Data allocation -----
 //====================================================================================//
 
  char *data_as_txt1 = malloc(locnrows*4*charspernum*sizeof(char));
 
- dummycount=0;
-//  label=mpirank;
- label=0;
+ dummycount = 0 ;
+ label      = 0 ;
 
 //====================================================================================//
 //---- start and endrow local array : balanced (if)  unbalanced (else) -----
@@ -391,8 +384,6 @@ int main(int argc, char *argv[]) {
  int zLocalEnd   = pntzM1 ;
 
  fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
-
-// printf("####I %d istart %d iend %d \n\n",mpirank,yLocalStart,yLocalEnd);
 
 //====================================================================================//
 //---- Gathering tetrahedra data -----
@@ -535,26 +526,15 @@ int main(int argc, char *argv[]) {
 //----------------------------------//
 //      Y part      
 //----------------------------------//
-
- if( (pntyM1%mpisize) == 0 )
-   locnrows= 4 * (pntyM1/mpisize)* (pntzM1 + pntxM1);    //NTri/mpisize
- else
-   if( mpirank < (pntyM1%mpisize) )
-     locnrows= 4 * (pntyM1/mpisize+1)* (pntzM1 + pntxM1); //NTri/mpisize
-   else
-     locnrows= 4 * (pntyM1/mpisize)* (pntzM1 + pntxM1);   //NTri/mpisize
-
+     
+ locnrows = fetchLocalRows( mpirank, mpisize, (pntzM1 + pntxM1) * 4, pntyM1); 
+ 
 //----------------------------------//
 //      Z part      
 //----------------------------------//
 
- if( (pntzM1%mpisize) == 0 )
-   locnrows += 4 * (pntzM1/mpisize)*pntxM1;
- else
-   if( mpirank < (pntzM1%mpisize) )
-     locnrows += 4 * (pntzM1/mpisize+1)*pntxM1;
-   else
-     locnrows += 4 * (pntzM1/mpisize)*pntxM1;
+ locnrows = locnrows + fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
+  
 
  char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
 
@@ -892,4 +872,23 @@ void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend) {
       *iend   = *istart + (pntM1/mpisize) ;
    }
  }
-}    
+}   
+
+
+int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM) {
+
+ int locnrows;
+ int Remainder = pntM%mpisize ;
+ int Quotient  = pntM/mpisize ; 
+
+ if( Remainder == 0 )
+   locnrows = multipyFactor * Quotient ;
+ else
+   if( mpirank < Remainder )
+     locnrows = multipyFactor * (Quotient+1);
+   else
+     locnrows = multipyFactor * Quotient; 
+       
+ return locnrows;   
+ 
+}     
