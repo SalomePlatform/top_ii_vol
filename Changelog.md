@@ -3,11 +3,12 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 
 ## Unreleased
 ### Added
-- New header for all files 
+- New header for all files
+- Better algorithm for parallel mesher
 
 ### Removed
 - Merged the partitioner and distributed mesher, no more `top-ii-vol-Part`
-- No more `--scatter`, now a part of parallel mesher.
+- No more `--scatter`, now a part of parallel mesher
 
 ## [1.1] 2020‑03‑31
 ### Added
