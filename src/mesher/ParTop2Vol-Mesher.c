@@ -383,7 +383,7 @@ int main(int argc, char *argv[]) {
      max     = pntzM1 ;
      highest = 3      ;
  }      
- highest = 3;
+
  switch(highest)
  {
    case 1:
@@ -540,37 +540,40 @@ int main(int argc, char *argv[]) {
 //====================================================================================//
 
 //----------------------------------//
-//  Xmin Xmax and Zmin Zmax plane  (Y)     
-//----------------------------------//
-     
- locnrows = fetchLocalRows( mpirank, mpisize, (pntzM1 + pntxM1) * 4, pntyM1); 
- 
-//----------------------------------//
-//      Ymin Xmax plane            (Z)   
+//  Xmin Xmax  plane  (Y max)     
 //----------------------------------//
 
- locnrows = locnrows + fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
+ locnrows = fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntyM1);
+ startrow = fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntyM1);   
  
+//----------------------------------//
+//  Zmin Zmax plane  (Y max)   
+//----------------------------------//
+
+ locnrows += fetchLocalRows( mpirank, mpisize, pntzM1 * 4, pntyM1);
+ startrow += fetchStartRows( mpirank, mpisize, pntzM1 * 4, pntyM1);  
+ 
+//----------------------------------//
+//  Ymin Xmax plane (Z max)   
+//----------------------------------//
+
+ locnrows += fetchLocalRows( mpirank, mpisize, pntxM1 * 4, pntzM1);
+ startrow += fetchStartRows( mpirank, mpisize, pntxM1 * 4, pntzM1); 
  
 //====================================================================================//
 //---- Data allocation -----
 //====================================================================================//  
 
  char *data_as_txt2 = malloc(locnrows*4*charspernum*sizeof(char)); 
-
+   
 //====================================================================================//
-//---- start and endrow local array -----
+//---- generating triangles for X planes -----
 //====================================================================================//
 
  initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
  initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
-
  fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
-   
-//====================================================================================//
-//---- writing triangles -----
-//====================================================================================//
-
+ 
 //----X-MIN-PLANE---//
  dummycount=0;
 
@@ -627,15 +630,23 @@ int main(int argc, char *argv[]) {
  }
  }
 
+//====================================================================================//
+//---- generating triangles for Z planes -----
+//====================================================================================//
+
+ initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
+ initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
+ fetchIstartIend(mpirank, mpisize, &yLocalStart, &yLocalEnd);
+
 //----Z-MIN-PLANE----//
  label = 22;
  for(int i=yLocalStart; i<yLocalEnd;  i++){
  for(int j=xLocalStart; j<xLocalEnd;  j++){
 
-   IJK        =  i*pntxXpntz + j*pntz + 1;
-   Ip1JK    =  IJK + pntxXpntz     ;
-   IJp1K    =  IJK + pntz          ;
-   Ip1Jp1K   =  Ip1JK + pntz      ;
+   IJK     =  i*pntxXpntz + j*pntz + 1 ;
+   Ip1JK   =  IJK + pntxXpntz          ;
+   IJp1K   =  IJK + pntz               ;
+   Ip1Jp1K =  Ip1JK + pntz             ;
 
    sprintf(&data_as_txt2[dummycount*totcar+0*charspernum], fmt1, IJK);
    sprintf(&data_as_txt2[dummycount*totcar+1*charspernum], fmt1, IJp1K);
@@ -681,14 +692,12 @@ int main(int argc, char *argv[]) {
  }
 
 //====================================================================================//
-//---- start and endrow local array -----
+//---- generating triangles for Y planes -----
 //====================================================================================//
 
  initializeThreeIntegers(&xLocalStart, &yLocalStart, &zLocalStart, 0, 0, 0);
  initializeThreeIntegers(&xLocalEnd  , &yLocalEnd  , &zLocalEnd, pntxM1, pntyM1, pntzM1);
-
  fetchIstartIend(mpirank, mpisize, &zLocalStart, &zLocalEnd);
-
 
 //----Y-MAX-PLANE----//
  label=55;
@@ -745,29 +754,6 @@ int main(int argc, char *argv[]) {
 
  }
  }
-
-//====================================================================================//
-//---- local startrows calculation -----
-//====================================================================================//
-
-//----------------------------------//
-//     Y Part       
-//----------------------------------//
-
- startrow = fetchStartRows(mpirank, mpisize, 4*(pntxM1+pntzM1), pntyM1);
-
-//----------------------------------//
-//     Z Part       
-//----------------------------------//
-
- startrow += fetchStartRows(mpirank, mpisize, 4*pntxM1, pntzM1);
-
-//----------------------------------//
-//      Y & Z perfect balance       
-//----------------------------------//
-
- if((pntyM1%mpisize) == 0 &&  (pntzM1%mpisize) == 0)
-    startrow = mpirank * locnrows;
 
 //====================================================================================//
 //---- Triangle writing -----
