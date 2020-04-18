@@ -1,6 +1,6 @@
 FILE1= top-ii-vol-MPImesher.cpp 
 
-NP=7
+NP=3
 
 all-local: top-ii-vol-DistMesher
 	@echo ""

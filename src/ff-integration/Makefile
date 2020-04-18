@@ -2,7 +2,7 @@ LIST_COMPILE= top-ii-vol.cpp
 
 ffCXX=ff-c++
 
-NP=4
+NP=3
 	
 all: top-ii-vol.so
 	@echo "  			                              "
