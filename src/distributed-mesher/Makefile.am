@@ -1,5 +1,7 @@
 FILE1= top-ii-vol-MPImesher.cpp 
 
+NP=7
+
 all-local: top-ii-vol-DistMesher
 	@echo ""
 	@echo " *============================================================*"
@@ -20,11 +22,11 @@ top-ii-vol-DistMesher: top-ii-vol-MPImesher.o
 	$(MPICXX) -o top-ii-vol-DistMesher top-ii-vol-MPImesher.o  
 
 check-local:
-	mpirun -np 4 ./top-ii-vol-DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m
+	mpirun -np $(NP) ./top-ii-vol-DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m
 
 test-freefem: check-local ./../../test/reconstruct.edp
-	ff-mpirun -np 2 ../../test/reconstruct.edp -v 0
-	paraview vtk_2.pvd  
+	ff-mpirun -np $(NP) ../../test/reconstruct.edp -v 0
+	paraview vtk_$(NP).pvd  
 
 clean-local:
 	@echo "*============================================================*"
