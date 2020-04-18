@@ -37,6 +37,7 @@ Makefile.in
 *.l[ao]
 *.in
 *.nfs*
+compile
 src/distributed-mesher/top-ii-vol-DistMesher
 src/distributed-mesher/top-ii-vol-Part
 src/mesher/top-ii-vol-Mesher
