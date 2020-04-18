@@ -67,19 +67,25 @@
  double* yy = new double[pntx];  
  double* zz = new double[pntx];   
  
- int cutoff = pnty/mpisize;
+ int *TNPts = new int[mpisize];
+ 
+ for(int j = 0; j<mpisize; j++)
+   TNPts[j]=(pnty+(mpisize-1))/mpisize;
+   
+ for(int j = 0; j<((pnty+(mpisize-1))%mpisize); j++) 
+   TNPts[j]=TNPts[j]+1; 
 
  for(int j=1; j<=pnty; j++){
-
-   counter++;
 
    for(int i=1; i<=pntx; i++){
      in >> std::fixed >> xx[i-1]         >> yy[i-1]         >> zz[i-1];
      wr << std::fixed << xx[i-1] << "\t" << yy[i-1] << "\t" << zz[i-1] << "\n";
    }
 
-   if(j%cutoff==0 && fileNo < mpisize-1){
-
+   counter++;
+   
+   if(counter==TNPts[fileNo] && fileNo < mpisize-1){
+     //cout << "  counter is "<<counter<<"\n";  
      fileNo++; 
      wr.close(); 
      cout << "  done\n";
@@ -98,7 +104,11 @@
    }
 
  }
-
+ 
+ //cout << "  counter out is "<<counter<<"\n"; 
+       
+ delete[] TNPts; 
+        
  delete[] xx;
  delete[] yy;
  delete[] zz;
