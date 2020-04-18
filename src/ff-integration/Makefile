@@ -1,6 +1,8 @@
 LIST_COMPILE= top-ii-vol.cpp
 
 ffCXX=ff-c++
+
+NP=4
 	
 all: top-ii-vol.so
 	@echo "  			                              "
@@ -12,9 +14,9 @@ top-ii-vol.so: top-ii-vol.cpp
 	$(ffCXX) -auto 	top-ii-vol.cpp
 
 
-test: ./../../test/test.edp
-	ff-mpirun -np 2 ../../test/test.edp -v 0
-	paraview vtk_2.pvd    
+test-freefem: ./../../test/test.edp
+	ff-mpirun -np $(NP) ../../test/test.edp -v 0
+	paraview vtk_$(NP).pvd    
 
 clean:
 	@echo "  			            "
