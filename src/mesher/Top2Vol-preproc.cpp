@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 // ---- Logo -----
 //-----------------------------------------------------------------------------------//
 
-#include "./../lib/LogoTopiiVolCpp.hpp"
+    #include "./../lib/LogoTopiiVolCpp.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -42,6 +42,9 @@ int main(int argc, char *argv[])
     double x 		;
     double y 		;
     double z 		;
+
+    int pointsYAfterSkip;
+    int pointsXAfterSkip;
 
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
@@ -123,8 +126,6 @@ int main(int argc, char *argv[])
 //---- Total points after skip-----
 //-----------------------------------------------------------------------------------//
 
-    int pointsYAfterSkip, pointsXAfterSkip;
-
     if (pnty%skipy==0)
         pointsYAfterSkip=pnty/skipy;
     if (pnty%skipy!=0)
@@ -149,13 +150,13 @@ int main(int argc, char *argv[])
 
     wr.open(outpufile);
 
-    for(int j = 0; j<pnty; j++)
+    for(int j=0; j<pnty; j++)
         {
-            for(int i = 0; i<pntx; i++)
+            for(int i=0; i<pntx; i++)
                 {
                     in>>std::fixed>> x  >> y >> z;
 
-                    if(int(j%skipy) == 0 && int(i%skipx) == 0 )
+                    if(int(j%skipy) == 0 && int(i%skipx) == 0)
                         wr<< std::fixed << x << "\t" << y << "\t"<< z << "\n";
                 }
         }
@@ -169,9 +170,9 @@ int main(int argc, char *argv[])
     wr.open("info-"+outpufile+".txt");
 
     wr   << " *===================================================* \n"
-         << " *                  INFORMATION                      * \n"
+         << " *      Information on processed point cloud         * \n"
          << " *===================================================* \n"
-         << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
+         << "\n   Total # points :: "<< pointsYAfterSkip*pointsXAfterSkip
          << "\n   Total # xPoints:: "<< pointsXAfterSkip
          << "\n   Total # yPoints:: "<< pointsYAfterSkip
          << "\n\n ==================================================== \n";
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
          << " *===================================================* \n"
          << " *      Information on processed point cloud         * \n"
          << " *===================================================* \n"
-         << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
+         << "\n   Total # points :: "<< pointsXAfterSkip*pointsYAfterSkip
          << "\n   Total # xPoints:: "<< pointsXAfterSkip
          << "\n   Total # yPoints:: "<< pointsYAfterSkip
          << "\n\n ==================================================== \n\n";
