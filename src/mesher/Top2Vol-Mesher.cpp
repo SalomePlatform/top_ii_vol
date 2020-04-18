@@ -1,19 +1,19 @@
 /*****************************************************************************
-                                                                             
-             This file is a part of top-ii-vol meshing tools.                         
-                                                                             
-     -------------------------------------------------------------------     
-                                                                             
-     Author(s): Mohd Afeef Badri                                             
-     Email    : mohd-afeef.badri@hotmail.com                                                              
-     Date     : 2019‑12‑09                                                  
-                                                                           
+
+             This file is a part of top-ii-vol meshing tools.
+
      -------------------------------------------------------------------
 
-     top-ii-vol  provides  sequential  and  parallel tools for  creating  
+     Author(s): Mohd Afeef Badri
+     Email    : mohd-afeef.badri@hotmail.com
+     Date     : 2019‑12‑09
+
+     -------------------------------------------------------------------
+
+     top-ii-vol  provides  sequential  and  parallel tools for  creating
      volumic tetrahedral meshes from a topology defined by a point cloud.
-     top-ii-vol  is  distributed in the hope that it will be useful, but 
-     WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of 
+     top-ii-vol  is  distributed in the hope that it will be useful, but
+     WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 *******************************************************************************/
@@ -26,13 +26,14 @@
 using namespace std;
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
 //-----------------------------------------------------------------------------------//
 //---- Logo -----
 //-----------------------------------------------------------------------------------//
- 
-    #include "./../lib/LogoTopiiVolCpp.hpp" 
+
+#include "./../lib/LogoTopiiVolCpp.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- Global Variables -----
@@ -58,10 +59,10 @@ int main(int argc, char *argv[]){
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << " 							    \n" 
-         << " *  This program  will take your .xyz cloud topology * \n" 
+    cout << " 							    \n"
+         << " *  This program  will take your .xyz cloud topology * \n"
          << " *  mesh and and generate a  pseudo-structured tetra * \n"
-         << " *  mesh in medit's '.mesh' format                   * \n"  
+         << " *  mesh in medit's '.mesh' format                   * \n"
          << " 							    \n";
 
 //-----------------------------------------------------------------------------------//
@@ -86,49 +87,50 @@ int main(int argc, char *argv[]){
 //---- Comandline Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    for(int i=0; i<argc-1; i++){
+    for(int i=0; i<argc-1; i++)
+        {
 
-        string argvdummy  = argv[i]   ;
-        string argvdummy1 = argv[i+1] ;
+            string argvdummy  = argv[i]   ;
+            string argvdummy1 = argv[i+1] ;
 
-		if( argvdummy == "--xpoints") 
-	    	pntx= stoi(argvdummy1);
+            if( argvdummy == "--xpoints")
+                pntx= stoi(argvdummy1);
 
-		if( argvdummy == "--ypoints") 
-	    	pnty= stoi(argvdummy1);
+            if( argvdummy == "--ypoints")
+                pnty= stoi(argvdummy1);
 
-		if( argvdummy == "--zpoints") 
-	    	pntz= stoi(argvdummy1);
+            if( argvdummy == "--zpoints")
+                pntz= stoi(argvdummy1);
 
-		if( argvdummy == "--in") 
-	    	*inputfile = argvdummy1;
+            if( argvdummy == "--in")
+                *inputfile = argvdummy1;
 
-		if( argvdummy == "--out") 
-	    	*outputfile = argvdummy1;
+            if( argvdummy == "--out")
+                *outputfile = argvdummy1;
 
-		if( argvdummy == "--mesh") 
-	    	meshtype = argvdummy1;
+            if( argvdummy == "--mesh")
+                meshtype = argvdummy1;
 
-		if( argvdummy == "--depth") 
-	    	zmax= stod(argvdummy1);
-     }
+            if( argvdummy == "--depth")
+                zmax= stod(argvdummy1);
+        }
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-        in.open(*inputfile)      ;
+    in.open(*inputfile)      ;
 
     ofstream wrgmsh;
-        wrgmsh.open(*outputfile)	;
+    wrgmsh.open(*outputfile)	;
 
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << " *===================================================* \n" 
-         << " *                  User Input                       * \n"  
+    cout << " *===================================================* \n"
+         << " *                  User Input                       * \n"
          << " *===================================================* \n\n";
 
 
@@ -143,7 +145,7 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
 //-----------------------------------------------------------------------------------//
- 
+
     std::clock_t c_start = std::clock();
 
 //-----------------------------------------------------------------------------------//
@@ -161,179 +163,198 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------//
 
-   if(meshtype == "mesh"){
+    if(meshtype == "mesh")
+        {
 
-    cout << "   Meshing the topology in Medit's *.mesh format"	<< "\n";
+            cout << "   Meshing the topology in Medit's *.mesh format"	<< "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Header for mesh -----
 //-----------------------------------------------------------------------------------//
 
-    wrgmsh << "MeshVersionFormatted 1\n\n"
-           << "Dimension 3\n\n";
+            wrgmsh << "MeshVersionFormatted 1\n\n"
+                   << "Dimension 3\n\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating points -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "   Generating points....";
-    wrgmsh << "Vertices\n"
-           <<  NPnt<< "\n";
+            cout   << "   Generating points....";
+            wrgmsh << "Vertices\n"
+                   <<  NPnt<< "\n";
 
-    for(int i=0; i<pntx*pnty; i++){
-        in     >> std::fixed >> xx >>        yy        >> zz            ;
-        wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n";
+            for(int i=0; i<pntx*pnty; i++)
+                {
+                    in     >> std::fixed >> xx >>        yy        >> zz            ;
+                    wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n";
 
-        zznew=zz;  delz= (zmax-zz)/(pntz-1);
-        for(int j=0; j<pntz-1; j++){
-            zznew  = zznew + delz;
-            wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zznew << " 0\n";
-        }
-    }
+                    zznew=zz;
+                    delz= (zmax-zz)/(pntz-1);
+                    for(int j=0; j<pntz-1; j++)
+                        {
+                            zznew  = zznew + delz;
+                            wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zznew << " 0\n";
+                        }
+                }
 
-    wrgmsh << "\n";
-    cout   << "   Done\n   #  "<<NPnt<<" points written\n";
+            wrgmsh << "\n";
+            cout   << "   Done\n   #  "<<NPnt<<" points written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "   Generating Tetrahedra....";
-    wrgmsh << "Tetrahedra\n"
-           <<  NTet  << "\n";
+            cout   << "   Generating Tetrahedra....";
+            wrgmsh << "Tetrahedra\n"
+                   <<  NTet  << "\n";
 
-    for(int j=0; j<pnty-1;  j++){
-    for(int i=0; i<pntx-1;  i++){
-    for(int k=1; k<=pntz-1; k++){
+            for(int j=0; j<pnty-1;  j++)
+                {
+                    for(int i=0; i<pntx-1;  i++)
+                        {
+                            for(int k=1; k<=pntz-1; k++)
+                                {
 
-        IJK	  =	i*pntz  + j*pntx*pntz + k	;
-        Ip1JK	  =	IJK 	+ (pntx*pntz)		;
-        IJp1K	  =	IJK 	+ (pntz)		;
-        Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
-        IJKp1     =	IJK 	+ 1			;
-        Ip1JKp1   =	Ip1JK 	+ 1			;
-        IJp1Kp1   =	IJp1K   + 1			;
-        Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
+                                    IJK	  =	i*pntz  + j*pntx*pntz + k	;
+                                    Ip1JK	  =	IJK 	+ (pntx*pntz)		;
+                                    IJp1K	  =	IJK 	+ (pntz)		;
+                                    Ip1Jp1K   =	IJK 	+ (pntx*pntz) + pntz	;
+                                    IJKp1     =	IJK 	+ 1			;
+                                    Ip1JKp1   =	Ip1JK 	+ 1			;
+                                    IJp1Kp1   =	IJp1K   + 1			;
+                                    Ip1Jp1Kp1 =	Ip1Jp1K + 1			;
 
-        wrgmsh << std::fixed << IJK     << "\t" << IJKp1   << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n"
-                             << IJKp1   << "\t" << IJK     << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
-                             << Ip1JKp1 << "\t" << IJKp1   << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
-                             << IJKp1   << "\t" << Ip1JKp1 << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
-                             << IJp1Kp1 << "\t" << IJKp1   << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
-                             << IJKp1   << "\t" << IJp1Kp1 << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n";
-    }
-    }
-    }
+                                    wrgmsh << std::fixed << IJK     << "\t" << IJKp1   << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n"
+                                           << IJKp1   << "\t" << IJK     << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
+                                           << Ip1JKp1 << "\t" << IJKp1   << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
+                                           << IJKp1   << "\t" << Ip1JKp1 << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
+                                           << IJp1Kp1 << "\t" << IJKp1   << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
+                                           << IJKp1   << "\t" << IJp1Kp1 << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n";
+                                }
+                        }
+                }
 
-    wrgmsh << "\n";
-    cout   << "   Done\n   #  "<<NTet<<" tetrahedra written\n";
+            wrgmsh << "\n";
+            cout   << "   Done\n   #  "<<NTet<<" tetrahedra written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
 //-----------------------------------------------------------------------------------//
 
-    cout   << "   Generating Triangles...."			       ;
-    wrgmsh << "Triangles\n"
-           << NTri  << "\n";
+            cout   << "   Generating Triangles...."			       ;
+            wrgmsh << "Triangles\n"
+                   << NTri  << "\n";
 
 //----X-MIN-PLANE---//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	  =	i*(pntz*pntx) + j+1	;
-        IJKp1	  =	IJK + 1			;
-        Ip1JK	  =	IJK + (pntz*pntx)	;
-        Ip1JKp1   =	Ip1JK + 1		;
+                            IJK	  =	i*(pntz*pntx) + j+1	;
+                            IJKp1	  =	IJK + 1			;
+                            Ip1JK	  =	IJK + (pntz*pntx)	;
+                            Ip1JKp1   =	Ip1JK + 1		;
 
-        wrgmsh << std::fixed << IJKp1   << "\t" <<  IJK  << "\t" << Ip1JK << " 1\n"
-                             << Ip1JKp1 << "\t" << IJKp1 << "\t" << Ip1JK << " 1\n";
-    }
-    }
+                            wrgmsh << std::fixed << IJKp1   << "\t" <<  IJK  << "\t" << Ip1JK << " 1\n"
+                                   << Ip1JKp1 << "\t" << IJKp1 << "\t" << Ip1JK << " 1\n";
+                        }
+                }
 
 //----Y-MIN-PLANE----//
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pntx-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	  =	i*pntz + j+1	;
-        IJKp1	  =	IJK + 1		;
-        IJp1K	  =	IJK + pntz	;
-        IJp1Kp1   =	IJp1K + 1	;
+                            IJK	  =	i*pntz + j+1	;
+                            IJKp1	  =	IJK + 1		;
+                            IJp1K	  =	IJK + pntz	;
+                            IJp1Kp1   =	IJp1K + 1	;
 
-        wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << IJp1K << " 2\n"
-                             << IJKp1 << "\t" << IJp1Kp1 << "\t" << IJp1K << " 2\n";
+                            wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << IJp1K << " 2\n"
+                                   << IJKp1 << "\t" << IJp1Kp1 << "\t" << IJp1K << " 2\n";
 
-    }
-    }
+                        }
+                }
 
 //----Z-MIN-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntx-1;  j++)
+                        {
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1	;
-        Ip1JK	  =	IJK + (pntz*pntx)		;
-        IJp1K	  =	IJK + pntz			;
-        Ip1Jp1K   =	Ip1JK + pntz			;
+                            IJK	  =	i*(pntz*pntx) + j*(pntz)+1	;
+                            Ip1JK	  =	IJK + (pntz*pntx)		;
+                            IJp1K	  =	IJK + pntz			;
+                            Ip1Jp1K   =	Ip1JK + pntz			;
 
-        wrgmsh << std::fixed << IJK   << " " << IJp1K << " " << Ip1Jp1K << " 3\n"
-                             << Ip1JK << " " << IJK   << " " << Ip1Jp1K << " 3\n";
-    }
-    }
+                            wrgmsh << std::fixed << IJK   << " " << IJp1K << " " << Ip1Jp1K << " 3\n"
+                                   << Ip1JK << " " << IJK   << " " << Ip1Jp1K << " 3\n";
+                        }
+                }
 
 //----X-MAX-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	  =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
-        IJKp1	  =	IJK + 1					;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
-        Ip1JKp1   =	Ip1JK + 1				;
+                            IJK	  =	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
+                            IJKp1	  =	IJK + 1					;
+                            Ip1JK	  =	IJK + (pntz*pntx)			;
+                            Ip1JKp1   =	Ip1JK + 1				;
 
-        wrgmsh << std::fixed << IJK   << " " << IJKp1   << " " << Ip1JK << " 4\n"
-                             << IJKp1 << " " << Ip1JKp1 << " " << Ip1JK << " 4\n";
+                            wrgmsh << std::fixed << IJK   << " " << IJKp1   << " " << Ip1JK << " 4\n"
+                                   << IJKp1 << " " << Ip1JKp1 << " " << Ip1JK << " 4\n";
 
 
-    }
-    }
+                        }
+                }
 
 //----Y-MAX-PLANE----//
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pntx-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	  =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
-        IJKp1	  =	IJK + 1					;
-        IJp1K	  =	IJK + pntz				;
-        IJp1Kp1   =	IJp1K + 1				;
+                            IJK	  =	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
+                            IJKp1	  =	IJK + 1					;
+                            IJp1K	  =	IJK + pntz				;
+                            IJp1Kp1   =	IJp1K + 1				;
 
-        wrgmsh << std::fixed << IJKp1   << " " << IJK   << " " << IJp1K << " 5\n"
-                             << IJp1Kp1 << " " << IJKp1 << " " << IJp1K << " 5\n";
+                            wrgmsh << std::fixed << IJKp1   << " " << IJK   << " " << IJp1K << " 5\n"
+                                   << IJp1Kp1 << " " << IJKp1 << " " << IJp1K << " 5\n";
 
-    }
-    }
+                        }
+                }
 
 //----Z-MAX-PLANE----//
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntx-1;  j++)
+                        {
 
-        IJK	  =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
-        Ip1JK	  =	IJK + (pntz*pntx)			;
-        IJp1K	  =	IJK + pntz				;
-        Ip1Jp1K   =	Ip1JK + pntz				;
+                            IJK	  =	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
+                            Ip1JK	  =	IJK + (pntz*pntx)			;
+                            IJp1K	  =	IJK + pntz				;
+                            Ip1Jp1K   =	Ip1JK + pntz				;
 
-        wrgmsh << std::fixed << IJp1K << " " << IJK   << " " << Ip1Jp1K << " 6\n"
-                             << IJK   << " " << Ip1JK << " " << Ip1Jp1K << " 6\n";
-    }
-    }
+                            wrgmsh << std::fixed << IJp1K << " " << IJK   << " " << Ip1Jp1K << " 6\n"
+                                   << IJK   << " " << Ip1JK << " " << Ip1Jp1K << " 6\n";
+                        }
+                }
 
-    cout << "   Done\n   #  "<<NTri<<" triangles written\n";
+            cout << "   Done\n   #  "<<NTri<<" triangles written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----
 //-----------------------------------------------------------------------------------//
 
-    wrgmsh << "\n"
-           << "End"<< endl;
-  }
+            wrgmsh << "\n"
+                   << "End"<< endl;
+        }
 
 //-----------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------//
@@ -341,202 +362,222 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------//
 
-  else if (meshtype == "msh"){
-    cout << "   Meshing the topology in Gmsh's *.msh format\n";
+    else if (meshtype == "msh")
+        {
+            cout << "   Meshing the topology in Gmsh's *.msh format\n";
 
 //--------------------------------------//
 //---- Header for msh2 -----
 //--------------------------------------//
 
-    wrgmsh<< "$MeshFormat\n"
-          << "2.2 0 8\n"
-          << "$EndMeshFormat\n"
-          << "$Nodes\n"
-          << NPnt<<"\n" ;
+            wrgmsh<< "$MeshFormat\n"
+                  << "2.2 0 8\n"
+                  << "$EndMeshFormat\n"
+                  << "$Nodes\n"
+                  << NPnt<<"\n" ;
 
-    int counter1 = 1;
+            int counter1 = 1;
 
-    cout << "   Generating points....";
+            cout << "   Generating points....";
 
-    for(int i=0; i<pntx*pnty; i++){
-        in >> std::fixed >> xx  >> yy >> zz;
-	wrgmsh << std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<< zz << "\n" ;
-	counter1++ ;
-	zznew = zz ; delz= (zmax-zz)/(pntz-1);
-	for(int j=0; j<pntz-1; j++){
-	    zznew  = zznew + delz ;
-	    wrgmsh << std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<< zznew << "\n" ;
-	    counter1++;
+            for(int i=0; i<pntx*pnty; i++)
+                {
+                    in >> std::fixed >> xx  >> yy >> zz;
+                    wrgmsh << std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<< zz << "\n" ;
+                    counter1++ ;
+                    zznew = zz ;
+                    delz= (zmax-zz)/(pntz-1);
+                    for(int j=0; j<pntz-1; j++)
+                        {
+                            zznew  = zznew + delz ;
+                            wrgmsh << std::fixed << counter1 << "\t" << xx << "\t" << yy << "\t"<< zznew << "\n" ;
+                            counter1++;
 
-	}
-    }
+                        }
+                }
 
-    wrgmsh<< "$EndNodes\n";
-    cout << "   Done\n";
+            wrgmsh<< "$EndNodes\n";
+            cout << "   Done\n";
 
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
 //-----------------------------------------------------------------------------------//
 
-    cout << "   Generating Triangles...."  ;
+            cout << "   Generating Triangles...."  ;
 
-    wrgmsh << "$Elements\n"
-           << int(NTet+NTri)<< "\n";
+            wrgmsh << "$Elements\n"
+                   << int(NTet+NTri)<< "\n";
 
-    counter1=1;
+            counter1=1;
 
 //---------------------------------X-MIN-PLANE----------------------------------//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	    =	i*(pntz*pntx) + j+1	;
-        IJKp1	=	IJK + 1			    ;
-        Ip1JK	=	IJK + (pntz*pntx)	;
-        Ip1JKp1	=	Ip1JK + 1		    ;
+                            IJK	    =	i*(pntz*pntx) + j+1	;
+                            IJKp1	=	IJK + 1			    ;
+                            Ip1JK	=	IJK + (pntz*pntx)	;
+                            Ip1JKp1	=	Ip1JK + 1		    ;
 
-        wrgmsh << std::fixed << counter1   << " 2 1 11 " << IJKp1   << " " << IJK   << " " << Ip1JK <<"\n"
-                             << counter1+1 << " 2 1 11 " << Ip1JKp1 << " " << IJKp1 << " " << Ip1JK <<"\n";
-        counter1=counter1+2;
+                            wrgmsh << std::fixed << counter1   << " 2 1 11 " << IJKp1   << " " << IJK   << " " << Ip1JK <<"\n"
+                                   << counter1+1 << " 2 1 11 " << Ip1JKp1 << " " << IJKp1 << " " << Ip1JK <<"\n";
+                            counter1=counter1+2;
 
-    }
-    }
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 //---------------------------------Y-MIN-PLANE----------------------------------//
 
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pntx-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	    =	i*pntz + j+1 ;
-        IJKp1	=	IJK + 1		 ;
-        IJp1K	=	IJK + pntz	 ;
-        IJp1Kp1	=	IJp1K + 1	 ;
+                            IJK	    =	i*pntz + j+1 ;
+                            IJKp1	=	IJK + 1		 ;
+                            IJp1K	=	IJK + pntz	 ;
+                            IJp1Kp1	=	IJp1K + 1	 ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 2 22 0 " << IJK   << " " << IJKp1   << " " << IJp1K <<"\n"
-                            << counter1+1 << " 2 2 22 0 " << IJKp1 << " " << IJp1Kp1 << " " << IJp1K <<"\n";
-        counter1=counter1+2;
+                            wrgmsh<< std::fixed << counter1   << " 2 2 22 0 " << IJK   << " " << IJKp1   << " " << IJp1K <<"\n"
+                                  << counter1+1 << " 2 2 22 0 " << IJKp1 << " " << IJp1Kp1 << " " << IJp1K <<"\n";
+                            counter1=counter1+2;
 
-    }
-    }
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 
 //---------------------------------Z-MIN-PLANE----------------------------------//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntx-1;  j++)
+                        {
 
-        IJK	    =	i*(pntz*pntx) + j*(pntz)+1	;
-        Ip1JK	=	IJK + (pntz*pntx)		    ;
-        IJp1K	=	IJK + pntz			        ;
-        Ip1Jp1K	=	Ip1JK + pntz		        ;
+                            IJK	    =	i*(pntz*pntx) + j*(pntz)+1	;
+                            Ip1JK	=	IJK + (pntz*pntx)		    ;
+                            IJp1K	=	IJK + pntz			        ;
+                            Ip1Jp1K	=	Ip1JK + pntz		        ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 1 33 "  << IJK  << " "  << IJp1K  << " " << Ip1Jp1K <<"\n"
-                            << counter1+1 << " 2 1 33 "  << Ip1JK << " " << IJK    << " " << Ip1Jp1K <<"\n";
-        counter1=counter1+2;
-    }
-    }
+                            wrgmsh<< std::fixed << counter1   << " 2 1 33 "  << IJK  << " "  << IJp1K  << " " << Ip1Jp1K <<"\n"
+                                  << counter1+1 << " 2 1 33 "  << Ip1JK << " " << IJK    << " " << Ip1Jp1K <<"\n";
+                            counter1=counter1+2;
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 
 //---------------------------------X-MAX-PLANE----------------------------------//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	=	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
-        IJKp1	=	IJK + 1			                ;
-        Ip1JK	=	IJK + (pntz*pntx)	                ;
-        Ip1JKp1	=	Ip1JK + 1		                ;
+                            IJK	=	i*(pntz*pntx) + j+1 + (pntx-1)*(pntz)	;
+                            IJKp1	=	IJK + 1			                ;
+                            Ip1JK	=	IJK + (pntz*pntx)	                ;
+                            Ip1JKp1	=	Ip1JK + 1		                ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 1 44 " << IJK   << " " << IJKp1    << " " << Ip1JK <<"\n"
-                            << counter1+1 << " 2 1 44 " << IJKp1 << " " << Ip1JKp1  << " " << Ip1JK <<"\n";
-        counter1=counter1+2;
+                            wrgmsh<< std::fixed << counter1   << " 2 1 44 " << IJK   << " " << IJKp1    << " " << Ip1JK <<"\n"
+                                  << counter1+1 << " 2 1 44 " << IJKp1 << " " << Ip1JKp1  << " " << Ip1JK <<"\n";
+                            counter1=counter1+2;
 
-    }
-    }
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 //---------------------------------Y-MAX-PLANE----------------------------------//
 
-    for(int i=0; i<pntx-1;  i++){
-    for(int j=0; j<pntz-1;  j++){
+            for(int i=0; i<pntx-1;  i++)
+                {
+                    for(int j=0; j<pntz-1;  j++)
+                        {
 
-        IJK	=	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
-        IJKp1	=	IJK + 1		                        ;
-        IJp1K	=	IJK + pntz	                        ;
-        IJp1Kp1	=	IJp1K + 1	                        ;
+                            IJK	=	i*pntz + j+1 + (pntx*pntz*(pnty-1))	;
+                            IJKp1	=	IJK + 1		                        ;
+                            IJp1K	=	IJK + pntz	                        ;
+                            IJp1Kp1	=	IJp1K + 1	                        ;
 
-        wrgmsh<< std::fixed << counter1   << " 2 2 55 0 " <<  IJKp1   << " " << IJK  << " " << IJp1K <<"\n"
-                            << counter1+1 << " 2 2 55 0 " << IJp1Kp1  << " " <<IJKp1 << " " << IJp1K <<"\n";
-        counter1=counter1+2;
+                            wrgmsh<< std::fixed << counter1   << " 2 2 55 0 " <<  IJKp1   << " " << IJK  << " " << IJp1K <<"\n"
+                                  << counter1+1 << " 2 2 55 0 " << IJp1Kp1  << " " <<IJKp1 << " " << IJp1K <<"\n";
+                            counter1=counter1+2;
 
-    }
-    }
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 
 //---------------------------------Z-MAX-PLANE----------------------------------//
 
-    for(int i=0; i<pnty-1;  i++){
-    for(int j=0; j<pntx-1;  j++){
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<pntx-1;  j++)
+                        {
 
-        IJK	=	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
-        Ip1JK	=	IJK + (pntz*pntx)		            ;
-        IJp1K	=	IJK + pntz			                ;
-        Ip1Jp1K	=	Ip1JK + pntz		                ;
+                            IJK	=	i*(pntz*pntx) + j*(pntz)+1 + (pntz-1)	;
+                            Ip1JK	=	IJK + (pntz*pntx)		            ;
+                            IJp1K	=	IJK + pntz			                ;
+                            Ip1Jp1K	=	Ip1JK + pntz		                ;
 
-        wrgmsh<< std::fixed << counter1    << " 2 1 66 " << IJp1K << " " << IJK   << " " << Ip1Jp1K <<"\n"
-                            << counter1+1  << " 2 1 66 " << IJK   << " " << Ip1JK << " " << Ip1Jp1K <<"\n";
-        counter1=counter1+2;
-    }
-    }
+                            wrgmsh<< std::fixed << counter1    << " 2 1 66 " << IJp1K << " " << IJK   << " " << Ip1Jp1K <<"\n"
+                                  << counter1+1  << " 2 1 66 " << IJK   << " " << Ip1JK << " " << Ip1Jp1K <<"\n";
+                            counter1=counter1+2;
+                        }
+                }
 //------------------------------------------------------------------------------------//
 
 
-    cout << "Done  \n"
-         << "   Generating Tetrahedrals....";
+            cout << "Done  \n"
+                 << "   Generating Tetrahedrals....";
 
-    for(int j=0; j<pnty-1;  j++){
-    for(int i=0; i<pntx-1;  i++){
-    for(int k=1; k<=pntz-1; k++){
+            for(int j=0; j<pnty-1;  j++)
+                {
+                    for(int i=0; i<pntx-1;  i++)
+                        {
+                            for(int k=1; k<=pntz-1; k++)
+                                {
 
-        IJK	    =	i*pntz + j*pntx*pntz + k      ;
+                                    IJK	    =	i*pntz + j*pntx*pntz + k      ;
 
-        Ip1JK	=	IJK 	+ (pntx*pntz)		  ;
-        IJp1K	=	IJK 	+ (pntz)		      ;
-        Ip1Jp1K	=	IJK 	+ (pntx*pntz) + pntz  ;
+                                    Ip1JK	=	IJK 	+ (pntx*pntz)		  ;
+                                    IJp1K	=	IJK 	+ (pntz)		      ;
+                                    Ip1Jp1K	=	IJK 	+ (pntx*pntz) + pntz  ;
 
-        IJKp1     =	IJK 	+ 1	                  ;
-        Ip1JKp1   =	Ip1JK 	+ 1	                  ;
-        IJp1Kp1   =	IJp1K   + 1	                  ;
-        Ip1Jp1Kp1 =	Ip1Jp1K + 1	                  ;
+                                    IJKp1     =	IJK 	+ 1	                  ;
+                                    Ip1JKp1   =	Ip1JK 	+ 1	                  ;
+                                    IJp1Kp1   =	IJp1K   + 1	                  ;
+                                    Ip1Jp1Kp1 =	Ip1Jp1K + 1	                  ;
 
-        wrgmsh << std::fixed 
-        << counter1   << " 4 2 0 0 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
-        << counter1+1 << " 4 2 0 0 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
-        << counter1+2 << " 4 2 0 0 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
-        << counter1+3 << " 4 2 0 0 " << IJKp1   << " " << Ip1JKp1 << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
-        << counter1+4 << " 4 2 0 0 " << IJp1Kp1 << " " << IJKp1   << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
-        << counter1+5 << " 4 2 0 0 " << IJKp1   << " " << IJp1Kp1 << " " << IJp1K     << " " << Ip1Jp1K <<"\n";
-        counter1=counter1+6;
+                                    wrgmsh << std::fixed
+                                           << counter1   << " 4 2 0 0 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
+                                           << counter1+1 << " 4 2 0 0 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+                                           << counter1+2 << " 4 2 0 0 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+                                           << counter1+3 << " 4 2 0 0 " << IJKp1   << " " << Ip1JKp1 << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+                                           << counter1+4 << " 4 2 0 0 " << IJp1Kp1 << " " << IJKp1   << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+                                           << counter1+5 << " 4 2 0 0 " << IJKp1   << " " << IJp1Kp1 << " " << IJp1K     << " " << Ip1Jp1K <<"\n";
+                                    counter1=counter1+6;
 
-    }
-    }
-    }
+                                }
+                        }
+                }
 
-    wrgmsh<< "EndElements\n";
-    cout  << "Done\n";
+            wrgmsh<< "EndElements\n";
+            cout  << "Done\n";
 
-    }
-    else {
-    cout << " *=============================================================* \n" 
-         << " * ERROR: --mesh input is wrong only msh or mesh is accepted   * \n"  
-         << " *=============================================================* \n" 
-         << "  							    \n";
-    }
+        }
+    else
+        {
+            cout << " *=============================================================* \n"
+                 << " * ERROR: --mesh input is wrong only msh or mesh is accepted   * \n"
+                 << " *=============================================================* \n"
+                 << "  							    \n";
+        }
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
@@ -550,5 +591,5 @@ int main(int argc, char *argv[]){
          << "                                                               \n";
 
 
-return 0;
+    return 0;
 }

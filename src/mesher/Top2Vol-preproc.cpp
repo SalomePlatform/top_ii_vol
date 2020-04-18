@@ -1,19 +1,19 @@
 /*****************************************************************************
-                                                                             
-             This file is a part of top-ii-vol meshing tools.                         
-                                                                             
-     -------------------------------------------------------------------     
-                                                                             
-     Author(s): Mohd Afeef Badri                                             
-     Email    : mohd-afeef.badri@hotmail.com                                                              
-     Date     : 2019‑12‑09                                                  
-                                                                           
+
+             This file is a part of top-ii-vol meshing tools.
+
      -------------------------------------------------------------------
 
-     top-ii-vol  provides  sequential  and  parallel tools for  creating  
+     Author(s): Mohd Afeef Badri
+     Email    : mohd-afeef.badri@hotmail.com
+     Date     : 2019‑12‑09
+
+     -------------------------------------------------------------------
+
+     top-ii-vol  provides  sequential  and  parallel tools for  creating
      volumic tetrahedral meshes from a topology defined by a point cloud.
-     top-ii-vol  is  distributed in the hope that it will be useful, but 
-     WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of 
+     top-ii-vol  is  distributed in the hope that it will be useful, but
+     WITHOUT  ANY  WARRANTY; or  without  even  the  implied warranty of
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 *******************************************************************************/
@@ -26,7 +26,8 @@
 using namespace std;
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
 //-----------------------------------------------------------------------------------//
 // ---- Logo -----
@@ -59,42 +60,43 @@ int main(int argc, char *argv[]){
 //---- Comandline Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    for(int i=0; i<argc-1; i++){
+    for(int i=0; i<argc-1; i++)
+        {
 
-        string argvdummy  = argv[i]   ;
-        string argvdummy1 = argv[i+1] ;
+            string argvdummy  = argv[i]   ;
+            string argvdummy1 = argv[i+1] ;
 
-	if( argvdummy == "--xpoints") 
-	    pntx = stoi(argvdummy1);
+            if( argvdummy == "--xpoints")
+                pntx = stoi(argvdummy1);
 
-	if( argvdummy == "--ypoints") 
-	    pnty = stoi(argvdummy1);
+            if( argvdummy == "--ypoints")
+                pnty = stoi(argvdummy1);
 
-	if( argvdummy == "--xskip") 
-	    skipx = stoi(argvdummy1);
+            if( argvdummy == "--xskip")
+                skipx = stoi(argvdummy1);
 
-	if( argvdummy == "--yskip") 
-	    skipy = stoi(argvdummy1);
+            if( argvdummy == "--yskip")
+                skipy = stoi(argvdummy1);
 
-	if( argvdummy == "--in") 
-	    inpurfile = argvdummy1;
+            if( argvdummy == "--in")
+                inpurfile = argvdummy1;
 
-	if( argvdummy == "--out") 
-	    outpufile = argvdummy1;		
-     
-   }
+            if( argvdummy == "--out")
+                outpufile = argvdummy1;
+
+        }
 
 
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << "\n" 
-         << " *  This program  will coarsen your .xyz by skipping * \n" 
+    cout << "\n"
+         << " *  This program  will coarsen your .xyz by skipping * \n"
          << " *  the  specified  number of x and y points to skip.* \n\n"
-         << " *===================================================* \n" 
-         << " *                  User Input                       * \n"  
-         << " *===================================================* \n\n" 
+         << " *===================================================* \n"
+         << " *                  User Input                       * \n"
+         << " *===================================================* \n\n"
          << "   X points are        ------ " << pntx      << "\n"
          << "   Y points are        ------ " << pnty      << "\n"
          << "   X skip points are   ------ " << skipx     << "\n"
@@ -105,89 +107,91 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
 //-----------------------------------------------------------------------------------//
- 
+
     ifstream in;
-        in.open(inpurfile);
+    in.open(inpurfile);
 
     ofstream wr;
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
 //-----------------------------------------------------------------------------------//
- 
+
     std::clock_t c_start = std::clock();
 
 //-----------------------------------------------------------------------------------//
 //---- Total points after skip-----
 //-----------------------------------------------------------------------------------//
 
-    int pointsYAfterSkip , pointsXAfterSkip;
+    int pointsYAfterSkip, pointsXAfterSkip;
 
     if (pnty%skipy==0)
-           pointsYAfterSkip=pnty/skipy;
+        pointsYAfterSkip=pnty/skipy;
     if (pnty%skipy!=0)
-           pointsYAfterSkip=pnty/skipy+1;
+        pointsYAfterSkip=pnty/skipy+1;
 
     if (pntx%skipx==0)
-           pointsXAfterSkip=pntx/skipx;
+        pointsXAfterSkip=pntx/skipx;
     if (pntx%skipx!=0)
-           pointsXAfterSkip=pntx/skipx+1;
+        pointsXAfterSkip=pntx/skipx+1;
 
 //-----------------------------------------------------------------------------------//
 //---- Skipmeshing ----
 //-----------------------------------------------------------------------------------//
 
-        cout << "\n\n"
-    	     << " *===================================================* \n" 
-             << " *                  Work in progress                 * \n"  
-             << " *===================================================* \n\n"
-             << "   Top2Vol began coarsing "+inpurfile+"                \n"
-             << "   ...";   
+    cout << "\n\n"
+         << " *===================================================* \n"
+         << " *                  Work in progress                 * \n"
+         << " *===================================================* \n\n"
+         << "   Top2Vol began coarsing "+inpurfile+"                \n"
+         << "   ...";
 
 
-        wr.open(outpufile);
+    wr.open(outpufile);
 
-        for(int j = 0; j<pnty; j++){
-        for(int i = 0; i<pntx; i++){
-	      in>>std::fixed>> x  >> y >> z;
+    for(int j = 0; j<pnty; j++)
+        {
+            for(int i = 0; i<pntx; i++)
+                {
+                    in>>std::fixed>> x  >> y >> z;
 
-	      if(int(j%skipy) == 0 && int(i%skipx) == 0 )
-	          wr<< std::fixed << x << "\t" << y << "\t"<< z << "\n";
+                    if(int(j%skipy) == 0 && int(i%skipx) == 0 )
+                        wr<< std::fixed << x << "\t" << y << "\t"<< z << "\n";
+                }
         }
-        }
 
-        wr.close();
+    wr.close();
 
-        cout << "Finshed !!!                                               \n" 
-             << "   Top2Vol is now writing an info file                    \n"
-             << "   ...";    
+    cout << "Finshed !!!                                               \n"
+         << "   Top2Vol is now writing an info file                    \n"
+         << "   ...";
 
-        wr.open("info-"+outpufile+".txt");
+    wr.open("info-"+outpufile+".txt");
 
-        wr   << " *===================================================* \n" 
-             << " *                  INFORMATION                      * \n"  
-             << " *===================================================* \n"        
-             << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
-             << "\n   Total # xPoints:: "<< pointsXAfterSkip
-             << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n";
+    wr   << " *===================================================* \n"
+         << " *                  INFORMATION                      * \n"
+         << " *===================================================* \n"
+         << "\n   Total # Points :: "<< pointsYAfterSkip*pointsXAfterSkip
+         << "\n   Total # xPoints:: "<< pointsXAfterSkip
+         << "\n   Total # yPoints:: "<< pointsYAfterSkip
+         << "\n\n ==================================================== \n";
 
-        wr.close();
+    wr.close();
 
-        cout << "Finshed !!!                                               \n";
-    
+    cout << "Finshed !!!                                               \n";
+
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    	cout << "\n"
-    	     << " *===================================================* \n" 
-             << " *      Information on processed point cloud         * \n"  
-             << " *===================================================* \n"        
-             << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
-             << "\n   Total # xPoints:: "<< pointsXAfterSkip
-             << "\n   Total # yPoints:: "<< pointsYAfterSkip
-             << "\n\n ==================================================== \n\n";
+    cout << "\n"
+         << " *===================================================* \n"
+         << " *      Information on processed point cloud         * \n"
+         << " *===================================================* \n"
+         << "\n   Total # Points :: "<< pointsXAfterSkip*pointsYAfterSkip
+         << "\n   Total # xPoints:: "<< pointsXAfterSkip
+         << "\n   Total # yPoints:: "<< pointsYAfterSkip
+         << "\n\n ==================================================== \n\n";
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
@@ -200,6 +204,6 @@ int main(int argc, char *argv[]){
          << " *============================================================*\n"
          << "                                                               \n";
 
-return 0;
+    return 0;
 }
 
