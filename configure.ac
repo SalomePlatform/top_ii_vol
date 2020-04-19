@@ -4,6 +4,17 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_PREFIX_PROGRAM (program)
 
+dnl Small macro to print out a nice, pretty section title.
+define(SECTION_TITLE,
+[
+	echo >& AS_MESSAGE_FD
+	echo '   $1   ' | sed -e's/./-/g' >&AS_MESSAGE_FD
+	echo '   $1' >& AS_MESSAGE_FD
+	echo '   $1   ' | sed -e's/./-/g' >&AS_MESSAGE_FD
+])
+
+
+
 AU_ALIAS([ACX_MPI], [AX_MPI])
 AC_DEFUN([AX_MPI], [
 AC_PREREQ(2.50) dnl for AC_LANG_CASE
@@ -114,12 +125,16 @@ else
 fi
 ])dnl AX_MPI
 
+SECTION_TITLE([   checking for a C/C++ compilers   ])
+
 AC_PROG_CC
 AX_MPI
 
 AC_PROG_CXX
 AC_LANG(C++)
 AX_MPI
+
+SECTION_TITLE([  generating the required makefiles  ])
 
 AC_PREFIX_DEFAULT($HOME)
 AC_CONFIG_FILES([
