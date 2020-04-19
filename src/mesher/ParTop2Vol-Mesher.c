@@ -931,7 +931,7 @@ int main(int argc, char *argv[])
     if(mpirank==0)
         {
             printf( "\n\n *============================================================*\n");
-            printf( "  The program finshed in : %1.2f\n",  MPI_Wtime()-t1);
+            printf( "  The program finshed in : %f s\n",  MPI_Wtime()-t1);
             printf( " *============================================================*\n");
         }
     fflush(stdout);
