@@ -14,7 +14,7 @@ top-ii-vol.so: top-ii-vol.cpp
 	$(ffCXX) -auto 	top-ii-vol.cpp
 
 
-test-freefem: ./../../test/test.edp
+test-freefem: top-ii-vol.so ./../../test/test.edp
 	ff-mpirun -np $(NP) ../../test/test.edp -v 0
 	paraview vtk_$(NP).pvd    
 
