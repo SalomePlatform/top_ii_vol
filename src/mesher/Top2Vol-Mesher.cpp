@@ -42,8 +42,13 @@ int main(int argc, char *argv[])
     double xx	  ;
     double yy	  ;
     double zz	  ;
+    double zmax   ;
     double delz	  ;
     double zznew  ;
+
+    int pntx      ;
+    int pnty      ;
+    int	pntz      ;
 
     int IJK	  ;
     int Ip1JK	  ;
@@ -54,31 +59,30 @@ int main(int argc, char *argv[])
     int Ip1Jp1K	  ;
     int Ip1Jp1Kp1 ;
 
+    string * inputfile  = new string();
+    string * outputfile = new string();
 
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
     cout << "\n"
-         << " *  This program  will take your .xyz cloud topology * \n"
-         << " *  mesh and and generate a  pseudo-structured tetra * \n"
-         << " *  mesh in medit's '.mesh' or Gmsh's '.msh' formats * \n\n";
+         << " *  This program  will take your .xyz cloud topology *\n"
+         << " *  mesh and and generate a  pseudo-structured tetra *\n"
+         << " *  mesh in medit's '.mesh' or Gmsh's '.msh' formats *\n\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    double zmax = -1920.0;
+    pntx = 11;
+    pnty = 10;
+    pntz = 10;
 
-    int pntx = 11;
-    int pnty = 10;
-    int	pntz = 10;
+    zmax = -1920.0;
 
-    string * inputfile  = new string();
-    string * outputfile = new string();
-
-    * inputfile  = "out-coarse.xyz";
-    * outputfile = "test.mesh";
+    *inputfile  = "out-coarse.xyz";
+    *outputfile = "test.mesh";
 
     string meshtype  = "mesh";
 
@@ -128,18 +132,15 @@ int main(int argc, char *argv[])
 //---- Message on commandline -----
 //-----------------------------------------------------------------------------------//
 
-    cout << " *===================================================* \n"
-         << " *                  User Input                       * \n"
-         << " *===================================================* \n\n";
-
-
-    cout << "   X points are        ------ " << pntx        << "\n"
-         << "   Y points are        ------ " << pnty        << "\n"
-         << "   Z points are        ------ " << pntz        << "\n"
-         << "   Z depth provided    ------ " << zmax        << "\n"
-         << "   Input file          ------ " << *inputfile  << "\n"
-         << "   Output file         ------ " << *outputfile << "\n\n";
-
+    cout << " *===================================================*\n"
+         << " *                  User input                       *\n"
+         << " *===================================================*\n\n"
+         << "   # X points  :: " << pntx        << "\n"
+         << "   # Y points  :: " << pnty        << "\n"
+         << "   # Z points  :: " << pntz        << "\n"
+         << "   Z depth     :: " << zmax        << "\n"
+         << "   Input file  :: " << *inputfile  << "\n"
+         << "   Output file :: " << *outputfile << "\n\n";
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
@@ -164,7 +165,6 @@ int main(int argc, char *argv[])
 
     if(meshtype == "mesh")
         {
-
             cout << "   Meshing the topology in Medit's *.mesh format"	<< "\n";
 
 //-----------------------------------------------------------------------------------//
@@ -197,15 +197,14 @@ int main(int argc, char *argv[])
                 }
 
             wrgmsh << "\n";
-            cout   << "   Done\n   #  "<<NPnt<<" points written\n";
+            cout   << "   Done\n   #  " << NPnt << " points written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
 //-----------------------------------------------------------------------------------//
 
             cout   << "   Generating Tetrahedra....";
-            wrgmsh << "Tetrahedra\n"
-                   <<  NTet  << "\n";
+            wrgmsh << "Tetrahedra\n" << NTet << "\n";
 
             for(int j=0; j<pnty-1;  j++)
                 {
@@ -234,15 +233,14 @@ int main(int argc, char *argv[])
                 }
 
             wrgmsh << "\n";
-            cout   << "   Done\n   #  "<<NTet<<" tetrahedra written\n";
+            cout   << "   Done\n   #  " << NTet << " tetrahedra written\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
 //-----------------------------------------------------------------------------------//
 
             cout   << "   Generating Triangles...."			       ;
-            wrgmsh << "Triangles\n"
-                   << NTri  << "\n";
+            wrgmsh << "Triangles\n" << NTri  << "\n";
 
 //---------------------------- X-MIN-PLANE -------------------------------//
             for(int i=0; i<pnty-1;  i++)
@@ -350,8 +348,7 @@ int main(int argc, char *argv[])
 //---- Finishing footer -----
 //-----------------------------------------------------------------------------------//
 
-            wrgmsh << "\n"
-                   << "End"<< endl;
+            wrgmsh << "\n" << "End"<< endl;
         }
 
 //-----------------------------------------------------------------------------------//
@@ -372,7 +369,7 @@ int main(int argc, char *argv[])
                   << "2.2 0 8\n"
                   << "$EndMeshFormat\n"
                   << "$Nodes\n"
-                  << NPnt<<"\n" ;
+                  << NPnt <<"\n";
 
             int counter1 = 1;
 
