@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     int skipx = 150     ;
     int skipy = 150     ;
 
-    string inpurfile = "./../data/DEM_2m_new.xyz" ;
+    string inputfile = "./../data/DEM_2m_new.xyz" ;
     string outpufile = "out-coarse.xyz"           ;
 
 //-----------------------------------------------------------------------------------//
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
                 skipy = stoi(argvdummy1);
 
             if( argvdummy == "--in")
-                inpurfile = argvdummy1;
+                inputfile = argvdummy1;
 
             if( argvdummy == "--out")
                 outpufile = argvdummy1;
@@ -95,16 +95,14 @@ int main(int argc, char *argv[])
 //-----------------------------------------------------------------------------------//
 
     cout << "\n"
-         << " *  This program  will coarsen your .xyz by skipping * \n"
-         << " *  the  specified  number of x and y points to skip.* \n\n"
          << " *===================================================* \n"
-         << " *                  User Input                       * \n"
+         << " *                  User inputs                      * \n"
          << " *===================================================* \n\n"
          << "   X points are        ------ " << pntx      << "\n"
          << "   Y points are        ------ " << pnty      << "\n"
          << "   X skip points are   ------ " << skipx     << "\n"
          << "   Y skip points are   ------ " << skipy     << "\n"
-         << "   Input file          ------ " << inpurfile << "\n"
+         << "   Input file          ------ " << inputfile << "\n"
          << "   Output file         ------ " << outpufile << "\n";
 
 //-----------------------------------------------------------------------------------//
@@ -112,9 +110,10 @@ int main(int argc, char *argv[])
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open(inpurfile);
+    in.open(inputfile);
 
     ofstream wr;
+    wr.open(outpufile);
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
@@ -144,11 +143,11 @@ int main(int argc, char *argv[])
          << " *===================================================* \n"
          << " *                  Work in progress                 * \n"
          << " *===================================================* \n\n"
-         << "   Top2Vol began coarsing "+inpurfile+"                \n"
+         << "   topiivol began coarsing "+inputfile+"                \n"
          << "   ...";
 
 
-    wr.open(outpufile);
+   
 
     for(int j=0; j<pnty; j++)
         {
@@ -162,12 +161,13 @@ int main(int argc, char *argv[])
         }
 
     wr.close();
+    in.close();
 
     cout << "Finshed !!!                                               \n"
-         << "   Top2Vol is now writing an info file                    \n"
+         << "   topiivol is now writing an info file                    \n"
          << "   ...";
 
-    wr.open("info-"+outpufile+".txt");
+    wr.open(outpufile+".info");
 
     wr   << " *===================================================* \n"
          << " *      Information on processed point cloud         * \n"
