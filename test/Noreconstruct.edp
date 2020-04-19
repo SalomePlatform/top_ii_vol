@@ -57,7 +57,7 @@ macro def(u)u//
     Mat A;
     createMat(Th, A, Pk)
 
-    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v))  + on(66, u = 15.0)+ on(33, u = 1.0);
+    varf vPb(u, v) = intN(Th)(grad(u)' * grad(v))  + on(6, u = 15.0)+ on(3, u = 1.0);
     real[int] rhs = vPb(0, Wh);
 
     set(A, sparams = " ");

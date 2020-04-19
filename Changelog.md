@@ -10,6 +10,12 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 - Merged the partitioner and distributed mesher, no more `top-ii-vol-Part`
 - No more `--scatter`, now a part of parallel mesher
 
+### Bug
+
+- proper labeling for `.msh` was missing : now fixed
+
+
+
 ## [1.1] 2020‑03‑31
 ### Added
 - New MPI based distributed mesher
