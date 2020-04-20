@@ -67,7 +67,14 @@ int main(int argc, char *argv[])
     int zLocalStart ;       // used by MPI ranks to mark the z starting row
     int zLocalEnd   ;       // used by MPI ranks to mark the z ending row
 
+    int globalsizes[2] ;
+    int localsizes [2] ;
+    int starts[2]      ;
+
+
     float **data ;          // array to hold the input data from point cloud xyz
+
+
 
     float xx    ;           // variable hold x point value
     float yy    ;           // variable hold y point value
@@ -95,10 +102,13 @@ int main(int argc, char *argv[])
     int mpirank ;                  // MPI Variable to give MPI rank
     int mpisize ;                  // MPI Variable to give MPI size
 
-    MPI_Offset    offset       ;
-    MPI_File      file         ;
-    MPI_Status    status       ;
+    MPI_Offset   offset        ;
+    MPI_File     file          ;
+    MPI_File     filein        ;
+    MPI_File     fileinparted  ;
+    MPI_Status   status        ;
     MPI_Datatype num_as_string ;
+    MPI_Request  request       ;
 
     ierr = MPI_Init(&argc, &argv)                  ;
     ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize) ;
@@ -166,6 +176,16 @@ int main(int argc, char *argv[])
         }
 
 //====================================================================================//
+//---- pntz-1  pnty-1 pntx-1 -----
+//====================================================================================//
+
+    int pntxM1    = pntx-1      ;
+    int pntyM1    = pnty-1      ;
+    int pntzM1    = pntz-1      ;
+    int pntxXpnty = pntx * pnty ;
+    int pntxXpntz = pntz * pntx ;
+
+//====================================================================================//
 //---- partition input point cloud -----
 //====================================================================================//
 
@@ -178,17 +198,82 @@ int main(int argc, char *argv[])
 
     MPI_Barrier(MPI_COMM_WORLD);
 
+/*
+//-----------------------------------------------------------------------------------//
+//---- parallel  partitioning needs debugging -----
+//-----------------------------------------------------------------------------------//
 
-//====================================================================================//
-//---- pntz-1  pnty-1 pntx-1 -----
-//====================================================================================//
+    locnrows = fetchLocalRows( mpirank, mpisize, 1, pntxXpnty );
+    startrow = fetchStartRows( mpirank, mpisize, 1, pntxXpnty );
 
-    int pntxM1    = pntx-1      ;
-    int pntyM1    = pnty-1      ;
-    int pntzM1    = pntz-1      ;
-    int pntxXpnty = pntx * pnty ;
-    int pntxXpntz = pntz * pntx ;
+    printf("mpirank %d localrow %d startrow %d\n",mpirank,locnrows,startrow);
 
+
+    nrows = pntxXpnty;
+
+    globalsizes[0] = nrows;
+    globalsizes[1] = 4;
+
+    localsizes [0] = locnrows;
+    localsizes [1] = 4;
+
+    starts[0]  = startrow;
+    starts[1]  = 0;
+
+
+    MPI_Datatype localarray0	;
+    MPI_Type_create_subarray(2, globalsizes, localsizes,starts, MPI_ORDER_C, 
+                             num_as_string, &localarray0);
+    MPI_Type_commit(&localarray0);
+
+
+    char strname[80]="";
+    strcat (strname, inpurfile);
+
+    MPI_File_open( MPI_COMM_WORLD, strname, 
+                   MPI_MODE_RDONLY,
+                   MPI_INFO_NULL, &filein);
+
+
+    char filenamepath[256];
+    snprintf (filenamepath, sizeof(filenamepath), "test-xxxwr_%d.xyz",  mpirank);
+
+    MPI_File_open( MPI_COMM_SELF, filenamepath, 
+                   MPI_MODE_CREATE | MPI_MODE_RDWR,
+                   MPI_INFO_NULL, &fileinparted );
+
+//-----------------------------------------------------------------------------------//
+//---- Set file view -----
+//-----------------------------------------------------------------------------------//
+
+    offset = 0;
+    MPI_File_set_view( filein, offset,  MPI_CHAR, localarray0, 
+                           "native", MPI_INFO_NULL );
+
+
+//-----------------------------------------------------------------------------------//
+//---- Pointdata writing -----
+//-----------------------------------------------------------------------------------//
+
+    char *data_as_txt0 = malloc(locnrows*1*charspernum*sizeof(char));
+
+    MPI_File_iread( filein, data_as_txt0, locnrows*1, num_as_string,  &request ); 
+    MPI_Wait( &request, &status );
+
+    MPI_File_iwrite( fileinparted, data_as_txt0, locnrows*1, num_as_string, &request );
+    MPI_Wait( &request, &status );
+
+//-----------------------------------------------------------------------------------//
+//---- Freeup memory -----
+//-----------------------------------------------------------------------------------//
+
+    free(data_as_txt0);
+    MPI_Type_free(&localarray0);
+    MPI_File_close(&filein);
+    MPI_File_close(&fileinparted);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+*/
 //====================================================================================//
 //---- Calculating mesh attributes -----
 //====================================================================================//
@@ -294,9 +379,14 @@ int main(int argc, char *argv[])
 
     nrows = NPnt;
 
-    int globalsizes[2] = {nrows, 4};
-    int localsizes [2] = {locnrows, 4};
-    int starts[2]      = {startrow, 0};
+    globalsizes[0] = nrows;
+    globalsizes[1] = 4;
+
+    localsizes [0] = locnrows;
+    localsizes [1] = 4;
+
+    starts[0]  = startrow;
+    starts[1]  = 0;
 
     MPI_Datatype localarray;
     MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, 
