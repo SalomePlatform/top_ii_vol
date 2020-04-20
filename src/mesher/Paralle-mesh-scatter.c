@@ -38,24 +38,13 @@ int main(int argc, char **argv) {
 //---- Global Variables -----
 //-----------------------------------------------------------------------------------//
 
+    char filepath[256];
+
     int ierr 	 ;
     int rank 	 ;
     int size 	 ;
-
     int NPnt     ;
-    int NTri     ;
-    int NTet     ;
-    int label 	 ;
 
-    int	IJK	     ;
-    int	Ip1JK	 ;
-    int	IJp1K	 ;
-    int	IJKp1	 ;
-    int	Ip1JKp1	 ;
-    int	IJp1Kp1	 ;
-    int	Ip1Jp1K	 ;
-    int	Ip1Jp1Kp1;
-    int dummycount;
 
     int startrow ;
     int endrow   ;
@@ -65,22 +54,7 @@ int main(int argc, char **argv) {
 
     float **data ;
 
-    float xx	 ;
-    float yy	 ;
-    float zz	 ;
-    float delz	 ;
-    float zznew  ;
-
     const int charspernum = 41 ;
-
-    char *const fmt1      = "%-13d "     ;
-    char *const endfmt1   = "%-13d\n"    ;
-    char *const fmt       = "%-13.6f   " ;
-    char *const endfmt    = "%-13d\n"    ;
-    char *const fmtint    = "%-11d "     ;
-    char *const endfmtint = "%-7d\n"     ;
-
-    FILE *infile;
 
 //-----------------------------------------------------------------------------------//
 //---- MPI variables -----
@@ -92,6 +66,7 @@ int main(int argc, char **argv) {
     MPI_Status 	 status		;
     MPI_Datatype num_as_string	;
     MPI_Datatype localarray	;
+    MPI_Request request;
 
     ierr = MPI_Init(&argc, &argv);
     ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -101,24 +76,19 @@ int main(int argc, char **argv) {
     MPI_Type_commit(&num_as_string);
 
     double t1 = MPI_Wtime();
+
 //-----------------------------------------------------------------------------------//
 //---- Global Parameters -----
 //-----------------------------------------------------------------------------------//
 
-    double zmax = -1920.0;
-
     int pntx=32;
     int pnty=29;
-    int	pntz=51;
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
 
     NPnt = pntx * pnty						      ;
-    NTri = 4*((pntz-1)*(pntx-1)+(pnty-1)*(pntz-1)+(pntx-1)*(pnty-1))  ;
-    NTet = (pntx-1) * (pnty-1) * (pntz-1) * 6			      ;
-    locNPnt = 	(pntx * pnty)/size ;
 
 //=============================================================================
 // ------------- Commandline logo output ------------------
@@ -152,53 +122,55 @@ int main(int argc, char **argv) {
     int starts[2]      = {startrow, 0};
     int order          = MPI_ORDER_C  ;
 
-    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, order, num_as_string, &localarray);
+    MPI_Type_create_subarray(2, globalsizes, localsizes, 
+                             starts, order, num_as_string, 
+                             &localarray);
+
     MPI_Type_commit(&localarray);
 
 //-----------------------------------------------------------------------------------//
 //---- open the file, and set the view -----
 //-----------------------------------------------------------------------------------//
 
-    MPI_File_open(MPI_COMM_WORLD, "./../../data/DEM_160m.xyz", 
-                  MPI_MODE_RDONLY,
-                  MPI_INFO_NULL, &file);
+    MPI_File_open( MPI_COMM_WORLD, "./../../data/DEM_160m.xyz", 
+                   MPI_MODE_RDONLY,
+                   MPI_INFO_NULL, &file);
 
-    MPI_File_open(MPI_COMM_WORLD, "test-wr.xyz", 
-                  MPI_MODE_CREATE|MPI_MODE_WRONLY,
-                  MPI_INFO_NULL, &file1);
+
+    snprintf (filepath, sizeof(filepath), "test-xxxwr_%d.xyz",  rank);
+
+    MPI_File_open( MPI_COMM_SELF, filepath, 
+                   MPI_MODE_CREATE | MPI_MODE_RDWR,
+                   MPI_INFO_NULL, &file1 );
 
 //-----------------------------------------------------------------------------------//
 //---- Header writing -----
 //-----------------------------------------------------------------------------------//
 
-
-    if(rank==0)printf("\n Writing mesh points ");
-
-
     offset = 0;
-    MPI_File_set_view(file, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
 
-    MPI_File_set_view(file1, offset,  MPI_CHAR, localarray, 
-                           "native", MPI_INFO_NULL);
+    MPI_File_set_view( file, offset,  MPI_CHAR, localarray, 
+                           "native", MPI_INFO_NULL );
 
 //-----------------------------------------------------------------------------------//
 //---- Pointdata writing -----
 //-----------------------------------------------------------------------------------//
+
     char *data_as_txt = malloc(locnrows*1*charspernum*sizeof(char));
 
-    MPI_File_read_all(file, data_as_txt, locnrows*1, num_as_string, &status);
+    //printf("rank %d localrow %d startrow %d\n",rank,locnrows,startrow);
 
-    MPI_File_write_all(file1, data_as_txt, locnrows*1, num_as_string, &status);
+    MPI_File_iread( file, data_as_txt, locnrows*1, num_as_string,  &request ); 
+    MPI_Wait( &request, &status );
+
+    MPI_File_iwrite( file1, data_as_txt, locnrows*1, num_as_string, &request );
+    MPI_Wait( &request, &status );
+
     free(data_as_txt);
     MPI_Type_free(&localarray);
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    if(rank==0)
-	printf(" ---- Done\n");
-
     MPI_File_close(&file);
+    MPI_File_close(&file1);
     MPI_Type_free(&num_as_string);
 
     MPI_Finalize();
