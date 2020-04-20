@@ -98,7 +98,6 @@ int main(int argc, char **argv) {
      #include "./../lib/LogoTopiiVolC.h"
     }
 
-
 //-----------------------------------------------------------------------------------//
 //---- Data allocation -----
 //-----------------------------------------------------------------------------------//
@@ -144,7 +143,7 @@ int main(int argc, char **argv) {
                    MPI_INFO_NULL, &file1 );
 
 //-----------------------------------------------------------------------------------//
-//---- Header writing -----
+//---- Set file view -----
 //-----------------------------------------------------------------------------------//
 
     offset = 0;
@@ -166,9 +165,12 @@ int main(int argc, char **argv) {
     MPI_File_iwrite( file1, data_as_txt, locnrows*1, num_as_string, &request );
     MPI_Wait( &request, &status );
 
+//-----------------------------------------------------------------------------------//
+//---- Freeup memory -----
+//-----------------------------------------------------------------------------------//
+
     free(data_as_txt);
     MPI_Type_free(&localarray);
-
     MPI_File_close(&file);
     MPI_File_close(&file1);
     MPI_Type_free(&num_as_string);
