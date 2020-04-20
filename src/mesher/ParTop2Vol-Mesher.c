@@ -299,8 +299,8 @@ int main(int argc, char *argv[])
     int starts[2]      = {startrow, 0};
 
     MPI_Datatype localarray;
-    MPI_Type_create_subarray(2, globalsizes, localsizes, starts,
-                             MPI_ORDER_C, num_as_string, &localarray);
+    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, 
+                             num_as_string, &localarray);
     MPI_Type_commit(&localarray);
 
 //====================================================================================//
@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
         }
 
 //====================================================================================//
-//---- Data allocation -----
+//---- create a type describing our piece of the array (Tetrahedra) -----
 //====================================================================================//
 
     nrows = NTet;
@@ -513,14 +513,14 @@ int main(int argc, char *argv[])
     starts[0]  = startrow;
     starts[1]  = 0;
 
+    MPI_Datatype localarray1  ;
+    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, 
+                             num_as_string, &localarray1);
+    MPI_Type_commit(&localarray1);
+
 //====================================================================================//
 //---- Tetdata writing -----
 //====================================================================================//
-
-    MPI_Datatype localarray1  ;
-    MPI_Type_create_subarray(2, globalsizes, localsizes, starts,
-                             MPI_ORDER_C, num_as_string, &localarray1);
-    MPI_Type_commit(&localarray1);
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
 
@@ -673,9 +673,9 @@ int main(int argc, char *argv[])
         }
 
 
-//----X-MIN-PLANE---//
     dummycount=0;
 
+//----X-MIN-PLANE---//
     label=11;
 
     for(int i=yLocalStart; i<yLocalEnd;  i++)
@@ -706,6 +706,7 @@ int main(int argc, char *argv[])
 
 //----X-MAX-PLANE----//
     label=33;
+
     for(int i=yLocalStart; i<yLocalEnd;  i++)
         {
             for(int j=zLocalStart; j<zLocalEnd;  j++)
@@ -753,6 +754,7 @@ int main(int argc, char *argv[])
 
 //----Z-MIN-PLANE----//
     label = 22;
+
     for(int i=yLocalStart; i<yLocalEnd;  i++)
         {
             for(int j=xLocalStart; j<xLocalEnd;  j++)
@@ -782,6 +784,7 @@ int main(int argc, char *argv[])
 
 //----Z-MAX-PLANE----//
     label=44;
+
     for(int i=yLocalStart; i<yLocalEnd;  i++)
         {
             for(int j=xLocalStart; j<xLocalEnd;  j++)
@@ -887,7 +890,7 @@ int main(int argc, char *argv[])
         }
 
 //====================================================================================//
-//---- Triangle writing -----
+//---- create a type describing our piece of the array (Triangle) -----
 //====================================================================================//
 
     nrows = NTri;
@@ -901,10 +904,15 @@ int main(int argc, char *argv[])
     starts[0]  = startrow;
     starts[1]  = 0;
 
-
     MPI_Datatype localarray2  ;
-    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, num_as_string, &localarray2);
+    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, 
+                             num_as_string, &localarray2);
     MPI_Type_commit(&localarray2);
+
+
+//====================================================================================//
+//---- Triangle writing -----
+//====================================================================================//
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray2,"native", MPI_INFO_NULL);
 
