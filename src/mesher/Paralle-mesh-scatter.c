@@ -55,7 +55,6 @@ int main(int argc, char **argv) {
     MPI_File   	 file1		;
     MPI_Status 	 status		;
     MPI_Datatype num_as_string	;
-    MPI_Datatype localarray	;
     MPI_Request request;
 
     ierr = MPI_Init(&argc, &argv);
@@ -105,12 +104,10 @@ int main(int argc, char **argv) {
     int globalsizes[2] = {nrows   , 1};
     int localsizes [2] = {locnrows, 1};
     int starts[2]      = {startrow, 0};
-    int order          = MPI_ORDER_C  ;
 
-    MPI_Type_create_subarray(2, globalsizes, localsizes, 
-                             starts, order, num_as_string, 
-                             &localarray);
-
+    MPI_Datatype localarray	;
+    MPI_Type_create_subarray(2, globalsizes, localsizes,starts, MPI_ORDER_C, 
+                             num_as_string, &localarray);
     MPI_Type_commit(&localarray);
 
 //-----------------------------------------------------------------------------------//

@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     int NTet  ;             // # of tetrahedra in the mesh
     int label ;             // label # of the mesh surfaces
 
+
     int  IJK        ;       // variable used during tera or triangle generation
     int  Ip1JK      ;       // variable used during tera or triangle generation
     int  IJp1K      ;       // variable used during tera or triangle generation
@@ -55,10 +56,12 @@ int main(int argc, char *argv[])
     int  Ip1Jp1Kp1  ;       // variable used during tera or triangle generation
     int  dummycount ;       // variable used during tera or triangle generation
 
+
     int startrow ;          // used by MPI ranks to mark their starting row
     int locnrows ;          // used by MPI ranks to know the # of rows held
     int locNPnt  ;          // used by MPI ranks to know the # of points held
     int nrows    ;          // used by MPI ranks to know the total # of rows
+
 
     int xLocalStart ;       // used by MPI ranks to mark the x starting row
     int xLocalEnd   ;       // used by MPI ranks to mark the x ending row
@@ -67,13 +70,13 @@ int main(int argc, char *argv[])
     int zLocalStart ;       // used by MPI ranks to mark the z starting row
     int zLocalEnd   ;       // used by MPI ranks to mark the z ending row
 
-    int globalsizes[2] ;
-    int localsizes [2] ;
-    int starts[2]      ;
+
+    int globalsizes[2] ;    // used by MPI ranks to mark global size of array
+    int localsizes [2] ;    // used by MPI ranks to mark local  size of array
+    int starts[2]      ;    // used by MPI ranks to mark starting position of array
 
 
     float **data ;          // array to hold the input data from point cloud xyz
-
 
 
     float xx    ;           // variable hold x point value
@@ -82,7 +85,8 @@ int main(int argc, char *argv[])
     float delz  ;           // variable get delta z according to B/C (Laplacian)
     float zznew ;           // variable hold z point value
 
-    const int charspernum = 14 ;
+
+    const int charspernum = 14           ;
 
     char *const fmt1      = "%-13d "     ;
     char *const endfmt1   = "%-13d\n"    ;
@@ -93,6 +97,7 @@ int main(int argc, char *argv[])
 
     FILE *infile;
 
+    int ParallelPart = 0;
 
 //====================================================================================//
 //---- MPI variables -----
@@ -108,6 +113,7 @@ int main(int argc, char *argv[])
     MPI_File     fileinparted  ;
     MPI_Status   status        ;
     MPI_Datatype num_as_string ;
+    MPI_Datatype num_as_string0;
     MPI_Request  request       ;
 
     ierr = MPI_Init(&argc, &argv)                  ;
@@ -123,7 +129,7 @@ int main(int argc, char *argv[])
 
     if(mpirank == 0)
         {
-#include "./../lib/LogoTopiiVolC.h"
+            #include "./../lib/LogoTopiiVolC.h"
         }
 
 //====================================================================================//
@@ -141,7 +147,6 @@ int main(int argc, char *argv[])
     int pntx = 32  ;
     int pnty = 29  ;
     int pntz = 100 ;
-
 
     char inpurfile[80] = "./../../data/DEM_160m.xyz" ;
     char outpufile[80] = "Tetra-ParTop2Vol.mesh"     ;
@@ -189,43 +194,50 @@ int main(int argc, char *argv[])
 //---- partition input point cloud -----
 //====================================================================================//
 
-    if(mpirank == 0)
-        {
-#include "./../lib/TopiiVolPartitionPointCloudAlgo.h"
-        }
+    if(ParallelPart == 0)
+            if(mpirank == 0)
+                {  
+                     #include "./../lib/TopiiVolPartitionPointCloudAlgo.h"
+                }     
 
-    char partCloudName[80] = "pc_part";
+//====================================================================================//
+//---- parallel  partitioning experimetal -----
+//====================================================================================//
 
-    MPI_Barrier(MPI_COMM_WORLD);
+if(ParallelPart == 1)
+  {
 
-/*
+    const int charspernum0 = 41 ;
+    
+    MPI_Type_contiguous(charspernum0, MPI_CHAR, &num_as_string0); 
+    MPI_Type_commit(&num_as_string0);
+
 //-----------------------------------------------------------------------------------//
-//---- parallel  partitioning needs debugging -----
+//---- Allocate MPI data -----
 //-----------------------------------------------------------------------------------//
 
     locnrows = fetchLocalRows( mpirank, mpisize, 1, pntxXpnty );
     startrow = fetchStartRows( mpirank, mpisize, 1, pntxXpnty );
 
-    printf("mpirank %d localrow %d startrow %d\n",mpirank,locnrows,startrow);
-
-
     nrows = pntxXpnty;
 
     globalsizes[0] = nrows;
-    globalsizes[1] = 4;
+    globalsizes[1] = 1;
 
     localsizes [0] = locnrows;
-    localsizes [1] = 4;
+    localsizes [1] = 1;
 
     starts[0]  = startrow;
     starts[1]  = 0;
 
-
     MPI_Datatype localarray0	;
     MPI_Type_create_subarray(2, globalsizes, localsizes,starts, MPI_ORDER_C, 
-                             num_as_string, &localarray0);
+                             num_as_string0, &localarray0);
     MPI_Type_commit(&localarray0);
 
+//-----------------------------------------------------------------------------------//
+//---- Open MPI files -----
+//-----------------------------------------------------------------------------------//
 
     char strname[80]="";
     strcat (strname, inpurfile);
@@ -234,9 +246,8 @@ int main(int argc, char *argv[])
                    MPI_MODE_RDONLY,
                    MPI_INFO_NULL, &filein);
 
-
     char filenamepath[256];
-    snprintf (filenamepath, sizeof(filenamepath), "test-xxxwr_%d.xyz",  mpirank);
+    snprintf (filenamepath, sizeof(filenamepath), "pc_part_%d.xyz",  mpirank);
 
     MPI_File_open( MPI_COMM_SELF, filenamepath, 
                    MPI_MODE_CREATE | MPI_MODE_RDWR,
@@ -250,18 +261,26 @@ int main(int argc, char *argv[])
     MPI_File_set_view( filein, offset,  MPI_CHAR, localarray0, 
                            "native", MPI_INFO_NULL );
 
-
 //-----------------------------------------------------------------------------------//
-//---- Pointdata writing -----
+//---- Data reading and writing -----
 //-----------------------------------------------------------------------------------//
 
-    char *data_as_txt0 = malloc(locnrows*1*charspernum*sizeof(char));
+    char *data_as_txt0 = malloc(locnrows*1*charspernum0*sizeof(char));
 
-    MPI_File_iread( filein, data_as_txt0, locnrows*1, num_as_string,  &request ); 
+    if(mpirank==0)
+        printf("\n Reading the point cloud mesh");
+
+    MPI_File_iread( filein, data_as_txt0, locnrows*1, num_as_string0,  &request ); 
     MPI_Wait( &request, &status );
 
-    MPI_File_iwrite( fileinparted, data_as_txt0, locnrows*1, num_as_string, &request );
+    if(mpirank==0)
+        printf(" ---- Done\n Writing partitioned point cloud mesh");
+
+    MPI_File_iwrite( fileinparted, data_as_txt0, locnrows*1, num_as_string0, &request );
     MPI_Wait( &request, &status );
+
+    if(mpirank==0)
+        printf(" ---- Done");
 
 //-----------------------------------------------------------------------------------//
 //---- Freeup memory -----
@@ -271,9 +290,29 @@ int main(int argc, char *argv[])
     MPI_Type_free(&localarray0);
     MPI_File_close(&filein);
     MPI_File_close(&fileinparted);
+    MPI_Type_free(&num_as_string0);
+
+   }
+
+//====================================================================================//
+//---- Time taken for point cloud partitioning -----
+//====================================================================================//
+
+    if(mpirank==0)
+        {
+            printf( "\n\n *============================================================*\n");
+            printf( "  point cloud patitioning took : %f s\n",  MPI_Wtime()-t1);
+            printf( " *============================================================*\n");
+        }
+
+//====================================================================================//
+//---- Name of partioned mesh cloud -----
+//====================================================================================//
+
+    char partCloudName[80] = "pc_part";
 
     MPI_Barrier(MPI_COMM_WORLD);
-*/
+
 //====================================================================================//
 //---- Calculating mesh attributes -----
 //====================================================================================//

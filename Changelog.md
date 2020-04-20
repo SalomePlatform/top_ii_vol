@@ -5,6 +5,9 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 ### Added
 - New header for all files
 - Better algorithm for parallel mesher
+  - Dimension with Highest number of points gets partitioned
+  - Unbalanced partitioning improved  
+- Parallel partitioner for point cloud (sequential before)
 
 ### Removed
 - Merged the partitioner and distributed mesher, no more `top-ii-vol-Part`
