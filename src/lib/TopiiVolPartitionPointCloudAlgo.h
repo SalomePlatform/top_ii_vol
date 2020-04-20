@@ -98,7 +98,7 @@ for(int j = 0; j<pnty; j++)
                         printf( " writing partioned point cloud # %d in file : %s \n",k,wfilename);
                     }
 
-                fprintf(writeFile,"%lf\t%lf\t%lf\n",x,y,z) ;
+                fprintf(writeFile,"%lf %lf %lf\n",x,y,z) ;
                 countme++;
 
             }
