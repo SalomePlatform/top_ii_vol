@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
     MPI_File      file         ;
     MPI_Status    status       ;
     MPI_Datatype num_as_string ;
-    MPI_Datatype localarray    ;
 
     ierr = MPI_Init(&argc, &argv)                  ;
     ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize) ;
@@ -293,15 +292,15 @@ int main(int argc, char *argv[])
 //---- create a type describing our piece of the array (Points) -----
 //====================================================================================//
 
-    nrows = NPnt                      ;
+    nrows = NPnt;
 
     int globalsizes[2] = {nrows, 4};
     int localsizes [2] = {locnrows, 4};
     int starts[2]      = {startrow, 0};
-    int order          = MPI_ORDER_C  ;
 
+    MPI_Datatype localarray;
     MPI_Type_create_subarray(2, globalsizes, localsizes, starts,
-                             order, num_as_string, &localarray);
+                             MPI_ORDER_C, num_as_string, &localarray);
     MPI_Type_commit(&localarray);
 
 //====================================================================================//
@@ -503,20 +502,24 @@ int main(int argc, char *argv[])
 //---- Data allocation -----
 //====================================================================================//
 
-    nrows = NTet                       ;
+    nrows = NTet;
 
-    int globalsizes1[2] = {nrows, 4};
-    int localsizes1 [2] = {locnrows, 4};
-    int starts1[2]      = {startrow, 0};
-    int order1          = MPI_ORDER_C  ;
+    globalsizes[0] = nrows;
+    globalsizes[1] = 4;
+
+    localsizes [0] = locnrows;
+    localsizes [1] = 4;
+
+    starts[0]  = startrow;
+    starts[1]  = 0;
 
 //====================================================================================//
 //---- Tetdata writing -----
 //====================================================================================//
 
     MPI_Datatype localarray1  ;
-    MPI_Type_create_subarray(2, globalsizes1, localsizes1, starts1,
-                             order1, num_as_string, &localarray1);
+    MPI_Type_create_subarray(2, globalsizes, localsizes, starts,
+                             MPI_ORDER_C, num_as_string, &localarray1);
     MPI_Type_commit(&localarray1);
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
@@ -887,14 +890,20 @@ int main(int argc, char *argv[])
 //---- Triangle writing -----
 //====================================================================================//
 
-    nrows = NTri                       ;
-    int globalsizes2[2] = {nrows, 4};
-    int localsizes2 [2] = {locnrows, 4};
-    int starts2[2]      = {startrow, 0};
-    int order2          = MPI_ORDER_C  ;
+    nrows = NTri;
+
+    globalsizes[0] = nrows;
+    globalsizes[1] = 4;
+
+    localsizes [0] = locnrows;
+    localsizes [1] = 4;
+
+    starts[0]  = startrow;
+    starts[1]  = 0;
+
 
     MPI_Datatype localarray2  ;
-    MPI_Type_create_subarray(2, globalsizes2, localsizes2, starts2, order2, num_as_string, &localarray2);
+    MPI_Type_create_subarray(2, globalsizes, localsizes, starts, MPI_ORDER_C, num_as_string, &localarray2);
     MPI_Type_commit(&localarray2);
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray2,"native", MPI_INFO_NULL);
