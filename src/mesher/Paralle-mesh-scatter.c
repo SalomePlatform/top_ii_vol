@@ -18,19 +18,14 @@
 
 *******************************************************************************/
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mpi.h>
 
-float **alloc2d(int n, int m) {
-    float *data = malloc(n*m*sizeof(float));
-    float **array = malloc(n*sizeof(float *));
-    for (int i=0; i<n; i++)
-        array[i] = &(data[i*m]);
-    return array;
-}
+
+int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM);
+int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM);
 
 int main(int argc, char **argv) {
 
@@ -41,15 +36,12 @@ int main(int argc, char **argv) {
     char filepath[256];
 
     int ierr 	 ;
-    int rank 	 ;
-    int size 	 ;
+    int mpirank	 ;
+    int mpisize  ;
     int NPnt     ;
-
-
     int startrow ;
     int endrow   ;
     int locnrows ;
-    int locNPnt  ;
     int nrows    ;
 
     float **data ;
@@ -69,8 +61,8 @@ int main(int argc, char **argv) {
     MPI_Request request;
 
     ierr = MPI_Init(&argc, &argv);
-    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &size);
-    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    ierr|= MPI_Comm_size(MPI_COMM_WORLD, &mpisize);
+    ierr|= MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
 
     MPI_Type_contiguous(charspernum, MPI_CHAR, &num_as_string); 
     MPI_Type_commit(&num_as_string);
@@ -94,7 +86,7 @@ int main(int argc, char **argv) {
 // ------------- Commandline logo output ------------------
 //=============================================================================
 
-    if(rank==0){
+    if(mpirank==0){
      #include "./../lib/LogoTopiiVolC.h"
     }
 
@@ -102,14 +94,10 @@ int main(int argc, char **argv) {
 //---- Data allocation -----
 //-----------------------------------------------------------------------------------//
 
-    nrows = NPnt                   ;
-    locnrows = NPnt/size;
-    startrow = rank * locnrows;
-    endrow = startrow + locnrows - 1	;
-    if (rank == size-1) {
-        endrow = nrows - 1;
-        locnrows = endrow - startrow + 1;
-    }
+    locnrows = fetchLocalRows( mpirank, mpisize, 1, NPnt );
+    startrow = fetchStartRows( mpirank, mpisize, 1, NPnt );
+
+    printf("mpirank %d localrow %d startrow %d\n",mpirank,locnrows,startrow);
 
 //-----------------------------------------------------------------------------------//
 //---- create a type describing our piece of the array (Points) -----
@@ -136,7 +124,7 @@ int main(int argc, char **argv) {
                    MPI_INFO_NULL, &file);
 
 
-    snprintf (filepath, sizeof(filepath), "test-xxxwr_%d.xyz",  rank);
+    snprintf (filepath, sizeof(filepath), "test-xxxwr_%d.xyz",  mpirank);
 
     MPI_File_open( MPI_COMM_SELF, filepath, 
                    MPI_MODE_CREATE | MPI_MODE_RDWR,
@@ -157,8 +145,6 @@ int main(int argc, char **argv) {
 
     char *data_as_txt = malloc(locnrows*1*charspernum*sizeof(char));
 
-    //printf("rank %d localrow %d startrow %d\n",rank,locnrows,startrow);
-
     MPI_File_iread( file, data_as_txt, locnrows*1, num_as_string,  &request ); 
     MPI_Wait( &request, &status );
 
@@ -177,4 +163,49 @@ int main(int argc, char **argv) {
 
     MPI_Finalize();
     return 0;
+}
+
+
+//====================================================================================//
+//---- function to set localrow -----
+//====================================================================================//
+
+int fetchLocalRows(int mpirank, int mpisize, int multipyFactor, int pntM)
+{
+
+    int locnrows;
+    int Remainder = pntM%mpisize ;
+    int Quotient  = pntM/mpisize ;
+
+    if( Remainder == 0 )
+        locnrows = multipyFactor * Quotient ;
+    else if( mpirank < Remainder )
+        locnrows = multipyFactor * (Quotient+1);
+    else
+        locnrows = multipyFactor * Quotient;
+
+    return locnrows;
+
+}
+
+//====================================================================================//
+//---- function to set startrow -----
+//====================================================================================/
+
+int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM)
+{
+
+    int startrow;
+    int Remainder = pntM%mpisize ;
+    int Quotient  = pntM/mpisize ;
+
+    if(Remainder == 0)
+        startrow = mpirank * multipyFactor * Quotient;
+    else if(mpirank < Remainder)
+        startrow = mpirank * multipyFactor * (Quotient + 1)   ;
+    else
+        startrow = mpirank * multipyFactor * Quotient + Remainder * multipyFactor    ;
+
+    return startrow;
+
 }
