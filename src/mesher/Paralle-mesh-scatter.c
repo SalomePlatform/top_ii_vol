@@ -44,8 +44,6 @@ int main(int argc, char **argv) {
     int locnrows ;
     int nrows    ;
 
-    float **data ;
-
     const int charspernum = 41 ;
 
 //-----------------------------------------------------------------------------------//
@@ -164,7 +162,6 @@ int main(int argc, char **argv) {
     MPI_Finalize();
     return 0;
 }
-
 
 //====================================================================================//
 //---- function to set localrow -----
