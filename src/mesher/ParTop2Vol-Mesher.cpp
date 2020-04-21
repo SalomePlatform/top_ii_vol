@@ -390,7 +390,9 @@ if(ParallelPart == 1)
     if(mpirank==0)
         printf("\n   Point cloud data to parallel data conversion");
 
-    char *data_as_txt = (char*)malloc(locnrows*4*charspernum*sizeof(char));
+   // char *data_as_txt = (char*)malloc(locnrows*4*charspernum*sizeof(char));   // bug
+      char *data_as_txt = (char*)malloc(locnrows*3*charspernum*sizeof(char) 
+                                        + locnrows*1*(charspernum+1)*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
 
     label=0;
@@ -404,14 +406,7 @@ if(ParallelPart == 1)
             sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
         }
 
-
-   //********* CAUSES ERROR IN OPENMPI ********//
-    if(pntxXpnty%mpisize == 0 )
-        free(data);                     
-    else
-        if(mpirank < pntxXpnty%mpisize)
-            free(data);  
-   //********* *********************** ********//
+    free(data);  
 
     if(mpirank==0)
         printf(" ---- Done\n\n");
@@ -478,21 +473,15 @@ if(ParallelPart == 1)
 
     offset += totcar*NPnt;
 
-   //********* CAUSES ERROR IN OPENMPI ********//
-    if(pntxXpnty%mpisize == 0)
-        free(data_as_txt);
-    else
-        if(mpirank < pntxXpnty%mpisize)
-            free(data_as_txt);                   
-        //printf("Get %d length of string -> %d\n", mpirank, strlen(data_as_txt));
-   //********* *********************** ********//
-    
-    MPI_Type_free(&localarray);
-
-//    MPI_Barrier(MPI_COMM_WORLD);
-
     if(mpirank==0)
         printf(" ---- Done\n      %d points written ",NPnt);
+        
+//====================================================================================//
+//---- Cleanup memory -----
+//====================================================================================//
+        
+    free(data_as_txt);                    
+    MPI_Type_free(&localarray);
 
 //====================================================================================//
 //---- Tetdata header writing -----
