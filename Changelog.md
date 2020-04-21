@@ -6,12 +6,14 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 - New header for all files
 - Better algorithm for parallel mesher
   - Dimension with Highest number of points gets partitioned
-  - Unbalanced partitioning improved  
+  - Unbalanced partitioning improved
 - Parallel partitioner for point cloud (sequential before)
+- Parallel mesher migration to C++
 
 ### Removed
 - Merged the partitioner and distributed mesher, no more `top-ii-vol-Part`
 - No more `--scatter`, now a part of parallel mesher
+- Parallel mehser in C (migrated to C++)
 
 ### Bug
 

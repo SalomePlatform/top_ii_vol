@@ -13,23 +13,23 @@
 
 # Introduction
 
-top-ii-vol meshing tool provides sequential/parallel tools for creating volumic tetrahedral meshes from a topology (point cloud `*.xyz`). The volumic meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.  The framework is written in C and C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
+top-ii-vol meshing tool provides sequential/parallel tools for creating volumetric tetrahedral meshes from a given topology (point-cloud `*.xyz`). The volumetric meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` format.  The framework is written in C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
 
 top-ii-vol consists a total of four tools:
 
 ### 1. `top-ii-vol-PreProc`
 
-This tool is a point-cloud preprocessor. Often time point cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping specified n number of points.
+This tool is a point-cloud preprocessor. Often point-cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping a specified n number of points.
 
 
 ### 2. `top-ii-vol-Mesher`
 
-This is a sequential computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.
+This is a sequential computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumetric meshes that can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.
 
 
 ### 3. `top-ii-vol-ParMesher`
 
-This is a parallel computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumic meshes that can be extracted in  medit's `*.mesh` and `*.meshb` format.
+This is a parallel computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumetric meshes that can be extracted in  medit's `*.mesh` format.
 
 
 ### 4. `top-ii-vol-DistMesher`
@@ -100,7 +100,7 @@ If the compilation went successful you should have three tools at your disposal 
 | `--xskip`   | `[int]`    | These are # of periodic x points you would like to skip.     |
 | `--yskip`   | `[int]`    | These are # of periodic y points you would like to skip.     |
 | `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`           |
-| `--out`     | `[string]` | Sting to provide the  output coarsend/stripped point cloud file `.xyz |
+| `--out`     | `[string]` | Sting to provide the  output coarsened/stripped point cloud file `.xyz` |
 
 *Note that after successfully running `./top-ii-vol-PreProc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
 
