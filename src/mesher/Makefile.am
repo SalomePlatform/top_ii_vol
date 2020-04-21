@@ -54,7 +54,7 @@ check-local:
 ##	mpirun -n $(NP) ./top-ii-vol-ParMesher --xpoints $(SX1) --ypoints $(SY1) --zpoints $(PZ) --depth -2000  --in out-coarse-striped.xyz --out Parallel-out-mesh.mesh
 
 test-freefem: check-local
-	ff-mpirun -np 2 ../../test/Noreconstruct.edp -v 0
+	ff-mpirun -np $(NP) ../../test/Noreconstruct.edp -v 0
 	paraview
 
 clean-local:
