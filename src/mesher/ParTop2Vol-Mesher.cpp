@@ -472,7 +472,9 @@ if(ParallelPart == 1)
 
     offset += totcar*NPnt;
 
-    free(data_as_txt);
+    if( (pntxXpnty%mpisize) == 0 )
+        free(data_as_txt);                   //********* CAUSES ERROR IN OPENMPI ********
+        
     MPI_Type_free(&localarray);
 
     MPI_Barrier(MPI_COMM_WORLD);
