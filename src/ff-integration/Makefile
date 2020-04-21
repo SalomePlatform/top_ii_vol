@@ -5,13 +5,18 @@ ffCXX=ff-c++
 NP=3
 	
 all: top-ii-vol.so
-	@echo "  			                              "
+	@echo " *============================================================*"
+	@echo ""
 	@echo " Finished installing top-ii-vol compilation"
-	@echo "  			                              "
-	@echo " Compilation list $(LIST_COMPILE)          "
+	@echo ""
+	@echo " Compilation list $(LIST_COMPILE)"
+	@echo ""
+	@echo " *============================================================*"
+	@echo ""
 
 top-ii-vol.so: top-ii-vol.cpp
 	$(ffCXX) -auto 	top-ii-vol.cpp
+	@echo ""
 
 
 test-freefem: top-ii-vol.so ./../../test/test.edp
@@ -19,9 +24,10 @@ test-freefem: top-ii-vol.so ./../../test/test.edp
 	paraview vtk_$(NP).pvd    
 
 clean:
-	@echo "  			            "
-	@echo " Cleaning in progress ..."
-	@echo "  			            "
-	@echo "  			            "
-	rm  -f *~  top-ii-vol-Mesh top-ii-vol-Part *.o *.so *.vtu *.pvd *.xyz *.info *.mesh *.meshb *.khi
-	rm  -rf VTUs 
+	@echo ""
+	@echo "*============================================================*"
+	@echo " Cleaning files in :"; pwd
+	@echo "*============================================================*"
+	@echo ""
+	rm  -f *~  *.o *.so *.vtu *.pvd *.xyz *.info *.mesh *.meshb *.khi
+	@echo ""
