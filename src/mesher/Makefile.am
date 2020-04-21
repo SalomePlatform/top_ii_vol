@@ -43,7 +43,7 @@ top-ii-vol-ParMesher: ParTop2Vol-Mesher.o
 	$(MPICXX) -o top-ii-vol-ParMesher ParTop2Vol-Mesher.o
 	@echo ""
 
-NP=1
+NP=3
 SX=24
 SY=24
 PZ=15
