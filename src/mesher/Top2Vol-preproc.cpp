@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
                     in>>std::fixed>> x  >> y >> z;
 
                     if(int(j%skipy) == 0 && int(i%skipx) == 0)
-                        wr<< std::fixed << x << " " << y << " "<< z << " ";
+                        wr<< std::fixed << x << " " << y << " "<< z << "\n";
                 }
         }
 
