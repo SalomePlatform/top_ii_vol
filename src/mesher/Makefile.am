@@ -1,7 +1,6 @@
-FILE1= ParTop2Vol-Mesher.c 
-FILE2= skip-mesh-coarsining.cpp 
-FILE3= Top2Vol-Mesher.cpp 
-FILE4= Top2Vol-preproc.cpp 
+FILE1= ParTop2Vol-Mesher.cpp 
+FILE2= Top2Vol-Mesher.cpp 
+FILE3= Top2Vol-preproc.cpp 
 
 
 all-local:top-ii-vol-PreProc top-ii-vol-Mesher top-ii-vol-ParMesher
@@ -12,7 +11,6 @@ all-local:top-ii-vol-PreProc top-ii-vol-Mesher top-ii-vol-ParMesher
 	@echo "  # $(FILE1)"
 	@echo "  # $(FILE2)"
 	@echo "  # $(FILE3)"
-	@echo "  # $(FILE4)"
 	@echo ""
 	@echo " Finished compiling top-ii-vol tools"
 	@echo ""
@@ -35,11 +33,11 @@ Top2Vol-Mesher.o: Top2Vol-Mesher.cpp
 top-ii-vol-Mesher: Top2Vol-Mesher.o
 	$(CXX) -o top-ii-vol-Mesher Top2Vol-Mesher.o 
 
-ParTop2Vol-Mesher.o: ParTop2Vol-Mesher.c ./../lib/TopiiVolPartitionPointCloudAlgo.h
-	$(MPICC) -c ParTop2Vol-Mesher.c -std=c99
+ParTop2Vol-Mesher.o: ParTop2Vol-Mesher.cpp ./../lib/TopiiVolPartitionPointCloudAlgo.h
+	$(MPICXX) -c ParTop2Vol-Mesher.cpp -std=c++11
 
 top-ii-vol-ParMesher: ParTop2Vol-Mesher.o
-	$(MPICC) -o top-ii-vol-ParMesher ParTop2Vol-Mesher.o
+	$(MPICXX) -o top-ii-vol-ParMesher ParTop2Vol-Mesher.o
 
 NP=3
 SX=24
