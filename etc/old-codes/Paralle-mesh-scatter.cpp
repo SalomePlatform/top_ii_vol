@@ -44,8 +44,6 @@ int main(int argc, char **argv) {
     int locnrows ;
     int nrows    ;
 
-    float **data ;
-
     const int charspernum = 41 ;
 
 //-----------------------------------------------------------------------------------//
@@ -57,7 +55,6 @@ int main(int argc, char **argv) {
     MPI_File   	 file1		;
     MPI_Status 	 status		;
     MPI_Datatype num_as_string	;
-    MPI_Datatype localarray	;
     MPI_Request request;
 
     ierr = MPI_Init(&argc, &argv);
@@ -107,12 +104,10 @@ int main(int argc, char **argv) {
     int globalsizes[2] = {nrows   , 1};
     int localsizes [2] = {locnrows, 1};
     int starts[2]      = {startrow, 0};
-    int order          = MPI_ORDER_C  ;
 
-    MPI_Type_create_subarray(2, globalsizes, localsizes, 
-                             starts, order, num_as_string, 
-                             &localarray);
-
+    MPI_Datatype localarray	;
+    MPI_Type_create_subarray(2, globalsizes, localsizes,starts, MPI_ORDER_C, 
+                             num_as_string, &localarray);
     MPI_Type_commit(&localarray);
 
 //-----------------------------------------------------------------------------------//
@@ -143,7 +138,7 @@ int main(int argc, char **argv) {
 //---- Pointdata writing -----
 //-----------------------------------------------------------------------------------//
 
-    char *data_as_txt = malloc(locnrows*1*charspernum*sizeof(char));
+    char *data_as_txt = (char*)malloc(locnrows*1*charspernum*sizeof(char));
 
     MPI_File_iread( file, data_as_txt, locnrows*1, num_as_string,  &request ); 
     MPI_Wait( &request, &status );
@@ -164,7 +159,6 @@ int main(int argc, char **argv) {
     MPI_Finalize();
     return 0;
 }
-
 
 //====================================================================================//
 //---- function to set localrow -----
