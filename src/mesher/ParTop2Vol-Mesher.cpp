@@ -404,8 +404,14 @@ if(ParallelPart == 1)
             sprintf(&data_as_txt[i*totcar+3*charspernum], endfmt, label);
         }
 
-    if( (pntxXpnty%mpisize) == 0 )
-        free(data);                      //CAUSING ERROR IN SOME MPI RANKS CHECK ?????
+
+   //********* CAUSES ERROR IN OPENMPI ********//
+    if(pntxXpnty%mpisize == 0 )
+        free(data);                     
+    else
+        if(mpirank < pntxXpnty%mpisize)
+            free(data);  
+   //********* *********************** ********//
 
     if(mpirank==0)
         printf(" ---- Done\n\n");
@@ -472,12 +478,18 @@ if(ParallelPart == 1)
 
     offset += totcar*NPnt;
 
-    if( (pntxXpnty%mpisize) == 0 )
-        free(data_as_txt);                   //********* CAUSES ERROR IN OPENMPI ********
-        
+   //********* CAUSES ERROR IN OPENMPI ********//
+    if(pntxXpnty%mpisize == 0)
+        free(data_as_txt);
+    else
+        if(mpirank < pntxXpnty%mpisize)
+            free(data_as_txt);                   
+        //printf("Get %d length of string -> %d\n", mpirank, strlen(data_as_txt));
+   //********* *********************** ********//
+    
     MPI_Type_free(&localarray);
 
-    MPI_Barrier(MPI_COMM_WORLD);
+//    MPI_Barrier(MPI_COMM_WORLD);
 
     if(mpirank==0)
         printf(" ---- Done\n      %d points written ",NPnt);
