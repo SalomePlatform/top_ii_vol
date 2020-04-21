@@ -268,13 +268,13 @@ if(ParallelPart == 1)
     char *data_as_txt0 = (char*)malloc(locnrows*1*charspernum0*sizeof(char));
 
     if(mpirank==0)
-        printf("\n Reading the point cloud mesh");
+        printf("\n   Reading the point cloud mesh");
 
     MPI_File_iread( filein, data_as_txt0, locnrows*1, num_as_string0,  &request ); 
     MPI_Wait( &request, &status );
 
     if(mpirank==0)
-        printf(" ---- Done\n Writing partitioned point cloud mesh");
+        printf(" ---- Done\n   Writing partitioned point cloud mesh");
 
     MPI_File_iwrite( fileinparted, data_as_txt0, locnrows*1, num_as_string0, &request );
     MPI_Wait( &request, &status );
@@ -301,7 +301,7 @@ if(ParallelPart == 1)
     if(mpirank==0)
         {
             printf( "\n\n *============================================================*\n");
-            printf( "  point cloud patitioning took : %f s\n",  MPI_Wtime()-t1);
+            printf( "    point cloud patitioning took : %f s\n",  MPI_Wtime()-t1);
             printf( " *============================================================*\n");
         }
 
@@ -350,7 +350,7 @@ if(ParallelPart == 1)
 //====================================================================================//
 
     if(mpirank==0)
-        printf("\n Reading the partitioned point cloud mesh");
+        printf("\n   Reading the partitioned point cloud mesh");
 
     char filepath[256];
     snprintf (filepath, sizeof(filepath), "%s_%d.xyz", partCloudName, mpirank);
@@ -388,7 +388,7 @@ if(ParallelPart == 1)
 //====================================================================================//
 
     if(mpirank==0)
-        printf("\n Point cloud data to parallel data conversion");
+        printf("\n   Point cloud data to parallel data conversion");
 
     char *data_as_txt = (char*)malloc(locnrows*4*charspernum*sizeof(char));
     int totcar = 4*charspernum*sizeof(char);
@@ -448,7 +448,7 @@ if(ParallelPart == 1)
 //====================================================================================//
 
     if(mpirank==0)
-        printf("\n Writing mesh points ");
+        printf("\n   Writing mesh points ");
 
     offset = 0;
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray,
@@ -478,14 +478,14 @@ if(ParallelPart == 1)
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(mpirank==0)
-        printf(" ---- Done\n ->  %d points written ",NPnt);
+        printf(" ---- Done\n      %d points written ",NPnt);
 
 //====================================================================================//
 //---- Tetdata header writing -----
 //====================================================================================//
 
     if(mpirank==0)
-        printf("\n Writing mesh volumes ");
+        printf("\n   Writing mesh volumes ");
 
     if(mpirank==0)
         {
@@ -658,7 +658,7 @@ if(ParallelPart == 1)
     offset += totcar*NTet;
 
     if(mpirank==0)
-        printf(" ---- Done\n ->  %d tetrahedra written ",NTet);
+        printf(" ---- Done\n      %d tetrahedra written ",NTet);
 
     free(data_as_txt1);
     MPI_Type_free(&localarray1);
@@ -670,7 +670,7 @@ if(ParallelPart == 1)
 //====================================================================================//
 
     if(mpirank==0)
-        printf("\n Writing mesh surfaces ");
+        printf("\n   Writing mesh surfaces ");
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray,
                       "native", MPI_INFO_NULL);
@@ -1053,7 +1053,7 @@ if(ParallelPart == 1)
     MPI_Type_free(&localarray2);
 
     if(mpirank==0)
-        printf(" ---- Done\n ->  %d triangles written ",NTri);
+        printf(" ---- Done\n      %d triangles written ",NTri);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -1077,7 +1077,7 @@ if(ParallelPart == 1)
     if(mpirank==0)
         {
             printf( "\n\n *============================================================*\n");
-            printf( "  The program finshed in : %f s\n",  MPI_Wtime()-t1);
+            printf( "    The program finshed in : %f s\n",  MPI_Wtime()-t1);
             printf( " *============================================================*\n");
         }
     fflush(stdout);
