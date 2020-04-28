@@ -1,5 +1,5 @@
 SUBDIRS = src 
-EXTRA_DIST = Readme.md
+EXTRA_DIST = Readme.md Changlog.md Todo.md
 
 AUTOMAKE_LIST=autom4te.cache \
 config.h \
@@ -17,9 +17,11 @@ depcomp  \
 .swp
 
 all-local: logo
+	@echo ""
 	@echo "*============================================================*"
 	@echo " 'make' finished now do 'make check'"
 	@echo "*============================================================*"
+	@echo ""
 
 logo:
 	@echo "*============================================================*"
@@ -56,20 +58,24 @@ install-exec-local: logo
 	@echo "*============================================================*"		
 	
 check: logo
+	@echo ""
 	@echo "*============================================================*"
 	@echo " 'make check' finished now do 'make install'"
 	@echo "*============================================================*"				
 
 clean-local:
+	@echo ""
 	@echo "*============================================================*"
 	@echo " Cleaning files in :"; pwd
 	@echo "*============================================================*"
 	rm  -f *~
 	
 clean-automake:
+	@echo ""
 	@echo "*============================================================*"
 	@echo " Cleaning all automake files in :"; pwd
 	@echo "*============================================================*"
-	rm  -rf ${AUTOMAKE_LIST} *~
-	rm  -rf ./src/Makefile ./src/Makefile.in	./src/*~
-	rm  -rf ./src/top-ii-vol_MPI/Makefile ./src/top-ii-vol_MPI/Makefile.in	./src/top-ii-vol_MPI/*~
+	@echo ""
+	rm  -rf ${AUTOMAKE_LIST} *~ ./src/top-ii-vol_MPI/Makefile
+	rm  -rf ./src/Makefile ./src/Makefile.in  ./src/*~ 
+	rm  -rf ./src/top-ii-vol_MPI/Makefile.in  ./src/top-ii-vol_MPI/*~
