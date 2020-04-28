@@ -1,4 +1,4 @@
-AC_INIT([M. A. Badri], [1.0], [mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
+AC_INIT([top-ii-vol], [1.2], [mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_CONFIG_HEADERS([config.h])
@@ -144,3 +144,17 @@ AC_CONFIG_FILES([
  src/distributed-mesher/Makefile
 ])
 AC_OUTPUT
+
+SECTION_TITLE([                 status              ])
+
+dnl Print results
+AC_MSG_RESULT([])
+AC_MSG_RESULT([ top-ii-vol version $VERSION configured successfully.])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([ Using '$prefix' for installation.])
+AC_MSG_RESULT([ Using '$CXX' for C++ compiler.])
+AC_MSG_RESULT([ Using '$MPICXX' for MPIC++ compiler.])
+AC_MSG_RESULT([ Building with '$CXXFLAGS' for C++ compiler flags.])
+AC_MSG_RESULT([ Building with '$LDFLAGS' for linker flags.])
+AC_MSG_RESULT([ Building with '$LIBS' libraries.])
+AC_MSG_RESULT([])
