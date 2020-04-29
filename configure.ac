@@ -125,14 +125,28 @@ else
 fi
 ])dnl AX_MPI
 
-SECTION_TITLE([   checking for a C/C++ compilers   ])
-
-AC_PROG_CC
-AX_MPI
-
+SECTION_TITLE([ checking for a C++/MPIC++ compilers ])
+dnl AC_PROG_CC
+dnl AX_MPI
 AC_PROG_CXX
 AC_LANG(C++)
 AX_MPI
+
+AC_ARG_WITH(MPICXX,
+	[  --with-MPICXX=          path of the MPI C++ compiler to be used 
+	                  (e.g. --with-MPICXX=your/MPIC++/Install/path/bin/mpic++)],
+	   MPICXX="${withval}")
+
+test "$MPICXX" == "$CXX" && AC_MSG_ERROR([
+
+  Required  MPI C++ compilers were not  found. If you are
+  sure that MPI C++ compiler is  present on you operating
+  system you might use the ./configure flag:
+  
+    '--with-MPICXX=your/MPIC++/Install/path/bin/mpic++' 
+     
+  to provide the location of MPI C++ compiler. 
+                                   ])
 
 SECTION_TITLE([  generating the required makefiles  ])
 
