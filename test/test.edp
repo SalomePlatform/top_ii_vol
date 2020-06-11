@@ -23,33 +23,82 @@ cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
     include "macro_ddm.idp"
     mesh3 Th;
 
-	mpiBarrier(mpiCommWorld);
+    mpiBarrier(mpiCommWorld);
     if(mpirank == 0) t0 = mpiWtime();
 
     Th=readmesh3("top-ii-vol-mesh_"+mpirank+".mesh");
+    
+    if(mpirank == 0)
+    cout <<  "  Total time taken for reading mesh : " << mpiWtime()-t0 << " s"<< endl;
 
+
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    
     reconstructDmesh(Th)
 
-	mpiBarrier(mpiCommWorld);
+    mpiBarrier(mpiCommWorld);
     if(mpirank == 0)
     cout <<  "  Total time taken for Dmesh reconstruction : " << mpiWtime()-t0 << " s"<< endl;
 
 
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    
     fespace Wh(Th, Pk);
     Wh<real> u;
+    
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Fespace construction : " << mpiWtime()-t0 << " s"<< endl;    
 
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+    
     Mat A;
     createMat(Th, A, Pk)
+    
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for PETSc Matrix construction : " << mpiWtime()-t0 << " s"<< endl;    
 
     varf vPb(u, v) = intN(Th)(grad(u)' * grad(v)) /*+ intN(Th)(1e6*(x<.6)*(x>.4)*x*y*v)*/ + on(6, u = 15.0)+ on(3, u = 1.0);
+    
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();
+        
     real[int] rhs = vPb(0, Wh);
 
     set(A, sparams = "-ksp_type cg" );
     A = vPb(Wh, Wh);
+
+
+
+        
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Assemble Matrix/Vector  : " << mpiWtime()-t0 << " s"<< endl;
+
+
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime();        
     u[] = A^-1 * rhs; 
 
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken for Solve laplace  : " << mpiWtime()-t0 << " s"<< endl;
+ 
+    mpiBarrier(mpiCommWorld);
+    if(mpirank == 0) t0 = mpiWtime(); 
+       
     plotMPI(Th, u, Pk, def, real, cmm = "u"); 
     int[int] fforder=[1];
     savevtk("vtk.vtu",Th,u,order=fforder, dataname = "u");
-    saveDmesh(Th, "saved-Dmesh");
+    
+     mpiBarrier(mpiCommWorld);
+    if(mpirank == 0)
+    cout <<  "  Total time taken Plotting solution  : " << mpiWtime()-t0 << " s"<< endl;
+       
+    //saveDmesh(Th, "saved-Dmesh");
+    
 }
