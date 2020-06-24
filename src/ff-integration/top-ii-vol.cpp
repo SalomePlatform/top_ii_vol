@@ -163,6 +163,8 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const
     if(mpirank==0)
 #include "./../lib/LogoTopiiVolCpp.hpp"
 #include "./../lib/TopiiVolMeshAlgo.hpp"
+
+    return 0L;
     };
 
 static void InitFF()
