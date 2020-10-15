@@ -1,8 +1,9 @@
 # Changelog
 All notable changes to top-ii-vol mesher will be documented in this file.
 
-## Unreleased
+## [1.1] 2020‑10‑15
 ### Added
+- PSD interface for exascale computing
 - New header for all files
 - Better algorithm for parallel mesher
   - Dimension with Highest number of points gets partitioned
