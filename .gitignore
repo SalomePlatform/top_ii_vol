@@ -47,4 +47,10 @@ src/mesher/top-ii-vol-PreProc
 ## ALLOWED FILES ##
 !/data/DEM_10m.xyz
 !/data/DEM_160m.xyz
+!/data/data5x5.xyz
+!/data/data6x5.xyz
+!/data/data5x6.xyz
+!/data/data6x6.xyz
+!/data/data6x9.xyz
+!/data/data9x9.xyz
 
