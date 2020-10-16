@@ -6,7 +6,7 @@
 
      Author(s): Mohd Afeef Badri
      Email    : mohd-afeef.badri@hotmail.com
-     Date     : 2019‑03‑29
+     Date     : 2019‑10‑29
 
      -------------------------------------------------------------------
 
@@ -63,6 +63,14 @@ int main(int argc, char **argv)
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
 
+
+//-----------------------------------------//
+//---- Partition method to use -----
+//-----------------------------------------//
+
+    string *method  = new string();
+    *method         = "1D";
+
 //-----------------------------------------//
 //---- Points in z and zmax -----
 //-----------------------------------------//
@@ -77,6 +85,13 @@ int main(int argc, char **argv)
     // 10m  20m  40m  80m 160m
     int pntx = 32; // 500; 250; 125; 63; 32;
     int pnty = 29; // 451; 226; 113; 57; 29;
+
+//-----------------------------------------//
+//---- Partitions in x and y -----
+//-----------------------------------------//
+
+    int NpX = 1;
+    int NpY = mpisize;
 
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
@@ -96,11 +111,22 @@ int main(int argc, char **argv)
             if(!strcmp(argv[i], "--zpoints"))
                 pntz = atoi(argv[i+1]);
 
-            if(!strcmp(argv[i], "--in"))
-                *inputfile  = argv[i+1];
+            if(!strcmp(argv[i], "--partition_2D_x"))
+                NpX = atoi(argv[i+1]);
+
+            if(!strcmp(argv[i], "--partition_2D_y"))
+                NpY = atoi(argv[i+1]);
 
             if(!strcmp(argv[i], "--depth"))
-                zmax= atol(argv[i+1]);
+                zmax = atol(argv[i+1]);
+
+            if(!strcmp(argv[i], "--in"))
+                *inputfile = argv[i+1];
+
+            if(!strcmp(argv[i], "--partition"))
+                *method = argv[i+1];
+
+
         }
 
 //-----------------------------------------------------------------------------------//
@@ -126,6 +152,7 @@ int main(int argc, char **argv)
             #include "./../lib/TopiiVolPartAlgo2D.hpp"   // TOBE REPLACED TOBE REPLACED
         }
     t_part = MPI_Wtime()-t_part;
+
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
 //-----------------------------------------------------------------------------------//
@@ -138,7 +165,6 @@ int main(int argc, char **argv)
             if(!strcmp(argv[i], "--out"))
                 *outputfile  = argv[i+1];
         }
-
 
     MPI_Barrier(MPI_COMM_WORLD);
 

@@ -34,9 +34,23 @@ double* xx = new double[pntx];
 double* yy = new double[pntx];
 double* zz = new double[pntx];
 
+//----------------------------------------------------------------------------//
+//---- Determining the patition number -----
+//----------------------------------------------------------------------------//
 
-int NpX = 1;         // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
-int NpY = mpisize;   // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+if(*method=="1D")
+  {
+  if(pnty>=pntx)
+    {
+    NpX = 1;       
+    NpY = mpisize;
+    }
+  else
+    {
+    NpX = mpisize;       
+    NpY = 1;
+    }
+  }
 
 //----------------------------------------------------------------------------//
 //---- Open input file -----

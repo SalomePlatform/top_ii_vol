@@ -22,7 +22,7 @@ top-ii-vol-DistMesher: top-ii-vol-MPImesher.o
 	@echo "" 
 
 check-local:
-	mpirun -np $(NP) ./top-ii-vol-DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m
+	mpirun -np $(NP) ./top-ii-vol-DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition 1D
 	@echo ""
 
 test-freefem: check-local ./../../test/reconstruct.edp

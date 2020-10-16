@@ -29,7 +29,7 @@ class partPointCloud_Op : public E_F0mps
 public:
     Expression filename			;
 
-    static const int n_name_param = 3		;
+    static const int n_name_param = 6		;
     static basicAC_F0::name_and_type name_param[]	;
     Expression nargs[n_name_param]			;
 
@@ -52,7 +52,10 @@ basicAC_F0::name_and_type partPointCloud_Op<K>::name_param[] =
 {
     {"outfile", &typeid(std::string*)},
     {"pointsx", &typeid(long)},
-    {"pointsy", &typeid(long)}
+    {"pointsy", &typeid(long)},
+    {"method" , &typeid(std::string*)},
+    {"partx"  , &typeid(long)},
+    {"party"  , &typeid(long)}
 };
 
 
@@ -80,6 +83,9 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
     string* outputfile= nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
     int     pntx      = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
     int     pnty      = nargs[2] ? GetAny<long>((*nargs[2])(stack)) : -1;
+    string* method    = nargs[3] ? GetAny<std::string*>((*nargs[3])(stack)) : NULL;
+    int     NpX       = nargs[4] ? GetAny<long>((*nargs[4])(stack)) : -1;
+    int     NpY       = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;
 
 //    cout << " Px "<< pntx << " py  "<<pnty  << " Name input "<< *inputfile << " Name output "<< *outputfile << endl;
 
@@ -88,7 +94,7 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
         {
 
 #include "./../lib/LogoTopiiVolCpp.hpp"
-#include "./../lib/TopiiVolPartAlgo.hpp"
+#include "./../lib/TopiiVolPartAlgo2D.hpp"    // TOBE REPLACED TOBE REPLACED
 
         }
     return 0L;
@@ -101,7 +107,7 @@ class meshPointCloud_Op : public E_F0mps
 public:
     Expression filename			;
 
-    static const int n_name_param = 3		;
+    static const int n_name_param = 4		;
     static basicAC_F0::name_and_type name_param[]	;
     Expression nargs[n_name_param]			;
 
@@ -124,7 +130,8 @@ basicAC_F0::name_and_type meshPointCloud_Op<K>::name_param[] =
 {
     {"outfile", &typeid(std::string*)},
     {"pointsz", &typeid(long)},
-    {"zdepth", &typeid(double)}
+    {"zdepth", &typeid(double)},
+    {"method" , &typeid(std::string*)}
 };
 
 
@@ -151,6 +158,7 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const
     string* outputfile= nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
     int     pntz      = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
     double  zmax      = nargs[2] ? GetAny<double>((*nargs[2])(stack)) : -1.;
+    string* method    = nargs[3] ? GetAny<std::string*>((*nargs[3])(stack)) : NULL;
 
 
 //    string* outputfile= GetAny<string*>((*outname)(stack))	;
