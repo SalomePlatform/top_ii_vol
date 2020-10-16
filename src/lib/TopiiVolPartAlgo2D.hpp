@@ -34,6 +34,10 @@ double* xx = new double[pntx];
 double* yy = new double[pntx];
 double* zz = new double[pntx];
 
+
+int NpX = 1;         // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+int NpY = mpisize;   // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+
 //----------------------------------------------------------------------------//
 //---- Open input file -----
 //----------------------------------------------------------------------------//
@@ -46,15 +50,17 @@ in.open(*inputfile+".xyz");
 //----------------------------------------------------------------------------//
 
 ofstream outputWrite[NpX*NpY];
+ofstream infoWrite[NpX*NpY];
+
 for(int j = 0; j<NpX*NpY; j++)
-  outputWrite[j].open(*outputfile+"_---_"+std::to_string(j)+".xyz");
+  {
+   outputWrite[j].open(*outputfile+"_"+std::to_string(j)+".xyz");
+   infoWrite[j].open(*outputfile+"_"+std::to_string(j)+".info");  
+  }
 
 //----------------------------------------------------------------------------//
 //---- Divisions in X and Y -----
 //----------------------------------------------------------------------------//
-
-int NpX = 2;
-int NpY = 3;
 
 int *TNPtsx = new int[NpX];
 int *TNPtsy = new int[NpY];
@@ -64,8 +70,7 @@ int *TNPtsy = new int[NpY];
 //---- Print information  ----
 //----------------------------------------------------------------------------//
 
-cout << "                 ALGO 2                                        \n"
-     << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n"
+cout << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n"
      << "  # points in X -------------------- "<< pntx << "             \n"
      << "  # points in Y -------------------- "<< pnty << "             \n"
      << "  # of strips ---------------------- "<< mpisize << "          \n"
@@ -76,8 +81,6 @@ cout << "                 ALGO 2                                        \n"
      << "                                                               \n"
      << "  writing "
      << string(*outputfile+"_"+std::to_string(stripy)+".xyz")<<" ... "    ;
-
-
 
 //----------------------------------------------------------------------------//
 //---- Calculate total number of points held by each strip ----
@@ -95,11 +98,10 @@ for(int j = 0; j<NpX; j++)
 for(int j = 0; j<((pntx+(NpX-1))%NpX); j++)
   TNPtsx[j] = TNPtsx[j]+1;
 
-
 //----------------------------------------------------------------------------//
 //---- Main loop to read point cloud and returns the strips ----
 //----------------------------------------------------------------------------//
-
+      
 int kstrat = 0,
     kend   = TNPtsx[0];
 
@@ -132,6 +134,7 @@ for(int j=1; j<=pnty; j++)
            outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] << "\n"; 
          kstrat  = kend -1;
          kend   += TNPtsx[i+1] -1;
+         infoWrite[i +  (stripy-1)*NpX] << counter <<  "\t" <<  TNPtsx[i] << "\n";
         }
       counter = 0;
       counter++;
@@ -139,6 +142,13 @@ for(int j=1; j<=pnty; j++)
    kstrat = 0;
    kend   = TNPtsx[0];           
   }
+
+
+for(int i=0; i <NpX; i++)
+ {
+  fileindex = i +  (NpY -1)*NpX;
+  infoWrite[fileindex] << counter <<  "\t" <<  TNPtsx[i] << "\n";
+ } 
 
 cout << "  done\n";
 
@@ -156,6 +166,9 @@ delete[] zz;
 in.close();
 
 for(int j = 0; j<NpX*NpY; j++)
+ {
   outputWrite[j].close();
+  infoWrite[j].close();  
+ }   
   
 cout << "\n *============================================================*\n";

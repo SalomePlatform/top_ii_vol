@@ -47,13 +47,13 @@ int main(int argc, char **argv)
 //-----------------------------------------------------------------------------------//
 
     if(mpirank==0)
-#include "./../lib/LogoTopiiVolCpp.hpp"
+      #include "./../lib/LogoTopiiVolCpp.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
 //-----------------------------------------------------------------------------------//
 
-        string *inputfile  = new string();
+    string *inputfile  = new string();
     string *outputfile = new string();
 
     *inputfile  = "./../../data/DEM_160m";
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 //-----------------------------------------//
 
     double zmax = -1920.0  ;
-    int	pntz = 9        ;
+    int    pntz = 9        ;
 
 //-----------------------------------------//
 //---- Points in x & y on the surface -----
@@ -107,17 +107,25 @@ int main(int argc, char **argv)
 //---- Time variable -----
 //-----------------------------------------------------------------------------------//
 
-    double t1 = MPI_Wtime();
+    double t1         ,
+           t_part     ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+           t_gen_pnts ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+           t_gen_tets ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+           t_gen_tria ;     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
+    
+    t1 = MPI_Wtime();
 
 //-----------------------------------------------------------------------------------//
 //---- Main algo for partitioning -----
 //-------------------------------------------------------------------------------
 
+   t_part = MPI_Wtime();  
     if(mpirank==0)
         {
-#include "./../lib/TopiiVolPartAlgo.hpp"
+           //#include "./../lib/TopiiVolPartAlgo.hpp"    // TOBE REPLACED TOBE REPLACED
+            #include "./../lib/TopiiVolPartAlgo2D.hpp"   // TOBE REPLACED TOBE REPLACED
         }
-
+    t_part = MPI_Wtime()-t_part;
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
 //-----------------------------------------------------------------------------------//
@@ -140,7 +148,7 @@ int main(int argc, char **argv)
 //---- Main algo for meshing -----
 //-----------------------------------------------------------------------------------//
 
-#include "./../lib/TopiiVolMeshAlgo.hpp"
+    #include "./../lib/TopiiVolMeshAlgo.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- Time  -----
@@ -152,7 +160,9 @@ int main(int argc, char **argv)
             cout << "                                                               \n"
                  << " *============================================================*\n"
                  << std::fixed << std::setprecision(4)
-                 <<  "  The program finshed in : " << MPI_Wtime()-t1 << " s\n"
+                 <<  "  Time-log:\n"                                  
+                 <<  "  Point cloud partitioning : " << t_part << " s\n"                 
+                 <<  "  The program finshed in   : " << MPI_Wtime()-t1 << " s\n"
                  << " *============================================================*\n"
                  << "                                                               \n";
         }
