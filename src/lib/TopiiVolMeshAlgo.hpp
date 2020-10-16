@@ -54,13 +54,11 @@ wrgmsh.open(*outputfile+"_"+std::to_string(mpirank)+".mesh");
 in1 >> pnty >> pntx;
 in1.close() ;
 
-
-for(int i=0; i <1; i++)                   // TOBE REPLACED TOBE REPLACED TOBE REPLACED 
- {                                        // TOBE REPLACED TOBE REPLACED TOBE REPLACED  
-  if(mpirank==(mpisize-1-i))pnty=pnty-1;  // TOBE REPLACED TOBE REPLACED TOBE REPLACED  
- }                                        // TOBE REPLACED TOBE REPLACED TOBE REPLACED  
- 
-//if(mpirank==(mpisize-1))pnty=pnty-1; // Last mpirank does not have comman partion
+// --------------------------------------- BUG --------------------------------------//
+//                                                                                   //
+//if(mpirank==(mpisize-1))pnty=pnty-1; // Last mpirank does not have comman partion  //
+//                                                                                   //
+// --------------------------------------- BUG --------------------------------------//
 
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
