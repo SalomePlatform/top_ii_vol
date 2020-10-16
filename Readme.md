@@ -115,13 +115,13 @@ This is the sequential mesher
 - For  sequential mesher producing  `*.mesh` mesh.
 
   ```
-  ./top-ii-vol-Mesher --xpoints 31 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+  ./top-ii-vol-Mesher --xpoints 32 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
   ```
   
 - For  sequential mesher producing  `*.msh` mesh.
 
   ```
-  ./top-ii-vol-Mesher ---xpoints 31 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.msh --depth -1000 --mesh msh
+  ./top-ii-vol-Mesher ---xpoints 32 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.msh --depth -1000 --mesh msh
   ```
 
 *Command-line option definitions*
