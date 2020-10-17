@@ -169,22 +169,38 @@ This is the parallel mesher (still under heavy development)
 
 This is  tool to created distributed mesh from  partitioned point cloud
 
-- For parallel distributed mesher producing  `*.mesh` mesh with 2 MPI ranks.
+- Example of distributed mesher producing  `*.mesh` mesh with 3 MPI ranks (1D partitioning).
 
 ```
- mpirun -np 2 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
+ mpirun -np 3 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 1D
+```
+- Examples of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (2D partitioning).
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 1 --partition_2D_y 4 
+```
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 4 --partition_2D_y 1 
+```
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 2 --partition_2D_y 2 
 ```
 
 *Command-line option definitions*
 
-| Option      | Type       | Comment                                              |
-| ----------- | ---------- | :--------------------------------------------------- |
-| `--xpoints` | `[int]`    | These are # of x points present in your point cloud. |
-| `--ypoints` | `[int]`    | These are # of y points present in your point cloud. |
-| `--zpoints` | `[int]`    | These are # of z points intended in the z direction. |
-| `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`   |
-| `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
-| `-np`       | `[int]`   | Provide the # of MPI ranks.                           |
+| Option            | Type       | Comment                                                     |
+| ------------------| ---------- | :---------------------------------------------------------- |
+| `--xpoints`       | `[int]`    | These are # of x points present in your point cloud.        |
+| `--ypoints`       | `[int]`    | These are # of y points present in your point cloud.        |
+| `--zpoints`       | `[int]`    | These are # of z points intended in the z direction.        |
+| `--partition_2D_x`| `[int]`    | These are # x partitions for 2D partioning algorithm.       |
+| `--partition_2D_y`| `[int]`    | These are # y partitions for 2D partioning algorithm.       |
+| `--in`            | `[string]` | Sting to provide the input point cloud file `.xyz`          |
+| `--out`           | `[string]` | Sting to provide the  output mesh file  `.mesh`             |
+| `--partition`     | `[string]` | Sting to provide partitioning algorithm choose `1D` or `2D` |
+| `-np`             | `[int]`    | Provide the # of MPI ranks.                                 |
 
 
 

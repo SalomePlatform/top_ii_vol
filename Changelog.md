@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to top-ii-vol mesher will be documented in this file.
 
+## UNRELEASED
+### Added
+- Smarter way to perform 1D partitioning, algorithm decides based on points in each direction.
+- New flag `--partition` "1D"|"2D" to chose between 1D and 2D partioning.
+- New flags `--partition_2D_x`  and `--partition_2D_y` to decide 2D partioning in each direction. 
+
+### Removed
+
+### Bug
+
+- one layer was missing in x-direction, causing load imbalance (see c2aecf0).
+
+
 ## [1.2] 2020‑10‑15
 ### Added
 - PSD interface for exascale computing
