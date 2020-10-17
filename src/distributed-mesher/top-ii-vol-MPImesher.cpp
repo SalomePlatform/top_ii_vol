@@ -99,7 +99,6 @@ int main(int argc, char **argv)
 
     for(int i=0; i<argc-1; i++)
         {
-
             string argvdummy = argv[i];
 
             if(!strcmp(argv[i], "--xpoints"))
@@ -125,8 +124,6 @@ int main(int argc, char **argv)
 
             if(!strcmp(argv[i], "--partition"))
                 *method = argv[i+1];
-
-
         }
 
 //-----------------------------------------------------------------------------------//

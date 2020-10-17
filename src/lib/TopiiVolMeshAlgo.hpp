@@ -89,7 +89,7 @@ if(*method=="1D")
     lab_y_min = 99099;
     if(mpirank==0)
       lab_y_min = 2;
-    lab_y_max=99099;
+    lab_y_max = 99099;
     if(mpirank==(mpisize-1))
       lab_y_max = 5;
     }
@@ -98,9 +98,67 @@ if(*method=="1D")
     lab_x_min = 99099;
     if(mpirank==0)
       lab_x_min = 1;
-    lab_x_max=99099;
+    lab_x_max = 99099;
     if(mpirank==(mpisize-1))
       lab_x_max = 4;
+    }
+  }
+
+if(*method=="2D")
+  {
+   if(NpY==1 || NpX==1)
+   {
+   if(NpY > 1)
+     {
+      lab_y_min = 99099;
+      lab_y_max = 99099;
+      for(int i=0; i <NpX; i++)
+        {
+         if(mpirank==0+i)
+           lab_y_min = 2;
+         if(mpirank==(mpisize-1-i))
+           lab_y_max = 5;
+        }
+      }
+   if(NpX > 1)
+     {
+      lab_x_min = 99099;
+      lab_x_max = 99099;
+      for(int i=0; i <NpY; i++)
+        {
+         if(mpirank==0+i)
+           lab_x_min = 1;
+         if(mpirank==(mpisize-1-i))
+           lab_x_max = 4;
+        }
+      }
+    }
+    else
+   {
+   if(NpY > 1)
+     {
+      lab_y_min = 99099;
+      lab_y_max = 99099;
+      for(int i=0; i <NpX; i++)
+        {
+         if(mpirank==0+i)
+           lab_y_min = 2;
+         if(mpirank==(mpisize-1-i))
+           lab_y_max = 5;
+        }
+      }
+   if(NpX > 1)
+     {
+      lab_x_min = 99099;
+      lab_x_max = 99099;
+      for(int i=0; i <NpY; i++)
+        {
+         if(mpirank==0+i)
+           lab_x_min = 1;
+         if(mpirank==(mpisize-1-i))
+           lab_x_max = 4;
+        }
+      }
     }
   }
 
