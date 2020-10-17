@@ -15,7 +15,7 @@ all: top-ii-vol.so
 	@echo ""
 
 top-ii-vol.so: top-ii-vol.cpp
-	$(ffCXX) -auto 	top-ii-vol.cpp
+	$(ffCXX) -auto -mpi top-ii-vol.cpp
 	@echo ""
 
 

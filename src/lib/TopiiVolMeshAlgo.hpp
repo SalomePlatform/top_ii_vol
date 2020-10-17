@@ -192,6 +192,8 @@ wrgmsh << "MeshVersionFormatted 1\n\n"
 //---- Generating points -----
 //-----------------------------------------------------------------------------------//
 
+t_phase = MPI_Wtime();
+
 cout   << "Generating points ........"		               ;
 wrgmsh << "Vertices\n"
        <<  NPnt	<<"\n";
@@ -213,9 +215,16 @@ for(int i=0; i<PxPy; i++)
 wrgmsh << "\n";
 cout   << " finished for MPI rank : " << mpirank << "\n";
 
+t_phase = MPI_Wtime() - t_phase;
+t1 +=  t_phase;
+*time_log = string( *time_log+"\tPoint generation         : "
+                        +std::to_string(t_phase)+" s\n"           );
+
 //-----------------------------------------------------------------------------------//
 //---- Generating Tetrahedra -----
 //-----------------------------------------------------------------------------------//
+
+t_phase = MPI_Wtime();
 
 cout   << "Generating Tetrahedra ...."			       ;
 wrgmsh << "Tetrahedra\n"
@@ -250,9 +259,17 @@ for(int j=0; j<PyM1;  j++)
 wrgmsh << "\n";
 cout   << " finished for MPI rank : " << mpirank << "\n";
 
+
+t_phase = MPI_Wtime() - t_phase;
+t1 +=  t_phase;
+*time_log = string( *time_log+"\tTetrahedra generation    : "
+                        +std::to_string(t_phase)+" s\n"           );
+
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
 //-----------------------------------------------------------------------------------//
+
+t_phase = MPI_Wtime();
 
 cout   << "Generating Triangles ....."			       ;
 wrgmsh << "Triangles\n"
@@ -369,6 +386,11 @@ for(int i=0; i<PyM1;  i++)
     }
 
 cout   << " finished for MPI rank : " << mpirank << "\n";
+
+t_phase = MPI_Wtime() - t_phase;
+t1 +=  t_phase;
+*time_log = string( *time_log+"\tTriangles generation     : "
+                        +std::to_string(t_phase)+" s\n"           );
 
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----

@@ -20,6 +20,7 @@
 
 
 #include "ff++.hpp"
+#include <mpi.h>
 
 using namespace std;
 
@@ -89,6 +90,12 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
 
 //    cout << " Px "<< pntx << " py  "<<pnty  << " Name input "<< *inputfile << " Name output "<< *outputfile << endl;
 
+    string *time_log  = new string();
+    *time_log  = "";
+
+    double t_phase    ; 
+    t_phase = MPI_Wtime();  
+
 
     if(mpirank == 0)
         {
@@ -97,6 +104,22 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
 #include "./../lib/TopiiVolPartAlgo2D.hpp"    // TOBE REPLACED TOBE REPLACED
 
         }
+
+
+    t_phase = MPI_Wtime() - t_phase;
+    *time_log = string( *time_log+"\tPoint cloud partitioning : "
+                        +std::to_string(t_phase)+" s\n"           );
+
+    if(mpirank==0)
+        {
+            cout << "                                                               \n"
+                 << " *============================================================*\n"
+                 <<  "  Time-log:\n"
+                 << *time_log
+                 << " *============================================================*\n"
+                 << "                                                               \n";
+        }
+
     return 0L;
 }
 
@@ -107,7 +130,7 @@ class meshPointCloud_Op : public E_F0mps
 public:
     Expression filename			;
 
-    static const int n_name_param = 4		;
+    static const int n_name_param = 6		;
     static basicAC_F0::name_and_type name_param[]	;
     Expression nargs[n_name_param]			;
 
@@ -131,7 +154,9 @@ basicAC_F0::name_and_type meshPointCloud_Op<K>::name_param[] =
     {"outfile", &typeid(std::string*)},
     {"pointsz", &typeid(long)},
     {"zdepth", &typeid(double)},
-    {"method" , &typeid(std::string*)}
+    {"method" , &typeid(std::string*)},
+    {"partx"  , &typeid(long)},
+    {"party"  , &typeid(long)}
 };
 
 
@@ -159,18 +184,36 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const
     int     pntz      = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
     double  zmax      = nargs[2] ? GetAny<double>((*nargs[2])(stack)) : -1.;
     string* method    = nargs[3] ? GetAny<std::string*>((*nargs[3])(stack)) : NULL;
-
+    int     NpX       = nargs[4] ? GetAny<long>((*nargs[4])(stack)) : -1;
+    int     NpY       = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;
 
 //    string* outputfile= GetAny<string*>((*outname)(stack))	;
 //    int     pntz      = GetAny<long>((*ptz)(stack))	        ;
 //    double  zmax      = GetAny<double>((*dpth)(stack))	    ;
 
+
+    string *time_log  = new string();
+    *time_log  = "";
+
     int pnty;
     int pntx;
+
+    double t1 = 0     ,
+           t_phase    ; 
 
     if(mpirank==0)
 #include "./../lib/LogoTopiiVolCpp.hpp"
 #include "./../lib/TopiiVolMeshAlgo.hpp"
+
+    if(mpirank==0)
+        {
+            cout << "                                                               \n"
+                 << " *============================================================*\n"
+                 <<  "  Time-log:\n"
+                 << *time_log
+                 << " *============================================================*\n"
+                 << "                                                               \n";
+        }
 
     return 0L;
     };

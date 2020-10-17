@@ -59,6 +59,14 @@ int main(int argc, char **argv)
     *inputfile  = "./../../data/DEM_160m";
     *outputfile = "point-cloud-strip";
 
+
+//-----------------------------------------------------------------------------------//
+//---- Input Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    string *time_log  = new string();
+    *time_log  = "";
+
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
@@ -130,25 +138,23 @@ int main(int argc, char **argv)
 //---- Time variable -----
 //-----------------------------------------------------------------------------------//
 
-    double t1         ,
-           t_part     ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
-           t_gen_pnts ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
-           t_gen_tets ,     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
-           t_gen_tria ;     // TOBE REPLACED TOBE REPLACED TOBE REPLACED TOBE REPLACED
-    
-    t1 = MPI_Wtime();
+    double t1 = 0     ,
+           t_phase    ;    
 
 //-----------------------------------------------------------------------------------//
 //---- Main algo for partitioning -----
 //-------------------------------------------------------------------------------
 
-   t_part = MPI_Wtime();  
+   t_phase = MPI_Wtime();  
     if(mpirank==0)
         {
            //#include "./../lib/TopiiVolPartAlgo.hpp"    // TOBE REPLACED TOBE REPLACED
             #include "./../lib/TopiiVolPartAlgo2D.hpp"   // TOBE REPLACED TOBE REPLACED
         }
-    t_part = MPI_Wtime()-t_part;
+    t_phase = MPI_Wtime() - t_phase;
+    t1 =  t_phase;
+    *time_log = string( *time_log+"\tPoint cloud partitioning : "
+                        +std::to_string(t_phase)+" s\n"           );
 
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
@@ -182,10 +188,9 @@ int main(int argc, char **argv)
         {
             cout << "                                                               \n"
                  << " *============================================================*\n"
-                 << std::fixed << std::setprecision(4)
-                 <<  "  Time-log:\n"                                  
-                 <<  "  Point cloud partitioning : " << t_part << " s\n"                 
-                 <<  "  The program finshed in   : " << MPI_Wtime()-t1 << " s\n"
+                 <<  "  Time-log:\n"
+                 << *time_log                                  
+                 <<  "\tThe program finshed in   : " << t1 << " s\n"
                  << " *============================================================*\n"
                  << "                                                               \n";
         }
