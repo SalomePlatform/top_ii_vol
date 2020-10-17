@@ -153,9 +153,9 @@ if(*method=="2D")
       lab_x_max = 99099;
       for(int i=0; i <NpY; i++)
         {
-         if(mpirank==0+i)
+         if(mpirank==0+i*NpX)
            lab_x_min = 1;
-         if(mpirank==(mpisize-1-i))
+         if(mpirank==(mpisize-1-i*NpX))
            lab_x_max = 4;
         }
       }
