@@ -101,7 +101,7 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
         {
 
 #include "./../lib/LogoTopiiVolCpp.hpp"
-#include "./../lib/TopiiVolPartAlgo2D.hpp"    // TOBE REPLACED TOBE REPLACED
+#include "./../lib/TopiiVolPartAlgo1D2D.hpp"
 
         }
 

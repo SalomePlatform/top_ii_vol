@@ -148,8 +148,7 @@ int main(int argc, char **argv)
    t_phase = MPI_Wtime();  
     if(mpirank==0)
         {
-           //#include "./../lib/TopiiVolPartAlgo.hpp"    // TOBE REPLACED TOBE REPLACED
-            #include "./../lib/TopiiVolPartAlgo2D.hpp"   // TOBE REPLACED TOBE REPLACED
+            #include "./../lib/TopiiVolPartAlgo1D2D.hpp"
         }
     t_phase = MPI_Wtime() - t_phase;
     t1 =  t_phase;
