@@ -30,6 +30,9 @@ int counter   = 0;
 int stripy    = 0;
 int fileindex = 0;
 int localPntZ = 0;
+int deltaZ    = 0;
+
+double localZpar = 0;
 
 double* xx = new double[pntx];
 double* yy = new double[pntx];
@@ -51,9 +54,7 @@ if(*method=="1D")
     NpX = mpisize;       
     NpY = 1;
     }
-  }
-  
-int NpZ=2;  
+  }  
 
 //----------------------------------------------------------------------------//
 //---- Open input file -----
@@ -123,7 +124,9 @@ for(int j = 0; j<((pntz+(NpZ-1))%NpZ); j++)
   TNPtsz[j] = TNPtsz[j]+1;  
 
 for(int j = 0; j<NpZ; j++)
-  cout << "  TNPtsz[j] " << TNPtsz[j] <<endl;
+  cout << "  TNPtsz[j] --- " << TNPtsz[j] <<endl;
+  
+  
 //----------------------------------------------------------------------------//
 //---- Main loop to read point cloud and returns the strips ----
 //----------------------------------------------------------------------------//
@@ -140,10 +143,16 @@ for(int j=1; j<=pnty; j++)
    for(int i=0; i <NpX; i++)
      {
       fileindex = i +  stripy*NpX;
+      localPntZ = 0;
       for(int l=0; l <NpZ; l++){
-        fileindex = fileindex + l*NpX*NpY;                          
-      for(int k = kstrat; k<kend; k++)
-        outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] << "\n";
+        localPntZ += TNPtsz[l-1] ;     
+        fileindex = fileindex + l*NpX*NpY;
+        localZpar = (localPntZ-1)/(pntz-1.);
+        if(l==0) localZpar =0;  
+      for(int k = kstrat; k<kend; k++){
+        deltaZ  = localZpar*(zmax-zz[k]);                               
+        outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
+      }
      }
       kstrat  = kend -1;
       kend   += TNPtsx[i+1] -1;
@@ -160,9 +169,14 @@ for(int j=1; j<=pnty; j++)
         {
          fileindex = i +  stripy*NpX;
          for(int l=0; l <NpZ; l++){
+          localPntZ += TNPtsz[l-1] ;              
           fileindex = fileindex + l*NpX*NpY;
-          for(int k = kstrat; k<kend; k++)
-             outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] << "\n";
+          localZpar = (localPntZ-1)/(pntz-1); 
+                  if(l==0) localZpar =0;           
+          for(int k = kstrat; k<kend; k++){
+             deltaZ  = localZpar*(zmax-zz[k]);                                         
+             outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
+          }
           }
          kstrat  = kend -1;
          kend   += TNPtsx[i+1] -1;
