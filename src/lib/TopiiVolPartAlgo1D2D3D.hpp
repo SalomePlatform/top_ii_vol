@@ -29,6 +29,7 @@
 int counter   = 0;
 int stripy    = 0;
 int fileindex = 0;
+int fileindexX= 0;
 int localPntZ = 0;
 int deltaZ    = 0;
 
@@ -121,11 +122,7 @@ for(int j = 0; j<NpZ; j++)
   TNPtsz[j] = (pntz+(NpZ-1))/NpZ;
 
 for(int j = 0; j<((pntz+(NpZ-1))%NpZ); j++)
-  TNPtsz[j] = TNPtsz[j]+1;  
-
-for(int j = 0; j<NpZ; j++)
-  cout << "  TNPtsz[j] --- " << TNPtsz[j] <<endl;
-  
+  TNPtsz[j] = TNPtsz[j]+1;    
   
 //----------------------------------------------------------------------------//
 //---- Main loop to read point cloud and returns the strips ----
@@ -142,18 +139,18 @@ for(int j=1; j<=pnty; j++)
               
    for(int i=0; i <NpX; i++)
      {
-      fileindex = i +  stripy*NpX;
+      fileindexX = i +  stripy*NpX;
       localPntZ = 0;
       for(int l=0; l <NpZ; l++){
-        localPntZ += TNPtsz[l-1] ;     
-        fileindex = fileindex + l*NpX*NpY;
-        localZpar = (localPntZ-1)/(pntz-1.);
-        if(l==0) localZpar =0;  
-      for(int k = kstrat; k<kend; k++){
-        deltaZ  = localZpar*(zmax-zz[k]);                               
-        outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
+        localPntZ += TNPtsz[l-1] ; 
+        fileindex = fileindexX + l*NpX*NpY;
+        localZpar = (localPntZ-1*l)/(pntz-1.);
+        for(int k = kstrat; k<kend; k++)
+          {
+           deltaZ  = localZpar*(zmax-zz[k]);                               
+           outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
+          }
       }
-     }
       kstrat  = kend -1;
       kend   += TNPtsx[i+1] -1;
      }
@@ -167,29 +164,31 @@ for(int j=1; j<=pnty; j++)
       kend    = TNPtsx[0];
       for(int i=0; i <NpX; i++)
         {
-         fileindex = i +  stripy*NpX;
-         for(int l=0; l <NpZ; l++){
-          localPntZ += TNPtsz[l-1] ;              
-          fileindex = fileindex + l*NpX*NpY;
-          localZpar = (localPntZ-1)/(pntz-1); 
-                  if(l==0) localZpar =0;           
-          for(int k = kstrat; k<kend; k++){
-             deltaZ  = localZpar*(zmax-zz[k]);                                         
-             outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
-          }
-          }
+         fileindexX = i +  stripy*NpX;
+         for(int l=0; l <NpZ; l++)
+           {
+            localPntZ += TNPtsz[l-1] ;              
+            fileindex = fileindexX + l*NpX*NpY;
+            localZpar = (localPntZ-1*l)/(pntz-1); 
+            for(int k = kstrat; k<kend; k++)
+              {
+               deltaZ  = localZpar*(zmax-zz[k]);                                         
+               outputWrite[fileindex] << std::fixed << xx[k] << "\t" << yy[k] << "\t" << zz[k] + deltaZ << "\n";
+              }
+            }
          kstrat  = kend -1;
          kend   += TNPtsx[i+1] -1;
          localPntZ = 0;
-         for(int l=0; l <NpZ; l++){
-           fileindex  = i +  (stripy-1)*NpX + l*NpX*NpY;
-           localPntZ += TNPtsz[l-1] ;
-           infoWrite[fileindex] << counter <<  "\t" <<  TNPtsx[i] << "\t" <<  TNPtsz[l] <<  "\t" <<  localPntZ <<"\n";
-         }
+         for(int l=0; l <NpZ; l++)
+           {
+            fileindex  = i +  (stripy-1)*NpX + l*NpX*NpY;
+            localPntZ += TNPtsz[l-1] ;
+            infoWrite[fileindex] << counter <<  "\t" <<  TNPtsx[i] << "\t" <<  TNPtsz[l] <<  "\t" <<  localPntZ << "\t" <<  l <<"\n";
+           }
         }
       counter = 0;
       counter++;
-     }
+     }    
    kstrat = 0;
    kend   = TNPtsx[0];           
   }
@@ -198,11 +197,12 @@ for(int j=1; j<=pnty; j++)
 for(int i=0; i <NpX; i++)
  {
   localPntZ = 0; 
-  for(int l=0; l <NpZ; l++){
-    fileindex = i +  (NpY -1)*NpX + l*NpX*NpY;
-    localPntZ += TNPtsz[l-1] ;    
-    infoWrite[fileindex] << counter <<  "\t" <<  TNPtsx[i] << "\t" <<  TNPtsz[l] <<  "\t" <<  localPntZ <<"\n";
-  }
+  for(int l=0; l <NpZ; l++)
+    {
+     fileindex = i +  (NpY -1)*NpX + l*NpX*NpY;
+     localPntZ += TNPtsz[l-1] ;    
+     infoWrite[fileindex] << counter <<  "\t" <<  TNPtsx[i] << "\t" <<  TNPtsz[l] <<  "\t" <<  localPntZ << "\t" <<  l <<"\n";
+    }
  } 
 
 cout << "  done\n";

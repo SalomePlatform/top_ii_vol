@@ -31,6 +31,7 @@ double zznew      ;
 
 int localZpnts ;
 int localZmove ;
+int layerZ     ;
 
 int IJK	          ;
 int Ip1JK	  ;
@@ -55,7 +56,7 @@ in1.open(*inputfile+"_"+std::to_string(mpirank)+".info");
 ofstream wrgmsh;
 wrgmsh.open(*outputfile+"_"+std::to_string(mpirank)+".mesh");
 
-in1 >> pnty >> pntx >> pntz >> localZmove;
+in1 >> pnty >> pntx >> pntz >> localZmove >> layerZ;
 in1.close() ;
 
 // --------------------------------------- BUG --------------------------------------//
@@ -71,12 +72,12 @@ in1.close() ;
 int PxM1 = pntx-1                                       ;
 int PyM1 = pnty-1                                       ;
 int PzM1 = pntz-1                                       ;
-int PxPz = pntx*pntz									;
-int PxPy = pntx*pnty									;
+int PxPz = pntx*pntz					;
+int PxPy = pntx*pnty					;
 
-int NPnt = pntx * pnty * pntz					        ;
+int NPnt = pntx * pnty * pntz				;
 int NTri = 4*( PzM1*PxM1 + PyM1*PzM1 + PxM1*PyM1 )      ;
-int NTet = PxM1 * PyM1 * PzM1 * 6			            ;
+int NTet = PxM1 * PyM1 * PzM1 * 6			;
 
 int lab_x_min = 1                                       ;
 int lab_y_min = 2                                       ;
@@ -208,10 +209,7 @@ for(int i=0; i<PxPy; i++)
         wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n"     ;
 
         zznew=zz;
-        if(localZmove > 0 )
-        delz= (zmax-zz)/(((zglobal-1)-(localZmove-1)));
-        else    
-        delz= (zmax-zz)/(((zglobal-1)));           
+        delz= (zmax-zz)/(((zglobal-1)-(localZmove-1*layerZ)));          
         for(int j=0; j<PzM1; j++)
             {
                 zznew  = zznew + delz;
