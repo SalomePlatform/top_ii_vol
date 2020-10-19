@@ -14,7 +14,7 @@ all: top-ii-vol.so
 	@echo " *============================================================*"
 	@echo ""
 
-top-ii-vol.so: top-ii-vol.cpp
+top-ii-vol.so: top-ii-vol.cpp  ./../lib/TopiiVolPartAlgo1D2D.hpp ./../lib/TopiiVolMeshAlgo.hpp ./../lib/LogoTopiiVolCpp.hpp
 	$(ffCXX) -auto -mpi top-ii-vol.cpp
 	@echo ""
 
