@@ -8,11 +8,12 @@ real t0;
 mpiBarrier(mpiCommWorld);
 if(mpirank == 0) t0 = mpiWtime();
 
-   topiivolpart("./../../data/DEM_160m",outfile="point-cloud-strip",pointsx=32,pointsy=29,method="1D");
-//topiivolpart("./../../data/DEM_160m",outfile="point-cloud-strip",pointsx=32,pointsy=29,method="2D",partx=1,party=mpisize);
+   topiivolpart("./../../data/DEM_160m",outfile="point-cloud-strip",pointsx=32,pointsy=29,pointsz=31,zdepth=-1920.0,partx=1,party=mpisize,partz=1);
+//topiivolpart("./../../data/DEM_160m",outfile="point-cloud-strip",pointsx=32,pointsy=29,partx=1,party=mpisize,partz=1);
    mpiBarrier(mpiCommWorld);
-   topiivolmesh("point-cloud-strip",outfile="top-ii-vol-mesh",pointsz=4,zdepth=-1920.0,method="1D");
-//topiivolmesh("point-cloud-strip",outfile="top-ii-vol-mesh",pointsz=4,zdepth=-1920.0,method="2D",partx=1,party=mpisize);
+   topiivolmesh("point-cloud-strip",outfile="top-ii-vol-mesh",pointsz=31,zdepth=-1920.0,partx=1,party=mpisize,partz=1);
+//topiivolmesh("point-cloud-strip",outfile="top-ii-vol-mesh",pointsz=31,zdepth=-1920.0,partx=1,party=mpisize,partz=1);
+
 
 mpiBarrier(mpiCommWorld);
 if(mpirank == 0)
@@ -102,3 +103,4 @@ cout <<  "  Total time taken for topiivol : " << mpiWtime()-t0 << " s"<< endl;
     //saveDmesh(Th, "saved-Dmesh");
     
 }
+

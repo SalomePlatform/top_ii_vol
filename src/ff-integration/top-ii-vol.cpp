@@ -30,7 +30,7 @@ class partPointCloud_Op : public E_F0mps
 public:
     Expression filename			;
 
-    static const int n_name_param = 6		;
+    static const int n_name_param = 8		;
     static basicAC_F0::name_and_type name_param[]	;
     Expression nargs[n_name_param]			;
 
@@ -54,9 +54,11 @@ basicAC_F0::name_and_type partPointCloud_Op<K>::name_param[] =
     {"outfile", &typeid(std::string*)},
     {"pointsx", &typeid(long)},
     {"pointsy", &typeid(long)},
-    {"method" , &typeid(std::string*)},
+    {"pointsz", &typeid(long)},
+    {"zdepth", &typeid(double)},       
     {"partx"  , &typeid(long)},
-    {"party"  , &typeid(long)}
+    {"party"  , &typeid(long)},    
+    {"partz"  , &typeid(long)}
 };
 
 
@@ -80,13 +82,15 @@ public:
 template<class K>
 AnyType partPointCloud_Op<K>::operator()(Stack stack) const
 {
-    string* inputfile = GetAny<string*>((*filename)(stack))	;
-    string* outputfile= nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
-    int     pntx      = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
-    int     pnty      = nargs[2] ? GetAny<long>((*nargs[2])(stack)) : -1;
-    string* method    = nargs[3] ? GetAny<std::string*>((*nargs[3])(stack)) : NULL;
-    int     NpX       = nargs[4] ? GetAny<long>((*nargs[4])(stack)) : -1;
-    int     NpY       = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;
+    string* inputfile  = GetAny<string*>((*filename)(stack))	;
+    string* outputfile = nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
+    int     pntx       = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
+    int     pnty       = nargs[2] ? GetAny<long>((*nargs[2])(stack)) : -1;
+    int     pntz       = nargs[3] ? GetAny<long>((*nargs[3])(stack)) : -1;
+    double  zmax       = nargs[4] ? GetAny<double>((*nargs[4])(stack)) : -1.;        
+    int     NpX        = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;
+    int     NpY        = nargs[6] ? GetAny<long>((*nargs[6])(stack)) : -1;
+    int     NpZ        = nargs[7] ? GetAny<long>((*nargs[7])(stack)) : -1;        
 
 //    cout << " Px "<< pntx << " py  "<<pnty  << " Name input "<< *inputfile << " Name output "<< *outputfile << endl;
 
@@ -101,7 +105,7 @@ AnyType partPointCloud_Op<K>::operator()(Stack stack) const
         {
 
 #include "./../lib/LogoTopiiVolCpp.hpp"
-#include "./../lib/TopiiVolPartAlgo1D2D.hpp"
+#include "./../lib/TopiiVolPartAlgo1D2D3D.hpp"
 
         }
 
@@ -154,9 +158,9 @@ basicAC_F0::name_and_type meshPointCloud_Op<K>::name_param[] =
     {"outfile", &typeid(std::string*)},
     {"pointsz", &typeid(long)},
     {"zdepth", &typeid(double)},
-    {"method" , &typeid(std::string*)},
     {"partx"  , &typeid(long)},
-    {"party"  , &typeid(long)}
+    {"party"  , &typeid(long)},    
+    {"partz"  , &typeid(long)}
 };
 
 
@@ -179,13 +183,13 @@ public:
 template<class K>
 AnyType meshPointCloud_Op<K>::operator()(Stack stack) const
 {
-    string* inputfile = GetAny<string*>((*filename)(stack))	;
-    string* outputfile= nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
-    int     pntz      = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
-    double  zmax      = nargs[2] ? GetAny<double>((*nargs[2])(stack)) : -1.;
-    string* method    = nargs[3] ? GetAny<std::string*>((*nargs[3])(stack)) : NULL;
-    int     NpX       = nargs[4] ? GetAny<long>((*nargs[4])(stack)) : -1;
-    int     NpY       = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;
+    string* inputfile  = GetAny<string*>((*filename)(stack))	;
+    string* outputfile = nargs[0] ? GetAny<std::string*>((*nargs[0])(stack)) : NULL;
+    int     pntz       = nargs[1] ? GetAny<long>((*nargs[1])(stack)) : -1;
+    double  zmax       = nargs[2] ? GetAny<double>((*nargs[2])(stack)) : -1.;
+    int     NpX        = nargs[3] ? GetAny<long>((*nargs[3])(stack)) : -1;
+    int     NpY        = nargs[4] ? GetAny<long>((*nargs[4])(stack)) : -1;
+    int     NpZ        = nargs[5] ? GetAny<long>((*nargs[5])(stack)) : -1;    
 
 //    string* outputfile= GetAny<string*>((*outname)(stack))	;
 //    int     pntz      = GetAny<long>((*ptz)(stack))	        ;
@@ -203,7 +207,7 @@ AnyType meshPointCloud_Op<K>::operator()(Stack stack) const
 
     if(mpirank==0)
 #include "./../lib/LogoTopiiVolCpp.hpp"
-#include "./../lib/TopiiVolMeshAlgo.hpp"
+#include "./../lib/TopiiVolMeshAlgo1D2D3D.hpp"
 
     if(mpirank==0)
         {
