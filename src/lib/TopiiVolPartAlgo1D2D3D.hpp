@@ -45,16 +45,18 @@ double* zz = new double[pntx];
 
 if(*method=="1D")
   {
-  if(pnty>=pntx)
+  if(pnty>=pntx && pnty>=pntz)
     {
-    NpX = 1;       
-    NpY = mpisize;
+    NpX = 1; NpY = mpisize; NpZ = 1;           
     }
-  else
+  else if(pntx>pnty && pntx>=pntz)
     {
-    NpX = mpisize;       
-    NpY = 1;
+    NpX = mpisize; NpY = 1; NpZ = 1;     
     }
+  else if(pntz>pnty && pntz>pntx)
+    {
+    NpX = 1; NpY = 1; NpZ = mpisize;     
+    }    
   }  
 
 //----------------------------------------------------------------------------//
@@ -93,14 +95,13 @@ int *TNPtsz = new int[NpZ];
 cout << "  # points in the .xyz ------------- "<< pntx*pnty << "        \n"
      << "  # points in X -------------------- "<< pntx << "             \n"
      << "  # points in Y -------------------- "<< pnty << "             \n"
-     << "  # of strips ---------------------- "<< mpisize << "          \n"
+     << "  # points in Z -------------------- "<< pntz << "             \n"     
+     << "  # of partitions------------------- "<< mpisize << "          \n"
      << "                                                               \n"
      << " *============================================================*\n"
      << "                                                               \n"
-     << "  top-ii-vol is now stripping the point cloud .......          \n"
-     << "                                                               \n"
-     << "  writing "
-     << string(*outputfile+"_"+std::to_string(stripy)+".xyz")<<" ... "    ;
+     << "  scattering the point cloud across MPI ranks........          \n"
+     << "                                                               \n";
 
 //----------------------------------------------------------------------------//
 //---- Calculate total number of points held by each strip ----
@@ -122,7 +123,8 @@ for(int j = 0; j<NpZ; j++)
   TNPtsz[j] = (pntz+(NpZ-1))/NpZ;
 
 for(int j = 0; j<((pntz+(NpZ-1))%NpZ); j++)
-  TNPtsz[j] = TNPtsz[j]+1;    
+  TNPtsz[j] = TNPtsz[j]+1;  
+  
   
 //----------------------------------------------------------------------------//
 //---- Main loop to read point cloud and returns the strips ----
@@ -213,6 +215,7 @@ cout << "  done\n";
 
 delete[] TNPtsy;
 delete[] TNPtsx;
+delete[] TNPtsz;
 
 delete[] xx;
 delete[] yy;
