@@ -40,26 +40,6 @@ double* yy = new double[pntx];
 double* zz = new double[pntx];
 
 //----------------------------------------------------------------------------//
-//---- Determining the patition number -----
-//----------------------------------------------------------------------------//
-
-if(*method=="1D")
-  {
-  if(pnty>=pntx && pnty>=pntz)
-    {
-    NpX = 1; NpY = mpisize; NpZ = 1;           
-    }
-  else if(pntx>pnty && pntx>=pntz)
-    {
-    NpX = mpisize; NpY = 1; NpZ = 1;     
-    }
-  else if(pntz>pnty && pntz>pntx)
-    {
-    NpX = 1; NpY = 1; NpZ = mpisize;     
-    }    
-  }  
-
-//----------------------------------------------------------------------------//
 //---- Open input file -----
 //----------------------------------------------------------------------------//
 

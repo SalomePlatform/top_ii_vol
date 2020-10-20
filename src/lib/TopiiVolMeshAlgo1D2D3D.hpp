@@ -52,150 +52,45 @@ int lab_x_max = 4 ;
 int lab_y_max = 5 ;
 int lab_z_max = 3 ;
 
+lab_y_min = 99099;
+lab_y_max = 99099;
         
-if(*method=="1D")
+for(int i=0; i <NpZ; i++)
 {
-
-    if(pnty>=pntx && pnty>=pntz)
-    {          
-        lab_y_min = 99099;
-        if(mpirank==0)
+    for(int j=0; j <NpX; j++)
+    {
+        if(mpirank==i*NpX*NpY+j)
             lab_y_min = 2;
-        lab_y_max = 99099;
-        if(mpirank==(mpisize-1))
-           lab_y_max = 5;             
+        if(mpirank==( (mpisize-1)-i*NpX*NpY  -j ))
+            lab_y_max = 5;        
     }
-    
-    else if(pntx>pnty && pntx>=pntz)
-    {
-        lab_x_min = 99099;
-        if(mpirank==0)
-            lab_x_min = 1;
-        lab_x_max = 99099;
-        if(mpirank==(mpisize-1))
-            lab_x_max = 4; 
-    }
-    
-    else if(pntz>pnty && pntz>pntx)
-    {
-        lab_z_max = 99099;
-        if(mpirank==0)
-            lab_z_max = 3;
-        lab_z_min = 99099;
-        if(mpirank==(mpisize-1))
-          lab_z_min = 6;
-    }
-    
 }
-
-if(*method=="2D")
-  {
-   if(NpY==1 || NpX==1)
-   {
-   if(NpY > 1)
-     {
-      lab_y_min = 99099;
-      lab_y_max = 99099;
-      for(int i=0; i <NpX; i++)
-        {
-         if(mpirank==0+i)
-           lab_y_min = 2;
-         if(mpirank==(mpisize-1-i))
-           lab_y_max = 5;
-        }
-      }
-   if(NpX > 1)
-     {
-      lab_x_min = 99099;
-      lab_x_max = 99099;
-      for(int i=0; i <NpY; i++)
-        {
-         if(mpirank==0+i)
-           lab_x_min = 1;
-         if(mpirank==(mpisize-1-i))
-           lab_x_max = 4;
-        }
-      }
-    }
-    else
-   {
-   if(NpY > 1)
-     {
-      lab_y_min = 99099;
-      lab_y_max = 99099;
-      for(int i=0; i <NpX; i++)
-        {
-         if(mpirank==0+i)
-           lab_y_min = 2;
-         if(mpirank==(mpisize-1-i))
-           lab_y_max = 5;
-        }
-      }
-   if(NpX > 1)
-     {
-      lab_x_min = 99099;
-      lab_x_max = 99099;
-      for(int i=0; i <NpY; i++)
-        {
-         if(mpirank==0+i*NpX)
-           lab_x_min = 1;
-         if(mpirank==(mpisize-1-i*NpX))
-           lab_x_max = 4;
-        }
-      }
-    }
-  }
-
-if(*method=="3D")
+ 
+lab_x_min = 99099;
+lab_x_max = 99099;
+        
+for(int i=0; i <NpZ; i++)
 {
-    if(NpX > 1 && NpZ > 1)
+    for(int j=0; j <NpY; j++)
     {
-        lab_x_min = 99099;
-        lab_x_max = 99099;
-        for(int i=0; i <NpZ; i++)
-        {
-            if(mpirank==0+i*NpX)
-               lab_x_min = 1;
-            if(mpirank==(mpisize-1-i*NpX))
-               lab_x_max = 4;        
-        }
-           
-        lab_z_min = 99099;
-        lab_z_max = 99099;
-        for(int j=0; j <NpX; j++)
-        {
-           if(mpirank==0+j)
-              lab_z_max = 3;
-           if(mpirank==(mpisize-1-j))
-              lab_z_min = 6;
-             
-        }            
+        if(mpirank==i*NpX*NpY + j*NpX )
+            lab_x_min = 1;
+        if(mpirank==( (mpisize-1)  -i*NpX*NpY  -j*NpX ))
+            lab_x_max = 4;        
     }
-    
-    if(NpY > 1 && NpZ > 1)
-    {
-        lab_y_min = 99099;
-        lab_y_max = 99099;
-        for(int i=0; i <NpZ; i++)
-        {
-            if(mpirank==0+i*NpY)
-               lab_y_min = 2;
-            if(mpirank==(mpisize-1-i*NpY))
-               lab_y_max = 5;        
-        }
-           
-        lab_z_min = 99099;
-        lab_z_max = 99099;
-        for(int j=0; j <NpY; j++)
-        {
-           if(mpirank==0+j)
-              lab_z_max = 3;
-           if(mpirank==(mpisize-1-j))
-              lab_z_min = 6;
-             
-        }            
-    }    
 }
+                
+lab_z_min = 99099;
+lab_z_max = 99099;
+        
+for(int j=0; j <NpX*NpY; j++)
+{
+    if(mpirank==j)
+        lab_z_max = 3;
+    if(mpirank==( (mpisize-1)  -j))
+        lab_z_min = 6;
+}         
+       
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//

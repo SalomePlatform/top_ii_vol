@@ -59,7 +59,6 @@ int main(int argc, char **argv)
     *inputfile  = "./../../data/DEM_160m";
     *outputfile = "point-cloud-strip";
 
-
 //-----------------------------------------------------------------------------------//
 //---- Input Parameters -----
 //-----------------------------------------------------------------------------------//
@@ -98,8 +97,11 @@ int main(int argc, char **argv)
 //---- Partitions in x and y -----
 //-----------------------------------------//
 
-    int NpX = 1;
-    int NpY = mpisize;
+    int NpX = mpisize;
+    int NpY = 1;
+    int NpZ = 1;
+
+    bool userpartitioning = false;       
 
 //-----------------------------------------------------------------------------------//
 //---- Comandline Parameters -----
@@ -118,22 +120,49 @@ int main(int argc, char **argv)
             if(!strcmp(argv[i], "--zpoints"))
                 pntz = atoi(argv[i+1]);
 
-            if(!strcmp(argv[i], "--partition_2D_x"))
-                NpX = atoi(argv[i+1]);
+            if(!strcmp(argv[i], "--partition_x"))
+            {   NpX = atoi(argv[i+1]); 
+                userpartitioning = true;
+            }
 
-            if(!strcmp(argv[i], "--partition_2D_y"))
-                NpY = atoi(argv[i+1]);
+            if(!strcmp(argv[i], "--partition_y"))
+            {   NpY = atoi(argv[i+1]);
+                userpartitioning = true;
+            }                
+
+            if(!strcmp(argv[i], "--partition_z"))
+            {   NpZ = atoi(argv[i+1]);
+                userpartitioning = true;
+            }                                                
 
             if(!strcmp(argv[i], "--depth"))
                 zmax = atol(argv[i+1]);
 
             if(!strcmp(argv[i], "--in"))
                 *inputfile = argv[i+1];
-
-            if(!strcmp(argv[i], "--partition"))
-                *method = argv[i+1];
+                
         }
 
+//-----------------------------------------------------------------------------------//
+//---- Automatic partitioning for no userpartioning -----
+//-----------------------------------------------------------------------------------//
+
+    if(!userpartitioning)
+    {
+      if(pnty>=pntx && pnty>=pntz)
+      {
+        NpX = 1; NpY = mpisize; NpZ = 1;           
+      }
+      else if(pntx>pnty && pntx>=pntz)
+      {
+        NpX = mpisize; NpY = 1; NpZ = 1;     
+      }
+      else if(pntz>pnty && pntz>pntx)
+      {
+        NpX = 1; NpY = 1; NpZ = mpisize;     
+      }
+    }   
+    
 //-----------------------------------------------------------------------------------//
 //---- Time variable -----
 //-----------------------------------------------------------------------------------//
@@ -148,7 +177,7 @@ int main(int argc, char **argv)
    t_phase = MPI_Wtime();  
     if(mpirank==0)
         {
-            #include "./../lib/TopiiVolPartAlgo1D2D.hpp"
+            #include "./../lib/TopiiVolPartAlgo1D2D3D.hpp"
         }
     t_phase = MPI_Wtime() - t_phase;
     t1 =  t_phase;
@@ -176,12 +205,12 @@ int main(int argc, char **argv)
 //---- Main algo for meshing -----
 //-----------------------------------------------------------------------------------//
 
-    #include "./../lib/TopiiVolMeshAlgo.hpp"
+    #include "./../lib/TopiiVolMeshAlgo1D2D3D.hpp"
 
 //-----------------------------------------------------------------------------------//
 //---- Time  -----
 //-----------------------------------------------------------------------------------//
-
+/**/
     MPI_Barrier(MPI_COMM_WORLD);
     if(mpirank==0)
         {
