@@ -124,15 +124,13 @@ for(int j = 0; j<NpZ; j++)
 
 for(int j = 0; j<((pntz+(NpZ-1))%NpZ); j++)
   TNPtsz[j] = TNPtsz[j]+1;  
-  
-  
+
 //----------------------------------------------------------------------------//
 //---- Main loop to read point cloud and returns the strips ----
 //----------------------------------------------------------------------------//
       
 int kstrat = 0,
     kend   = TNPtsx[0];
-
 
 for(int j=1; j<=pnty; j++)
   {
@@ -146,7 +144,7 @@ for(int j=1; j<=pnty; j++)
       for(int l=0; l <NpZ; l++){
         localPntZ += TNPtsz[l-1] ; 
         fileindex = fileindexX + l*NpX*NpY;
-        localZpar = (localPntZ-1*l)/(pntz-1.);
+        localZpar = (localPntZ-1.*l)/(pntz-1.);
         for(int k = kstrat; k<kend; k++)
           {
            deltaZ  = localZpar*(zmax-zz[k]);                               
@@ -167,11 +165,12 @@ for(int j=1; j<=pnty; j++)
       for(int i=0; i <NpX; i++)
         {
          fileindexX = i +  stripy*NpX;
+         localPntZ = 0;
          for(int l=0; l <NpZ; l++)
            {
             localPntZ += TNPtsz[l-1] ;              
             fileindex = fileindexX + l*NpX*NpY;
-            localZpar = (localPntZ-1*l)/(pntz-1); 
+            localZpar = (localPntZ-1.*l)/(pntz-1.); 
             for(int k = kstrat; k<kend; k++)
               {
                deltaZ  = localZpar*(zmax-zz[k]);                                         
@@ -180,6 +179,7 @@ for(int j=1; j<=pnty; j++)
             }
          kstrat  = kend -1;
          kend   += TNPtsx[i+1] -1;
+         
          localPntZ = 0;
          for(int l=0; l <NpZ; l++)
            {
