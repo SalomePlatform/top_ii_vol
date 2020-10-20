@@ -146,7 +146,56 @@ if(*method=="2D")
     }
   }
 
-
+if(*method=="3D")
+{
+    if(NpX > 1 && NpZ > 1)
+    {
+        lab_x_min = 99099;
+        lab_x_max = 99099;
+        for(int i=0; i <NpZ; i++)
+        {
+            if(mpirank==0+i*NpX)
+               lab_x_min = 1;
+            if(mpirank==(mpisize-1-i*NpX))
+               lab_x_max = 4;        
+        }
+           
+        lab_z_min = 99099;
+        lab_z_max = 99099;
+        for(int j=0; j <NpX; j++)
+        {
+           if(mpirank==0+j)
+              lab_z_max = 3;
+           if(mpirank==(mpisize-1-j))
+              lab_z_min = 6;
+             
+        }            
+    }
+    
+    if(NpY > 1 && NpZ > 1)
+    {
+        lab_y_min = 99099;
+        lab_y_max = 99099;
+        for(int i=0; i <NpZ; i++)
+        {
+            if(mpirank==0+i*NpY)
+               lab_y_min = 2;
+            if(mpirank==(mpisize-1-i*NpY))
+               lab_y_max = 5;        
+        }
+           
+        lab_z_min = 99099;
+        lab_z_max = 99099;
+        for(int j=0; j <NpY; j++)
+        {
+           if(mpirank==0+j)
+              lab_z_max = 3;
+           if(mpirank==(mpisize-1-j))
+              lab_z_min = 6;
+             
+        }            
+    }    
+}
 //-----------------------------------------------------------------------------------//
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
