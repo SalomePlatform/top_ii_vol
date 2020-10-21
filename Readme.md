@@ -175,18 +175,21 @@ This is  tool to created distributed mesh from  partitioned point cloud
 ```
  mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
 ```
+
 	- 1D partitioning with user enforced partitioning in x direction
 
 ```
  mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 1 --partition_z 1 
 ```
+
 	- 1D partitioning with user enforced partitioning in y direction
 
 ```
  mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 4 --partition_z 1 
 ```
-	- 1D partitioning with user enforced partitioning in z direction
 
+	- 1D partitioning with user enforced partitioning in z direction
+	
 ```
  mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 1 --partition_z 4 
 ```
@@ -200,6 +203,7 @@ This is  tool to created distributed mesh from  partitioned point cloud
 ```
  mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 2 --partition_z 1 
 ```
+
 	- 2D partitioning with user enforced partitioning with 8 subdomains divided between x and z directions
 
 ```
