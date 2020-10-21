@@ -7,7 +7,7 @@ Plan is to build Automake compilation for multiplatform builds but for now the m
 It has two main functions 
 
 - Provides way to coarsen the point cloud by skipping points.
-- Provides point cloud scattering (necessary for parallel for now).  
+- Provides point cloud scattering (necessary for parallel for now).
 
 To compile and build the executable 
 

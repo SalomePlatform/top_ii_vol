@@ -169,23 +169,57 @@ This is the parallel mesher (still under heavy development)
 
 This is  tool to created distributed mesh from  partitioned point cloud
 
-- Example of distributed mesher producing  `*.mesh` mesh with 3 MPI ranks (1D partitioning).
+- Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks: 
+	- 1D partitioning with letting the algorithm decide the partition direction
 
 ```
- mpirun -np 3 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 1D
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
 ```
-- Examples of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (2D partitioning).
+	- 1D partitioning with user enforced partitioning in x direction
 
 ```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 1 --partition_2D_y 4 
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 1 --partition_z 1 
 ```
+	- 1D partitioning with user enforced partitioning in y direction
 
 ```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 4 --partition_2D_y 1 
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 4 --partition_z 1 
 ```
+	- 1D partitioning with user enforced partitioning in z direction
 
 ```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition 2D  --partition_2D_x 2 --partition_2D_y 2 
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 1 --partition_z 4 
+```
+	
+- Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 8 MPI ranks:
+	- 2D partitioning with user enforced partitioning with 8 subdomains divided between x and y directions
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 4 --partition_z 1 
+```
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 2 --partition_z 1 
+```
+	- 2D partitioning with user enforced partitioning with 8 subdomains divided between x and z directions
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 1 --partition_z 4 
+```
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 1 --partition_z 2 
+```
+
+- Examples 3D partitioning of distributed mesher producing  `*.mesh` mesh with 24 MPI ranks:
+	- 3D partitioning with user enforced partitioning with 16 subdomains divided between x, y and z directions
+
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 3 --partition_z 4 
+```
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 3 --partition_y 2 --partition_z 4 
+```
+```
+ mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 2 --partition_z 6 
 ```
 
 *Command-line option definitions*
@@ -195,11 +229,11 @@ This is  tool to created distributed mesh from  partitioned point cloud
 | `--xpoints`       | `[int]`    | These are # of x points present in your point cloud.        |
 | `--ypoints`       | `[int]`    | These are # of y points present in your point cloud.        |
 | `--zpoints`       | `[int]`    | These are # of z points intended in the z direction.        |
-| `--partition_2D_x`| `[int]`    | These are # x partitions for 2D partioning algorithm.       |
-| `--partition_2D_y`| `[int]`    | These are # y partitions for 2D partioning algorithm.       |
+| `--partition_x`   | `[int]`    | These are # of x partitions in x direction.                 |
+| `--partition_y`   | `[int]`    | These are # of y partitions in y direction.                 |
+| `--partition_z`   | `[int]`    | These are # of z partitions in z direction.                 |
 | `--in`            | `[string]` | Sting to provide the input point cloud file `.xyz`          |
 | `--out`           | `[string]` | Sting to provide the  output mesh file  `.mesh`             |
-| `--partition`     | `[string]` | Sting to provide partitioning algorithm choose `1D` or `2D` |
 | `-np`             | `[int]`    | Provide the # of MPI ranks.                                 |
 
 
