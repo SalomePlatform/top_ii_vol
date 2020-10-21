@@ -44,6 +44,9 @@ src/mesher/top-ii-vol-Mesher
 src/mesher/top-ii-vol-ParMesher
 src/mesher/top-ii-vol-PreProc
 
+## CLUSTER ERROR FILES ##
+*.btr
+
 ## ALLOWED FILES ##
 !/data/DEM_10m.xyz
 !/data/DEM_160m.xyz
@@ -53,4 +56,5 @@ src/mesher/top-ii-vol-PreProc
 !/data/data6x6.xyz
 !/data/data6x9.xyz
 !/data/data9x9.xyz
+
 
