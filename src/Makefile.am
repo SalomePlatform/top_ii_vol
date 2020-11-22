@@ -1,4 +1,4 @@
-SUBDIRS = mesher distributed-mesher
+SUBDIRS = mesher distributed-mesher par-mesher distributed-mesher
 
 all-local:
 

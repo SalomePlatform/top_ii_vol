@@ -1,10 +1,21 @@
 # Changelog
 All notable changes to top-ii-vol mesher will be documented in this file.
 
-## UNRELEASED
+## Rolling release [1.3]
 ### Added
 - Smarter way to perform 1D partitioning, algorithm decides based on points in each direction.
+
 - New flags `--partition_x`, `--partition_y`  and `--partition_z` to decide # of partitions in each direction. 
+
+- Installation now performed at `/usr/local/bin` or `/usr/bin`.
+
+- More tutorials and examples.
+
+  
+
+### Changed
+
+- Tools renamed from `top-ii-vol_*`  to `topIIvol_*`.
 
 ### Removed
 

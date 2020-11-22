@@ -16,6 +16,7 @@
 *.khi
 *.idp
 *.so
+./*.pdf
 
 ## AUTOCONF FILES ##
 Makefile
@@ -38,11 +39,10 @@ Makefile.in
 *.in
 *.nfs*
 compile
-src/distributed-mesher/top-ii-vol-DistMesher
-src/distributed-mesher/top-ii-vol-Part
-src/mesher/top-ii-vol-Mesher
-src/mesher/top-ii-vol-ParMesher
-src/mesher/top-ii-vol-PreProc
+src/distributed-mesher/topIIvol_DistMesher
+src/mesher/topIIvol_Mesher
+src/par-mesher/topIIvol_ParMesher
+src/mesher/topIIvol_PreProc
 
 ## CLUSTER ERROR FILES ##
 *.btr

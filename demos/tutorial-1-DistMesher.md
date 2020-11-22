@@ -13,34 +13,33 @@
 
 # Introduction
 
-top-ii-vol meshing tool provides sequential/parallel tools for creating volumetric tetrahedral meshes from a given topology (point-cloud `*.xyz`). The volumetric meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` format.  The framework is written in C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
+topIIvol meshing tool provides sequential/parallel tools for creating volumetric tetrahedral meshes from a given topology (point-cloud `*.xyz`). The volumetric meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` format.  The framework is written in C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
 
-top-ii-vol consists a total of four tools:
+topIIvol consists a total of four tools:
 
-### 1. `top-ii-vol-PreProc`
+### 1. `topIIvol_PreProc`
 
 This tool is a point-cloud preprocessor. Often point-cloud data is huge and requires some alterations. This tool takes in a point-cloud as an input (`.xyz`). It can be used to coarsen a structured point cloud, by skipping a specified n number of points.
 
 
-### 2. `top-ii-vol-Mesher`
+### 2. `topIIvol_Mesher`
 
 This is a sequential computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumetric meshes that can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` and `*.meshb` format.
 
 
-### 3. `top-ii-vol-ParMesher`
+### 3. `topIIvol_ParMesher`
 
 This is a parallel computing tool. This tool takes in a point-cloud as an input (`.xyz`) and generates volumetric meshes that can be extracted in  medit's `*.mesh` format.
 
 
-### 4. `top-ii-vol-DistMesher`
+### 4. `topIIvol_DistMesher`
 
-This is a tool to create embarrassingly parallel distributed meshes. The mesher takes in a point-cloud as an input (`.xyz`) and outputs distributed mesh. 
-
+This is a tool to create embarrassingly parallel distributed meshes. The mesher takes in a point-cloud as an input (`.xyz`) and outputs distributed mesh.
 
 
 ## Installation process ##
 
-Before you begin installing top-ii-vol please check if your system meets the dependencies.
+Before you begin installing topIIvol please check if your system meets the dependencies.
 
 **Dependencies**
 
@@ -53,42 +52,49 @@ Before you begin installing top-ii-vol please check if your system meets the dep
 Goto `top-ii-vol-Source` folder and
 
 - step 1
-```
+```bash
 autoreconf -i
 ```
 
 - step 2
-```
+```bash
 ./configure 
 ```
-*Note*:   `./configure` will install top-ii-vol in `$HOME/top-ii-vol` to change this directory use `--prefix=Your/Own/Path` with `./configure`.
+*Note*:   `./configure` will install topIIvol in `/usr/local/bin` or `/usr/bin`, you generally need to be a superuser (sudoer) to have access to these directories. If you prefer to install at any other directory of choice `--prefix=Your/Own/Path` with `./configure`:
+
+```bash
+./configure --prefix=Your/Own/Path 
+```
 
 - step 3
-```
+```bash
 make
 ```
 
 - step 4
-```
+```bash
 make check
 ```
 
 - step 5
+```bash
+sudo make install
 ```
-make install
-```
-
-## Running top-ii-vol
-
-If the compilation went successful you should have three tools at your disposal `top-ii-vol-ParMesher`, `top-ii-vol-Mesher`,  `top-ii-vol-PreProc`, and `top-ii-vol-DistMesher`. These tools can be worked with command line inputs. And these tools should be present in `$HOME/top-ii-vol/bin` folder. 
+*Note*: if you used `--prefix` during the configure phase, you can avoid using `sudo` for this step and simply `make install`.
 
 
-##### How to use top-ii-vol-PreProc ?
+## Running topIIvol
+
+If the compilation went successful you should have three tools at your disposal `topIIvol_ParMesher`, `topIIvol_Mesher`,  `topIIvol_PreProc`, and `topIIvol_DistMesher`. These tools can be worked with command line inputs. Normally, these tools should be present in `/usr/local/bin` or `/usr/bin` folder, or else if you used `--prefix=your/directory` at the time of configure then these tools should be present in `your/directory/bin`. 
+
+
+##### How to use topIIvol_PreProc ?
 
 - If you wish to coarsen your mesh by skipping 10 points in x and y direction 
 
-  ```
-  ./top-ii-vol-PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 --in ./../etc/DEM_10m.xyz --out out-coarse.xyz
+  ```bash
+  topIIvol_PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 \
+  --in ./../etc/DEM_10m.xyz --out out-coarse.xyz
   ```
 
 *Command-line option definitions*
@@ -102,26 +108,24 @@ If the compilation went successful you should have three tools at your disposal 
 | `--in`      | `[string]` | Sting to provide the input point cloud file `.xyz`           |
 | `--out`     | `[string]` | Sting to provide the  output coarsened/stripped point cloud file `.xyz` |
 
-*Note that after successfully running `./top-ii-vol-PreProc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
+*Note that after successfully running `./topIIvol_PreProc`there will be a  info file `info-<out-coarse.xyz>.txt` that give the number of x an y points in the coarsened mesh cloud.*
 
-
-
-
-
-##### How to use top-ii-vol-Mesher ?
+##### How to use topIIvol_Mesher ?
 
 This is the sequential mesher 
 
 - For  sequential mesher producing  `*.mesh` mesh.
 
-  ```
-  ./top-ii-vol-Mesher --xpoints 32 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --depth -1000 --mesh mesh
+  ```bash
+  topIIvol_Mesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
+  --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --mesh mesh
   ```
   
 - For  sequential mesher producing  `*.msh` mesh.
 
-  ```
-  ./top-ii-vol-Mesher ---xpoints 32 --ypoints 29 --zpoints 15 --in ./../etc/DEM_160m.xyz --out out-mesh.msh --depth -1000 --mesh msh
+  ```bash
+  topIIvol_Mesher ---xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
+  --in ./../etc/DEM_160m.xyz --out out-mesh.msh  --mesh msh
   ```
 
 *Command-line option definitions*
@@ -140,14 +144,15 @@ This is the sequential mesher
 
 
 
-##### How to use top-ii-vol-ParMesher ?
+##### How to use topIIvol_ParMesher ?
 
 This is the parallel mesher (still under heavy development)
 
 - For parallel mesher producing  `*.mesh` mesh with 2 MPI ranks.
 
-```
-  mpirun -n 2 ./top-ii-vol-ParMesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -2000  --in ./../etc/DEM_160m.xyz  --out Parallel-out-mesh.mesh
+```bash
+mpirun -n 2 topIIvol_ParMesher --xpoints 32 --ypoints 29 --zpoints 15 \
+--depth -2000 --in ./../etc/DEM_160m.xyz  --out Parallel-out-mesh.mesh
 ```
 
 *Command-line option definitions*
@@ -165,83 +170,110 @@ This is the parallel mesher (still under heavy development)
 
 
 
-##### How to use top-ii-vol-DistMesher ?
+##### How to use topIIvol_DistMesher ?
 
 This is  tool to created distributed mesh from  partitioned point cloud
 
 - Examples 3D partitioning of distributed mesher producing  `*.mesh` mesh with 24 MPI ranks (with 24 subdomains divided between x, y and z directions):
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 3 --partition_z 4 
+```bash
+mpirun -n 24 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 2 --partition_y 3 --partition_z 4 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 or 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 3 --partition_y 2 --partition_z 4 
+```bash
+mpirun -n 24 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 3 --partition_y 2 --partition_z 4 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 or
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 2 --partition_z 6 
+```bash
+mpirun -n 24 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 2 --partition_y 2 --partition_z 6 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 8 MPI ranks (with the 8 subdomains divided between x and y directions):
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 4 --partition_z 1 
+```bash
+mpirun -n 8 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 2 --partition_y 4 --partition_z 1 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 or
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 2 --partition_z 1 
+```bash
+mpirun -n 8 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 4 --partition_y 2 --partition_z 1 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 6 MPI ranks (with the 6 subdomains divided between x and z directions):
 
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 2 --partition_y 1 --partition_z 3 
+```bash
+mpirun -n 6 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 2 --partition_y 1 --partition_z 3 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 or
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 3 --partition_y 1 --partition_z 2 
+```bash
+mpirun -n 6 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 3 --partition_y 1 --partition_z 2 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 16 MPI ranks (with the 16 subdomains divided between y and z directions):
 
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 8 --partition_z 2 
-```
-or
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 2 --partition_z 8 
+```bash
+mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 1 --partition_y 8 --partition_z 2 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 or
+```bash
+mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 1 --partition_y 2 --partition_z 8 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 4 --partition_z 4 
+or
+```bash
+mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 1 --partition_y 4 --partition_z 4 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
- 
+
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (letting the algorithm decide the partition direction): 
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
+```bash
+mpirun -n 4 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (enforced partitioning in x direction): 
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 4 --partition_y 1 --partition_z 1 
+```bash
+mpirun -n 4 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 4 --partition_y 1 --partition_z 1 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 8 MPI ranks (enforced partitioning in y direction): 
 
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 8 --partition_z 1 
+```bash
+mpirun -n 8 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 1 --partition_y 8 --partition_z 1 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 3 MPI ranks (enforced partitioning in z direction): 
 
 	
-```
- mpirun -np 4 ./top-ii-vol-DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m --partition_x 1 --partition_y 1 --partition_z 3 
+```bash
+mpirun -n 3 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
+--depth -1000 --partition_x 1 --partition_y 1 --partition_z 3 \
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m 
 ```
 
 

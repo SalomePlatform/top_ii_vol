@@ -36,31 +36,33 @@ logo:
 	@echo "*============================================================*"
 
 install-exec-local: logo
-	@mkdir -p ${prefix}/top-ii-vol
-	@mkdir -p ${prefix}/top-ii-vol/bin
-	@mkdir -p ${prefix}/top-ii-vol/doc
-	@mkdir -p ${prefix}/top-ii-vol/etc
-	@cp  ./src/mesher/top-ii-vol-PreProc   ${prefix}/top-ii-vol/bin/.
-	@cp  ./src/mesher/top-ii-vol-Mesher    ${prefix}/top-ii-vol/bin/.
-	@cp  ./src/mesher/top-ii-vol-ParMesher ${prefix}/top-ii-vol/bin/.
-	@cp  ./src/distributed-mesher/top-ii-vol-DistMesher   ${prefix}/top-ii-vol/bin/.
-	@cp  ./data/DEM_160m.xyz ${prefix}/top-ii-vol/etc/.
-	@cp  ./man/Readme.html   ${prefix}/top-ii-vol/doc/.
+	@mkdir -p ${prefix}/share/topIIvol
+	@mkdir -p ${prefix}/share/topIIvol/doc
+	@cp  ./man/Readme.html   ${prefix}/share/topIIvol/doc/.
+	@cp  ./man/Readme.pdf    ${prefix}/share/topIIvol/doc/.
 	@echo "*============================================================*"
 	@echo ""
+	@echo " # topIIvol tools are now installed at ${prefix}/bin"
 	@echo ""
-	@echo " # top-ii-vol tools are now installed at ${prefix}/top-ii-vol/bin"
+	@echo " # topIIvol documentations will be present ${prefix}/share/topIIvol/doc"
 	@echo ""
-	@echo " # top-ii-vol documentations will be present ${prefix}/top-ii-vol/doc"
-	@echo ""
-	@echo " # top-ii-vol can be tested on a dummy .xyz files in ${prefix}/top-ii-vol/etc"
-	@echo ""
-	@echo "*============================================================*"		
+	@echo "*============================================================*"
+
+tutorials:
+	@mkdir -p $${HOME}/topIIvol-tutorials
+	@mkdir -p $${HOME}/topIIvol-tutorials/doc
+	@mkdir -p $${HOME}/topIIvol-tutorials/xyz
+	@cp  ./demos/*.pdf   $${HOME}/topIIvol-tutorials/.
+	@cp  ./man/Readme.html   $${HOME}/topIIvol-tutorials/doc/.
+	@cp  ./man/Readme.pdf    $${HOME}/topIIvol-tutorials/doc/.
+	@cp  ./data/DEM_10m.xyz  $${HOME}/topIIvol-tutorials/xyz/point-cloud-fine.xyz
+	@cp  ./data/DEM_160m.xyz $${HOME}/topIIvol-tutorials/xyz/point-cloud-coarse.xyz
+
 	
 check: logo
 	@echo ""
 	@echo "*============================================================*"
-	@echo " 'make check' finished now do 'make install'"
+	@echo " 'make check' finished now do 'sudo make install'"
 	@echo "*============================================================*"				
 
 clean-local:

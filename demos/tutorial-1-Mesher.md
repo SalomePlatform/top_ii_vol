@@ -1,10 +1,19 @@
-![tringles](./etc/images/tringles.png)  
+```
+            *============================================================*
+                     ___                                            ___    
+                    /  /               ___________                 /  /    
+                 __/  /_ ___    ___   /__  __  __/__    __ ____   /  /
+                /_   __// _  \ / _  \   / / / /   \ \  / // _  \ /  / 
+                 /  /_ / /_/ // /_/ /__/ /_/ /__   \ \/ // /_/ //  /__
+                 \___/ \____// ____//__________/    \__/ \____/ \____/
+                            / /                                            
+                           /_/                                             
+             *============================================================*
+```
 
 # Introduction
 
 topIIvol meshing tool provides sequential/parallel tools for creating volumetric tetrahedral meshes from a given topology (point-cloud `*.xyz`). The volumetric meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` format.  The framework is written in C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
-
-
 
 topIIvol consists a total of four tools:
 
@@ -26,6 +35,7 @@ This is a parallel computing tool. This tool takes in a point-cloud as an input 
 ### 4. `topIIvol_DistMesher`
 
 This is a tool to create embarrassingly parallel distributed meshes. The mesher takes in a point-cloud as an input (`.xyz`) and outputs distributed mesh.
+
 
 ## Installation process ##
 
@@ -288,19 +298,3 @@ To report bugs, issues, feature-requests contact:*
 - **mohd-afeef.badri@cea.fr**
 - **mohd-afeef.badri@hotmail.com**
 - **mohd-afeef.badri@etu.univ-nantes.fr** 
-
-
-
-
-
-## Point cloud ##
-
-![points](./etc/images/points.png)
-
-## Surface triangulation of point cloud ##
-
-![tringles](./etc/images/tringles.png)
-
-##  Finite element solution field ##
-
-![alt](./etc/images/alt.png)

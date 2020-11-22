@@ -1,4 +1,4 @@
-AC_INIT([top-ii-vol], [1.2], [mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
+AC_INIT([top-ii-vol], [1.3], [mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_CONFIG_HEADERS([config.h])
@@ -126,7 +126,7 @@ fi
 ])dnl AX_MPI
 
 SECTION_TITLE([ checking for a C++/MPIC++ compilers ])
-dnl AC_PROG_CC
+AC_PROG_CC
 dnl AX_MPI
 AC_PROG_CXX
 AC_LANG(C++)
@@ -150,11 +150,12 @@ test "$MPICXX" == "$CXX" && AC_MSG_ERROR([
 
 SECTION_TITLE([  generating the required makefiles  ])
 
-AC_PREFIX_DEFAULT($HOME)
+dnl AC_PREFIX_DEFAULT($HOME)
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
  src/mesher/Makefile
+ src/par-mesher/Makefile
  src/distributed-mesher/Makefile
 ])
 AC_OUTPUT

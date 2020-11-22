@@ -7,7 +7,7 @@ NP=3
 all: top-ii-vol.so
 	@echo " *============================================================*"
 	@echo ""
-	@echo " Finished installing top-ii-vol compilation"
+	@echo " Finished installing topIIvol compilation"
 	@echo ""
 	@echo " Compilation list $(LIST_COMPILE)"
 	@echo ""
