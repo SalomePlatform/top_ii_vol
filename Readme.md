@@ -4,8 +4,6 @@
 
 topIIvol meshing tool provides sequential/parallel tools for creating volumetric tetrahedral meshes from a given topology (point-cloud `*.xyz`). The volumetric meshes can be extracted in Gmsh's `*.msh` format or medit's `*.mesh` format.  The framework is written in C++, and uses MPI I/O and MPI for parallelization. One could produce distributed meshes suitable for domain-decomposition based solvers or simply non distributed meshes (single mesh) suitable for a sequential/parallel solver.
 
-
-
 topIIvol consists a total of four tools:
 
 ### 1. `topIIvol_PreProc`
@@ -72,6 +70,14 @@ sudo make install
 ```
 *Note*: if you used `--prefix` during the configure phase, you can avoid using `sudo` for this step and simply `make install`.
 
+- Step 6 (optional)
+
+```bash
+make tutorials
+```
+
+this will install some basic tutorial at `$HOME/topIIvol-tutorials`.
+
 
 ## Running topIIvol
 
@@ -129,8 +135,6 @@ This is the sequential mesher
 | `--out`     | `[string]` | Sting to provide the  output mesh file  `.mesh`      |
 | `--depth`   | `[int]`    | This is the depth of the mesh needed.                |
 | `--mesh`    | `[string]` | To specify the kind of mesh needed                   |
-
-
 
 
 
@@ -259,7 +263,6 @@ mpirun -n 8 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 3 MPI ranks (enforced partitioning in z direction): 
 
-	
 ```bash
 mpirun -n 3 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 1 --partition_z 3 \

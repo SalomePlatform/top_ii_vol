@@ -38,7 +38,6 @@ logo:
 install-exec-local: logo
 	@mkdir -p ${prefix}/share/topIIvol
 	@mkdir -p ${prefix}/share/topIIvol/doc
-	@cp  ./man/Readme.html   ${prefix}/share/topIIvol/doc/.
 	@cp  ./man/Readme.pdf    ${prefix}/share/topIIvol/doc/.
 	@echo "*============================================================*"
 	@echo ""
@@ -53,7 +52,6 @@ tutorials:
 	@mkdir -p $${HOME}/topIIvol-tutorials/doc
 	@mkdir -p $${HOME}/topIIvol-tutorials/xyz
 	@cp  ./demos/*.pdf   $${HOME}/topIIvol-tutorials/.
-	@cp  ./man/Readme.html   $${HOME}/topIIvol-tutorials/doc/.
 	@cp  ./man/Readme.pdf    $${HOME}/topIIvol-tutorials/doc/.
 	@cp  ./data/DEM_10m.xyz  $${HOME}/topIIvol-tutorials/xyz/point-cloud-fine.xyz
 	@cp  ./data/DEM_160m.xyz $${HOME}/topIIvol-tutorials/xyz/point-cloud-coarse.xyz
@@ -78,6 +76,8 @@ clean-automake:
 	@echo " Cleaning all automake files in :"; pwd
 	@echo "*============================================================*"
 	@echo ""
-	rm  -rf ${AUTOMAKE_LIST} *~ ./src/top-ii-vol_MPI/Makefile
-	rm  -rf ./src/Makefile ./src/Makefile.in  ./src/*~ 
-	rm  -rf ./src/top-ii-vol_MPI/Makefile.in  ./src/top-ii-vol_MPI/*~
+	rm  -rf ${AUTOMAKE_LIST} *~ 
+	rm  -rf ./src/Makefile ./src/Makefile.in  ./src/*~  
+	rm  -rf ./src/distributed-mesher/Makefile ./src/distributed-mesher/Makefile.in  ./src/distributed-mesher/*~
+	rm  -rf ./src/par-mesher/Makefile ./src/par-mesher/Makefile.in  ./src/par-mesher/*~
+	rm  -rf ./src/mesher/Makefile ./src/mesher/Makefile.in  ./src/mesher/*~
