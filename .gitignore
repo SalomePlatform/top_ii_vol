@@ -56,5 +56,6 @@ src/mesher/topIIvol_PreProc
 !/data/data6x6.xyz
 !/data/data6x9.xyz
 !/data/data9x9.xyz
-
-
+!/data/data3x3.xyz
+!/data/data3x2.xyz
+!/data/data2x3.xyz
