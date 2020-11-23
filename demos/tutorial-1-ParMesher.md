@@ -29,4 +29,3 @@ To report bugs, issues, feature-requests contact:*
 
 - **mohd-afeef.badri@cea.fr**
 - **mohd-afeef.badri@hotmail.com**
-- **mohd-afeef.badri@etu.univ-nantes.fr** 
