@@ -17,11 +17,9 @@ After successfully running `topIIvol_PreProc` there will be a  coarsened point c
 
 | ![coarse-point-cloud](./../etc/images//coarse-point-cloud.png) |
 | :----------------------------------------------------------: |
-|       **Coarsend  point cloud with 2300 data points**        |
+|        **Coarse  point cloud with 2300 data points**         |
 
-
-
-To report bugs, issues, feature-requests contact:* 
+*To report bugs, issues, feature-requests contact:* 
 
 - **mohd-afeef.badri@cea.fr**
 - **mohd-afeef.badri@hotmail.com**
