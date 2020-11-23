@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
          << " *===================================================*\n"
          << " *                  Work in progress                 *\n"
          << " *===================================================*\n\n"
-         << "   topiivol began coarsing "+inputfile+"\n"
+         << "   topIIvol began coarsening "+inputfile+"\n"
          << "   ..."; 
 
     for(int j=0; j<pnty; j++)
@@ -160,8 +160,8 @@ int main(int argc, char *argv[])
     wr.close();
     in.close();
 
-    cout << "Finshed !!!\n"
-         << "   topiivol is now writing an info file\n"
+    cout << "Finished !!!\n"
+         << "   topIIvol is now writing an info file\n"
          << "   ...";
 
     wr.open(outpufile+".info");
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 
     wr.close();
 
-    cout << "Finshed !!!\n";
+    cout << "Finished !!!\n";
 
 //-----------------------------------------------------------------------------------//
 //---- Message on commandline -----
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
     get_time = clock() - get_time;
 
     cout << " *============================================================*\n"
-         << "  The program finshed in : " << (float)get_time/CLOCKS_PER_SEC 
+         << "  The program finished in : " << (float)get_time/CLOCKS_PER_SEC 
          << " s\n"
          << " *============================================================*\n\n";
 

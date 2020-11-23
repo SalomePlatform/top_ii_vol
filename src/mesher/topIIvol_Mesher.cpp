@@ -563,7 +563,7 @@ int main(int argc, char *argv[])
     get_time = clock() - get_time;
 
     cout << " *============================================================*\n"
-         << "  The program finshed in : " << (float)get_time/CLOCKS_PER_SEC 
+         << "  The program finished in : " << (float)get_time/CLOCKS_PER_SEC 
          << " s\n"
          << " *============================================================*\n";
 

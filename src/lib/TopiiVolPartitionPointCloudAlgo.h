@@ -62,7 +62,7 @@ printf( " reading point cloud from : %s \n\n",pathString);
 snprintf (wfilename, sizeof(wfilename), "pc_part_%d.xyz", k);
 writeFile = fopen(wfilename,"w");
 
-printf( " writing partioned point cloud # %d in file : %s \n",k,wfilename);
+printf( " writing partitioned point cloud # %d in file : %s \n",k,wfilename);
 
 //====================================================================================//
 //---- calculation for balanced or unbalanced partioning -----
@@ -95,7 +95,7 @@ for(int j = 0; j<pnty; j++)
                         fclose(writeFile);
                         snprintf (wfilename, sizeof(wfilename), "pc_part_%d.xyz", k);
                         writeFile = fopen(wfilename,"w");
-                        printf( " writing partioned point cloud # %d in file : %s \n",k,wfilename);
+                        printf( " writing partitioned point cloud # %d in file : %s \n",k,wfilename);
                     }
 
                 fprintf(writeFile,"%lf %lf %lf\n",x,y,z) ;

@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
                 }     
 
 //====================================================================================//
-//---- parallel  partitioning experimetal -----
+//---- parallel  partitioning experimental -----
 //====================================================================================//
 
 if(ParallelPart == 1)
@@ -301,7 +301,7 @@ if(ParallelPart == 1)
     if(mpirank==0)
         {
             printf( "\n\n *============================================================*\n");
-            printf( "    point cloud patitioning took : %f s\n",  MPI_Wtime()-t1);
+            printf( "    point cloud partitioning took : %f s\n",  MPI_Wtime()-t1);
             printf( " *============================================================*\n");
         }
 
@@ -1080,7 +1080,7 @@ if(ParallelPart == 1)
     if(mpirank==0)
         {
             printf( "\n\n *============================================================*\n");
-            printf( "    The program finshed in : %f s\n",  MPI_Wtime()-t1);
+            printf( "    The program finished in : %f s\n",  MPI_Wtime()-t1);
             printf( " *============================================================*\n");
         }
     fflush(stdout);
