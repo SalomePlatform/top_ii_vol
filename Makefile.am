@@ -16,7 +16,7 @@ stamp-h1 \
 depcomp  \
 .swp
 
-all-local: logo
+all-local:
 	@echo ""
 	@echo "*============================================================*"
 	@echo " 'make' finished now do 'make check'"
@@ -40,11 +40,20 @@ install-exec-local: logo
 	@mkdir -p ${prefix}/share/topIIvol/doc
 	@cp  ./man/Readme.pdf    ${prefix}/share/topIIvol/doc/.
 	@echo "*============================================================*"
+	@echo ""	
+	@echo " Finished installing topIIvol version $(VERSION)"	
 	@echo ""
-	@echo " # topIIvol tools are now installed at ${prefix}/bin"
+	@echo " # topIIvol tools  are now installed at:" 
+	@echo "               -  ${prefix}/bin/topIIvol_PreProc"
+	@echo "               -  ${prefix}/bin/topIIvol_Mesher"
+	@echo "               -  ${prefix}/bin/topIIvol_ParMesher"
+	@echo "               -  ${prefix}/bin/topIIvol_DistMesher"	
 	@echo ""
-	@echo " # topIIvol documentations will be present ${prefix}/share/topIIvol/doc"
+	@echo " # topIIvol documentations will be present at :"
+	@echo "               -  ${prefix}/share/topIIvol/doc/Readme.pdf"		
 	@echo ""
+	@echo " optionally do 'make tutorials' for basic topIIvol tutorials"
+	@echo ""		
 	@echo "*============================================================*"
 
 tutorials:
@@ -55,6 +64,12 @@ tutorials:
 	@cp  ./man/Readme.pdf    $${HOME}/topIIvol-tutorials/doc/.
 	@cp  ./data/DEM_10m.xyz  $${HOME}/topIIvol-tutorials/xyz/point-cloud-fine.xyz
 	@cp  ./data/DEM_160m.xyz $${HOME}/topIIvol-tutorials/xyz/point-cloud-coarse.xyz
+	@echo "*============================================================*"
+	@echo ""
+	@echo " # topIIvol tutorials are now present at:"
+	@echo "               -  $${HOME}/topIIvol-tutorials"		
+	@echo ""
+	@echo "*============================================================*"	 	
 
 	
 check: logo
