@@ -34,7 +34,7 @@ check-local: topIIvol_DistMesher.o
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_y 2 --partition_z 2 	
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_x 1 --partition_z 4
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_x 1 --partition_z 2 --partition_y 2
-	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_y 1 --partition_z 2 --partition_x 1				
+	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_y 1 --partition_z 2 --partition_x 2				
 	@echo ""
 
 test-freefem: ./../../test/reconstruct.edp
