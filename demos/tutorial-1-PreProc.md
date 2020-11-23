@@ -1,6 +1,6 @@
 
 
-In this tutorial  let us use `topIIvol_PreProc` to coarsen a point cloud cluster `./xyz/point-cloud-fine.xyz` which contains $$(x\times y)=500 \times 451= 225500$$ points.  To coarsen, we use skipping 10 rows of points in x direction and  skipping 10 rows of points y direction. We should roughly achieve $500/10 = 50$ points in $x$ and $451/10 \approx 46$ points in $y$, such that a total number of points now reduce to $50\times46 = 2300$. 
+In this tutorial  let us use `topIIvol_PreProc` to coarsen a point cloud cluster `./xyz/point-cloud-fine.xyz` which contains $(x\times y)=500 \times 451= 225500$ points.  To coarsen, we use skipping 10 rows of points in x direction and  skipping 10 rows of points y direction. We should roughly achieve $500/10 = 50$ points in $x$ and $451/10 \approx 46$ points in $y$, such that a total number of points now reduce to $50\times46 = 2300$. 
 
 | ![space-1.jpg](./../etc/images/fine-point-cloud.png) |
 | :--------------------------------------------------: |
