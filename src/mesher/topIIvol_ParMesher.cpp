@@ -46,15 +46,15 @@ int main(int argc, char *argv[])
     int label ;             // label # of the mesh surfaces
 
 
-    int  IJK        ;       // variable used during tera or triangle generation
-    int  Ip1JK      ;       // variable used during tera or triangle generation
-    int  IJp1K      ;       // variable used during tera or triangle generation
-    int  IJKp1      ;       // variable used during tera or triangle generation
-    int  Ip1JKp1    ;       // variable used during tera or triangle generation
-    int  IJp1Kp1    ;       // variable used during tera or triangle generation
-    int  Ip1Jp1K    ;       // variable used during tera or triangle generation
-    int  Ip1Jp1Kp1  ;       // variable used during tera or triangle generation
-    int  dummycount ;       // variable used during tera or triangle generation
+    int  IJK        ;       // variable used during tetra or triangle generation
+    int  Ip1JK      ;       // variable used during tetra or triangle generation
+    int  IJp1K      ;       // variable used during tetra or triangle generation
+    int  IJKp1      ;       // variable used during tetra or triangle generation
+    int  Ip1JKp1    ;       // variable used during tetra or triangle generation
+    int  IJp1Kp1    ;       // variable used during tetra or triangle generation
+    int  Ip1Jp1K    ;       // variable used during tetra or triangle generation
+    int  Ip1Jp1Kp1  ;       // variable used during tetra or triangle generation
+    int  dummycount ;       // variable used during tetra or triangle generation
 
 
     int startrow ;          // used by MPI ranks to mark their starting row
@@ -484,7 +484,7 @@ if(ParallelPart == 1)
     MPI_Type_free(&localarray);
 
 //====================================================================================//
-//---- Tetdata header writing -----
+//---- Tet data header writing -----
 //====================================================================================//
 
     if(mpirank==0)
@@ -651,7 +651,7 @@ if(ParallelPart == 1)
     MPI_Type_commit(&localarray1);
 
 //====================================================================================//
-//---- Tetdata writing -----
+//---- Tet data writing -----
 //====================================================================================//
 
     MPI_File_set_view(file, offset,  MPI_CHAR, localarray1,"native", MPI_INFO_NULL);
