@@ -37,7 +37,7 @@ check-local:
 	@echo ""
 
 test-freefem: check-local
-	ff-mpirun -np $(NP) ../../test/Noreconstruct.edp -v 0
+	ff-mpirun -np $(NP) ../../test/NoreconstructPar.edp -v 0
 	paraview
 
 clean-local:
@@ -48,5 +48,4 @@ clean-local:
 	@echo ""
 	rm  -f topIIvol_ParMesher 
 	rm  -f *~ *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh
-	rm  -f Makefile Makefile.in
 	@echo ""

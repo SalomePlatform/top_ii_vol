@@ -41,8 +41,10 @@ check-local:
 	./topIIvol_Mesher --xpoints 50 --ypoints 46 --zpoints 3 --in out-coarse.xyz --out out-mesh.msh --depth -1000 --mesh msh
 	@echo ""
 
+NP = 2
+
 test-freefem: check-local
-	ff-mpirun -np $(NP) ../../test/Noreconstruct.edp -v 0
+	ff-mpirun -np $(NP) ../../test/NoreconstructSeq.edp -v 0
 	paraview
 
 clean-local:
@@ -53,5 +55,4 @@ clean-local:
 	@echo ""
 	rm  -f topIIvol_Mesher topIIvol_PreProc
 	rm  -f *~ *.o *.vtu *.pvd *.xyz *.info *.mesh *.txt  *.meshb *.msh
-	rm  -f Makefile Makefile.in
 	@echo ""
