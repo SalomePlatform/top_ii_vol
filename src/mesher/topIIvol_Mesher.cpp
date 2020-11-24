@@ -115,9 +115,6 @@ int main(int argc, char *argv[])
 
     ifstream in;
     in.open(*inputfile);
-
-   // ofstream wrgmsh;
-   // wrgmsh.open(*outputfile);
     
     FILE* ff = std::fopen((*outputfile).c_str(), "w");
 
@@ -360,7 +357,6 @@ int main(int argc, char *argv[])
                     in >> std::fixed >> xx  >> yy >> zz;
                     std::fprintf(ff, "%d %lf %lf %lf\n",counter1,xx,yy,zz);
                    
-                    //wrgmsh << std::fixed << counter1 << " " << xx << " " << yy << " " << zz << "\n" ;
                     counter1++ ;
                     zznew = zz ;
                     delz= (zmax-zz)/PzM1;
@@ -368,7 +364,6 @@ int main(int argc, char *argv[])
                         {
                             zznew  = zznew + delz ;
                             std::fprintf(ff, "%d %lf %lf %lf\n",counter1,xx,yy,zznew);
-                            //wrgmsh << std::fixed << counter1 << " " << xx << " " << yy << " " << zznew << "\n" ;
                             counter1++;
 
                         }
@@ -399,9 +394,7 @@ int main(int argc, char *argv[])
 
 
                             std::fprintf(ff, "%d 2 2 1 11 %d %d %d\n%d 2 2 1 11 %d %d %d\n", counter1, IJKp1, IJK, Ip1JK, counter1+1, Ip1JKp1, IJKp1, Ip1JK);
-            
-                            //wrgmsh << std::fixed << counter1 << " 2 2 1 11 " << IJKp1 << " " << IJK << " " << Ip1JK <<"\n"
-                            //       << counter1+1 << " 2 2 1 11 " << Ip1JKp1 << " " << IJKp1 << " " << Ip1JK <<"\n";
+
                             counter1=counter1+2;
 
                         }
@@ -419,9 +412,7 @@ int main(int argc, char *argv[])
                             IJp1Kp1 = IJp1K + 1;
 
                             std::fprintf(ff, "%d 2 2 1 22 %d %d %d\n%d 2 2 1 22 %d %d %d\n", counter1, IJK, IJKp1, IJp1K, counter1+1, IJKp1, IJp1Kp1, IJp1K);
-                            
-                            //wrgmsh << std::fixed << counter1 << " 2 2 2 22 " << IJK << " " << IJKp1 << " " << IJp1K <<"\n"
-                            //       << counter1+1 << " 2 2 2 22 " << IJKp1 << " " << IJp1Kp1 << " " << IJp1K <<"\n";
+
                             counter1=counter1+2;
 
                         }
@@ -439,9 +430,7 @@ int main(int argc, char *argv[])
                             Ip1Jp1K = Ip1JK + pntz;
 
                             std::fprintf(ff, "%d 2 2 1 33 %d %d %d\n%d 2 2 1 33 %d %d %d\n", counter1, IJK, IJp1K, Ip1Jp1K, counter1+1, Ip1JK, IJK, Ip1Jp1K);
-                            
-                           // wrgmsh << std::fixed << counter1 << " 2 2 3 33 " << IJK << " " << IJp1K << " " << Ip1Jp1K <<"\n"
-                           //        << counter1+1 << " 2 2 3 33 "  << Ip1JK << " " << IJK    << " " << Ip1Jp1K <<"\n";
+
                             counter1=counter1+2;
                         }
                 }
@@ -459,8 +448,6 @@ int main(int argc, char *argv[])
 
                             std::fprintf(ff, "%d 2 2 1 44 %d %d %d\n%d 2 2 1 44 %d %d %d\n", counter1, IJK, IJKp1, Ip1JK, counter1+1, IJKp1, Ip1JKp1, Ip1JK);
                             
-                            //wrgmsh << std::fixed << counter1 << " 2 2 4 44 " << IJK << " " << IJKp1 << " " << Ip1JK <<"\n"
-                            //       << counter1+1 << " 2 2 4 44 " << IJKp1 << " " << Ip1JKp1  << " " << Ip1JK <<"\n";
                             counter1=counter1+2;
 
                         }
@@ -479,8 +466,6 @@ int main(int argc, char *argv[])
 
                             std::fprintf(ff, "%d 2 2 1 55 %d %d %d\n%d 2 2 1 55 %d %d %d\n", counter1, IJKp1, IJK, IJp1K, counter1+1, IJp1Kp1, IJKp1, IJp1K);
                             
-                            //wrgmsh << std::fixed << counter1 << " 2 2 5 55 " << IJKp1 << " " << IJK  << " " << IJp1K <<"\n"
-                            //       << counter1+1 << " 2 2 5 55 " << IJp1Kp1  << " " <<IJKp1 << " " << IJp1K <<"\n";
                             counter1=counter1+2;
 
                         }
@@ -499,8 +484,6 @@ int main(int argc, char *argv[])
 
                             std::fprintf(ff, "%d 2 2 1 66 %d %d %d\n%d 2 2 1 66 %d %d %d\n", counter1, IJp1K, IJK, Ip1Jp1K, counter1+1, IJK, Ip1JK, Ip1Jp1K);
 
-                            //wrgmsh << std::fixed << counter1 << " 2 2 6 66 " << IJp1K << " " << IJK << " " << Ip1Jp1K <<"\n"
-                            //       << counter1+1  << " 2 2 6 66 " << IJK   << " " << Ip1JK << " " << Ip1Jp1K <<"\n";
                             counter1=counter1+2;
                         }
                 }
@@ -532,13 +515,12 @@ int main(int argc, char *argv[])
                             std::fprintf(ff, "%d 4 2 7 77 %d %d %d %d\n%d 4 2 7 77 %d %d %d %d\n%d 4 2 7 77 %d %d %d %d\n%d 4 2 7 77 %d %d %d %d\n%d 4 2 7 77 %d %d %d %d\n%d 4 2 7 77 %d %d %d %d\n", counter1, IJK, IJKp1, IJp1K,Ip1Jp1K, counter1+1, IJKp1, IJK, Ip1JK, Ip1Jp1K, counter1+2, Ip1JKp1, IJKp1, Ip1JK, Ip1Jp1K, counter1+3, IJKp1, Ip1JKp1, Ip1Jp1Kp1, Ip1Jp1K, counter1+4, IJp1Kp1, IJKp1, Ip1Jp1Kp1, Ip1Jp1K, counter1+5, IJKp1, IJp1Kp1, IJp1K, Ip1Jp1K);
                             
                             
-//                                    wrgmsh << std::fixed
-//                                           << counter1   << " 4 2 7 77 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
-//                                           << counter1+1 << " 4 2 7 77 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
-//                                           << counter1+2 << " 4 2 7 77 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
-//                                           << counter1+3 << " 4 2 7 77 " << IJKp1   << " " << Ip1JKp1 << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
-//                                           << counter1+4 << " 4 2 7 77 " << IJp1Kp1 << " " << IJKp1   << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
-//                                           << counter1+5 << " 4 2 7 77 " << IJKp1   << " " << IJp1Kp1 << " " << IJp1K     << " " << Ip1Jp1K <<"\n";
+//<< counter1   << " 4 2 7 77 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
+//<< counter1+1 << " 4 2 7 77 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+//<< counter1+2 << " 4 2 7 77 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+//<< counter1+3 << " 4 2 7 77 " << IJKp1   << " " << Ip1JKp1 << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+//<< counter1+4 << " 4 2 7 77 " << IJp1Kp1 << " " << IJKp1   << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+//>< counter1+5 << " 4 2 7 77 " << IJKp1   << " " << IJp1Kp1 << " " << IJp1K     << " " << Ip1Jp1K <<"\n";
                                     counter1=counter1+6;
 
                                 }
@@ -546,7 +528,6 @@ int main(int argc, char *argv[])
                 }
 
             std::fprintf(ff, "$EndElements\n");
-            //wrgmsh<< "$EndElements\n";
             cout  << "Done\n";
 
         }
