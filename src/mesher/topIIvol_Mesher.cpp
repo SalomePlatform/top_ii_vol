@@ -411,7 +411,7 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             IJp1Kp1 = IJp1K + 1;
 
-                            std::fprintf(ff, "%d 2 2 1 22 %d %d %d\n%d 2 2 1 22 %d %d %d\n", counter1, IJK, IJKp1, IJp1K, counter1+1, IJKp1, IJp1Kp1, IJp1K);
+                            std::fprintf(ff, "%d 2 2 2 22 %d %d %d\n%d 2 2 2 22 %d %d %d\n", counter1, IJK, IJKp1, IJp1K, counter1+1, IJKp1, IJp1Kp1, IJp1K);
 
                             counter1=counter1+2;
 
@@ -429,7 +429,7 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             Ip1Jp1K = Ip1JK + pntz;
 
-                            std::fprintf(ff, "%d 2 2 1 33 %d %d %d\n%d 2 2 1 33 %d %d %d\n", counter1, IJK, IJp1K, Ip1Jp1K, counter1+1, Ip1JK, IJK, Ip1Jp1K);
+                            std::fprintf(ff, "%d 2 2 3 33 %d %d %d\n%d 2 2 3 33 %d %d %d\n", counter1, IJK, IJp1K, Ip1Jp1K, counter1+1, Ip1JK, IJK, Ip1Jp1K);
 
                             counter1=counter1+2;
                         }
@@ -446,7 +446,7 @@ int main(int argc, char *argv[])
                             Ip1JK   = IJK + Pxz;
                             Ip1JKp1 = Ip1JK + 1;
 
-                            std::fprintf(ff, "%d 2 2 1 44 %d %d %d\n%d 2 2 1 44 %d %d %d\n", counter1, IJK, IJKp1, Ip1JK, counter1+1, IJKp1, Ip1JKp1, Ip1JK);
+                            std::fprintf(ff, "%d 2 2 4 44 %d %d %d\n%d 2 2 4 44 %d %d %d\n", counter1, IJK, IJKp1, Ip1JK, counter1+1, IJKp1, Ip1JKp1, Ip1JK);
                             
                             counter1=counter1+2;
 
@@ -464,7 +464,7 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             IJp1Kp1 = IJp1K + 1;
 
-                            std::fprintf(ff, "%d 2 2 1 55 %d %d %d\n%d 2 2 1 55 %d %d %d\n", counter1, IJKp1, IJK, IJp1K, counter1+1, IJp1Kp1, IJKp1, IJp1K);
+                            std::fprintf(ff, "%d 2 2 5 55 %d %d %d\n%d 2 2 5 55 %d %d %d\n", counter1, IJKp1, IJK, IJp1K, counter1+1, IJp1Kp1, IJKp1, IJp1K);
                             
                             counter1=counter1+2;
 
@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             Ip1Jp1K = Ip1JK + pntz;
 
-                            std::fprintf(ff, "%d 2 2 1 66 %d %d %d\n%d 2 2 1 66 %d %d %d\n", counter1, IJp1K, IJK, Ip1Jp1K, counter1+1, IJK, Ip1JK, Ip1Jp1K);
+                            std::fprintf(ff, "%d 2 2 6 66 %d %d %d\n%d 2 2 6 66 %d %d %d\n", counter1, IJp1K, IJK, Ip1Jp1K, counter1+1, IJK, Ip1JK, Ip1Jp1K);
 
                             counter1=counter1+2;
                         }
