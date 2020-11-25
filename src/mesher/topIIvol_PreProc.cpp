@@ -107,11 +107,13 @@ int main(int argc, char *argv[])
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
+//---------------------------------
 // w2f  : write to file
-//-----------------------------------------------------------------------------------//
-
-    ifstream in;
-    in.open(inputfile);    
+// rf   : read from file
+//-----------------------------------------------------------------------------------//    
+    
+    FILE* rf;
+    rf = std::fopen((inputfile).c_str(), "r");
     
     FILE* w2f;
     w2f = std::fopen((outputfile).c_str(), "w");
@@ -150,15 +152,18 @@ int main(int argc, char *argv[])
     for(int j=0; j<pnty; j++)
         {
             for(int i=0; i<pntx; i++)
-                {
-                    in>>std::fixed>> x  >> y >> z;
+                {                    
+                    fscanf(rf,"%lf",&x) ;
+                    fscanf(rf,"%lf",&y) ;
+                    fscanf(rf,"%lf",&z) ;
+                    
                     if(int(j%skipy) == 0 && int(i%skipx) == 0)
                         std::fprintf(w2f, "%lf %lf %lf\n", x,y,z);
                 }
         }
 
     std::fclose(w2f);
-    in.close();
+    std::fclose(rf);
 
     cout << "Finished !!!\n"
          << "   topIIvol is now writing an info file\n"
