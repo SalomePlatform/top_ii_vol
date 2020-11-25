@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
     int skipx = 150     ;
     int skipy = 150     ;
 
-    string inputfile = "./../data/DEM_2m_new.xyz" ;
-    string outpufile = "out-coarse.xyz"           ;
+    string inputfile  = "./../data/DEM_2m_new.xyz" ;
+    string outputfile = "out-coarse.xyz"           ;
 
 //-----------------------------------------------------------------------------------//
 //---- Commandline Parameters -----
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
                 inputfile = argvdummy1;
 
             if( argvdummy == "--out")
-                outpufile = argvdummy1;
+                outputfile = argvdummy1;
 
         }
 
@@ -103,17 +103,18 @@ int main(int argc, char *argv[])
          << "   X skip points are   ------ " << skipx     << "\n"
          << "   Y skip points are   ------ " << skipy     << "\n"
          << "   Input file          ------ " << inputfile << "\n"
-         << "   Output file         ------ " << outpufile << "\n";
+         << "   Output file         ------ " << outputfile<< "\n";
 
 //-----------------------------------------------------------------------------------//
 //---- I/O Files -----
+// w2f  : write to file
 //-----------------------------------------------------------------------------------//
 
     ifstream in;
-    in.open(inputfile);
-
-    ofstream wr;
-    wr.open(outpufile);
+    in.open(inputfile);    
+    
+    FILE* w2f;
+    w2f = std::fopen((outputfile).c_str(), "w");
 
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
@@ -151,30 +152,33 @@ int main(int argc, char *argv[])
             for(int i=0; i<pntx; i++)
                 {
                     in>>std::fixed>> x  >> y >> z;
-
                     if(int(j%skipy) == 0 && int(i%skipx) == 0)
-                        wr<< std::fixed << x << " " << y << " "<< z << "\n";
+                        std::fprintf(w2f, "%lf %lf %lf\n", x,y,z);
                 }
         }
 
-    wr.close();
+    std::fclose(w2f);
     in.close();
 
     cout << "Finished !!!\n"
          << "   topIIvol is now writing an info file\n"
          << "   ...";
 
-    wr.open(outpufile+".info");
+    w2f = std::fopen((outputfile+".info").c_str(), "w");
 
-    wr   << " *===================================================*\n"
-         << " *      Information on processed point cloud         *\n"
-         << " *===================================================*\n"
-         << "\n   Total # points :: "<< pointsYAfterSkip*pointsXAfterSkip
-         << "\n   Total # xPoints:: "<< pointsXAfterSkip
-         << "\n   Total # yPoints:: "<< pointsYAfterSkip
-         << "\n\n ====================================================\n";
+    std::fprintf(w2f, " *===================================================*\n"
+                      " *      Information on processed point cloud         *\n"
+                      " *===================================================*\n"
+                      "   Total # points :: %d\n"
+                      "   Total # xPoints:: %d\n"
+                      "   Total # yPoints:: %d\n"
+                      " *===================================================*\n"
+                      , pointsYAfterSkip*pointsXAfterSkip  
+                      , pointsXAfterSkip 
+                      , pointsYAfterSkip                    
+                );
 
-    wr.close();
+    std::fclose(w2f);
 
     cout << "Finished !!!\n";
 
