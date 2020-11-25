@@ -18,7 +18,7 @@ CXX = $(MPICXX)
 bin_PROGRAMS               = topIIvol_DistMesher
 topIIvol_DistMesher_SOURCES = topIIvol_DistMesher.cpp
 
-topIIvol_DistMesher.o: topIIvol_DistMesher.cpp ./../lib/TopiiVolPartAlgo1D2D3D.hpp ./../lib/TopiiVolMeshAlgo.hpp ./../lib/LogoTopiiVolCpp.hpp
+topIIvol_DistMesher.o: topIIvol_DistMesher.cpp ./../lib/TopiiVolPartAlgo1D2D3D.hpp ./../lib/TopiiVolMeshAlgo1D2D3D.hpp ./../lib/LogoTopiiVolCpp.hpp
 	$(MPICXX) -c topIIvol_DistMesher.cpp -std=c++11
 
 #top-ii-vol-DistMesher: top-ii-vol-MPImesher.o
@@ -34,7 +34,7 @@ check-local: topIIvol_DistMesher.o
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_y 2 --partition_z 2 	
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_x 1 --partition_z 4
 	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_x 1 --partition_z 2 --partition_y 2
-	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_y 1 --partition_z 2 --partition_x 2				
+	mpirun -np $(NP) ./topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 --depth -1000 --out top-ii-vol-mesh  --in ./../../data/DEM_160m --partition_x 2 --partition_y 2 --partition_z 1				
 	@echo ""
 
 test-freefem: ./../../test/reconstruct.edp
