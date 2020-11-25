@@ -46,15 +46,15 @@ int main(int argc, char *argv[])
     int label ;             // label # of the mesh surfaces
 
 
-    int  IJK        ;       // variable used during tera or triangle generation
-    int  Ip1JK      ;       // variable used during tera or triangle generation
-    int  IJp1K      ;       // variable used during tera or triangle generation
-    int  IJKp1      ;       // variable used during tera or triangle generation
-    int  Ip1JKp1    ;       // variable used during tera or triangle generation
-    int  IJp1Kp1    ;       // variable used during tera or triangle generation
-    int  Ip1Jp1K    ;       // variable used during tera or triangle generation
-    int  Ip1Jp1Kp1  ;       // variable used during tera or triangle generation
-    int  dummycount ;       // variable used during tera or triangle generation
+    int  IJK        ;       // variable used during tetra or triangle generation
+    int  Ip1JK      ;       // variable used during tetra or triangle generation
+    int  IJp1K      ;       // variable used during tetra or triangle generation
+    int  IJKp1      ;       // variable used during tetra or triangle generation
+    int  Ip1JKp1    ;       // variable used during tetra or triangle generation
+    int  IJp1Kp1    ;       // variable used during tetra or triangle generation
+    int  Ip1Jp1K    ;       // variable used during tetra or triangle generation
+    int  Ip1Jp1Kp1  ;       // variable used during tetra or triangle generation
+    int  dummycount ;       // variable used during tetra or triangle generation
 
 
     int startrow ;          // used by MPI ranks to mark their starting row
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
                 }     
 
 //====================================================================================//
-//---- parallel  partitioning experimental -----
+//---- parallel  partitioning -----
 //====================================================================================//
 
 if(ParallelPart == 1)
@@ -306,7 +306,7 @@ if(ParallelPart == 1)
         }
 
 //====================================================================================//
-//---- Name of partioned mesh cloud -----
+//---- Name of partitioned mesh cloud -----
 //====================================================================================//
 
     char partCloudName[80] = "pc_part";
