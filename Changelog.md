@@ -11,6 +11,10 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 
 - More tutorials and examples.
 
+- Diffrent labeling for diffrent surfaces for `.msh` mesher.
+
+- Faster file writing for sequential mesher and preprocessor.
+
   
 
 ### Changed
