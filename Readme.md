@@ -88,10 +88,10 @@ If the compilation went successful you should have three tools at your disposal 
 
 - If you wish to coarsen your mesh by skipping 10 points in x and y direction 
 
-  ```bash
-  topIIvol_PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 \
-  --in ./../etc/DEM_10m.xyz --out out-coarse.xyz
-  ```
+```bash
+topIIvol_PreProc --xpoints 500 --ypoints 451 --xskip 10 --yskip 10 \
+--in ./../etc/DEM_10m.xyz --out out-coarse.xyz
+```
 
 *Command-line option definitions*
 
@@ -112,17 +112,17 @@ This is the sequential mesher
 
 - For  sequential mesher producing  `*.mesh` mesh.
 
-  ```bash
-  topIIvol_Mesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
-  --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --mesh mesh
-  ```
+```bash
+topIIvol_Mesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
+--in ./../etc/DEM_160m.xyz --out out-mesh.mesh --mesh mesh
+```
   
 - For  sequential mesher producing  `*.msh` mesh.
 
-  ```bash
-  topIIvol_Mesher ---xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
-  --in ./../etc/DEM_160m.xyz --out out-mesh.msh  --mesh msh
-  ```
+```bash
+topIIvol_Mesher ---xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
+--in ./../etc/DEM_160m.xyz --out out-mesh.msh  --mesh msh
+```
 
 *Command-line option definitions*
 
@@ -290,8 +290,6 @@ To report bugs, issues, feature-requests contact:*
 
 - **mohd-afeef.badri@cea.fr**
 - **mohd-afeef.badri@hotmail.com**
-- **mohd-afeef.badri@etu.univ-nantes.fr** 
-
 
 
 
