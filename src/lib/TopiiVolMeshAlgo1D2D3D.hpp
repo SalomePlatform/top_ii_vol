@@ -95,17 +95,21 @@ for(int j=0; j <NpX*NpY; j++)
 //---- Calculating Parameters -----
 //-----------------------------------------------------------------------------------//
 
-ifstream in;
-in.open(*inputfile+"_"+std::to_string(mpirank)+".xyz");
+FILE* rf;
+FILE* w2f ;
 
-ifstream in1;
-in1.open(*inputfile+"_"+std::to_string(mpirank)+".info");
+w2f = std::fopen((*outputfile+"_"+std::to_string(mpirank)+".mesh").c_str(), "w");
 
-ofstream wrgmsh;
-wrgmsh.open(*outputfile+"_"+std::to_string(mpirank)+".mesh");
+rf = std::fopen((*inputfile+"_"+std::to_string(mpirank)+".info").c_str(), "r");
+    
+fscanf(rf,"%d",&pnty);
+fscanf(rf,"%d",&pntx);
+fscanf(rf,"%d",&pntz);
+fscanf(rf,"%d",&localZmove);
+fscanf(rf,"%d",&layerZ);
+std::fclose(rf);
 
-in1 >> pnty >> pntx >> pntz >> localZmove >> layerZ;
-in1.close() ;
+rf = std::fopen((*inputfile+"_"+std::to_string(mpirank)+".xyz").c_str(), "r");
 
 // --------------------------------------- BUG --------------------------------------//
 //                                                                                   //
@@ -151,8 +155,7 @@ int NTet = PxM1 * PyM1 * PzM1 * 6			;
 //---- Header for mesh -----
 //-----------------------------------------------------------------------------------//
 
-wrgmsh << "MeshVersionFormatted 1\n\n"
-       << "Dimension 3\n\n";
+std::fprintf(w2f, "MeshVersionFormatted 1\n\nDimension 3\n\n");              
 
 //-----------------------------------------------------------------------------------//
 //---- Generating points -----
@@ -160,25 +163,30 @@ wrgmsh << "MeshVersionFormatted 1\n\n"
 
 t_phase = MPI_Wtime();
 
-cout   << "Generating points ........"		               ;
-wrgmsh << "Vertices\n"
-       <<  NPnt	<<"\n";
-
+cout   << "Generating points ........";
+std::fprintf(w2f, "Vertices\n%d\n",NPnt);       
 for(int i=0; i<PxPy; i++)
     {
-        in     >> std::fixed >> xx >>        yy        >> zz                 ;
-        wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zz << " 0\n"     ;
+        fscanf(rf,"%lf",&xx);
+        fscanf(rf,"%lf",&yy);
+        fscanf(rf,"%lf",&zz);  
+              
+        std::fprintf(w2f, "%lf\t%lf\t%lf 0\n"
+                        ,  xx , yy ,zz
+                    );
 
         zznew=zz;
         delz= (zmax-zz)/(((zglobal-1)-(localZmove-1*layerZ)));          
         for(int j=0; j<PzM1; j++)
             {
                 zznew  = zznew + delz;
-                wrgmsh << std::fixed << xx << "\t" << yy << "\t" << zznew << " 0\n";
+                std::fprintf(w2f, "%lf\t%lf\t%lf 0\n"
+                                ,  xx , yy ,zznew
+                             );                 
             }
     }
 
-wrgmsh << "\n";
+std::fprintf(w2f, "\n");
 cout   << " finished for MPI rank : " << mpirank << "\n";
 
 t_phase = MPI_Wtime() - t_phase;
@@ -193,8 +201,7 @@ t1 +=  t_phase;
 t_phase = MPI_Wtime();
 
 cout   << "Generating Tetrahedra ...."			       ;
-wrgmsh << "Tetrahedra\n"
-       <<  NTet <<"\n";
+std::fprintf(w2f, "Tetrahedra\n%d\n",NTet);       
 
 for(int j=0; j<PyM1;  j++)
     {
@@ -212,17 +219,25 @@ for(int j=0; j<PyM1;  j++)
                         IJp1Kp1     =	IJp1K   + 1			  ;
                         Ip1Jp1Kp1   =	Ip1Jp1K + 1			  ;
 
-                        wrgmsh << std::fixed << IJK     << "\t" << IJKp1   << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n"
-                               << IJKp1   << "\t" << IJK     << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
-                               << Ip1JKp1 << "\t" << IJKp1   << "\t" << Ip1JK     << "\t" << Ip1Jp1K << " 0\n"
-                               << IJKp1   << "\t" << Ip1JKp1 << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
-                               << IJp1Kp1 << "\t" << IJKp1   << "\t" << Ip1Jp1Kp1 << "\t" << Ip1Jp1K << " 0\n"
-                               << IJKp1   << "\t" << IJp1Kp1 << "\t" << IJp1K     << "\t" << Ip1Jp1K << " 0\n";
+
+                        std::fprintf(w2f, "%d\t%d\t%d\t%d 0\n"
+                                          "%d\t%d\t%d\t%d 0\n"
+                                          "%d\t%d\t%d\t%d 0\n"
+                                          "%d\t%d\t%d\t%d 0\n"
+                                          "%d\t%d\t%d\t%d 0\n"
+                                          "%d\t%d\t%d\t%d 0\n"
+                                        , IJK, IJKp1, IJp1K, Ip1Jp1K
+                                        , IJKp1, IJK, Ip1JK, Ip1Jp1K
+                                        , Ip1JKp1, IJKp1, Ip1JK, Ip1Jp1K
+                                        , IJKp1, Ip1JKp1, Ip1Jp1Kp1, Ip1Jp1K
+                                        , IJp1Kp1, IJKp1, Ip1Jp1Kp1, Ip1Jp1K
+                                        , IJKp1, IJp1Kp1, IJp1K, Ip1Jp1K
+                                     );                              
                     }
             }
     }
 
-wrgmsh << "\n";
+std::fprintf(w2f, "\n");
 cout   << " finished for MPI rank : " << mpirank << "\n";
 
 
@@ -238,8 +253,7 @@ t1 +=  t_phase;
 t_phase = MPI_Wtime();
 
 cout   << "Generating Triangles ....."			       ;
-wrgmsh << "Triangles\n"
-       << NTri << "\n";
+std::fprintf(w2f, "Triangles\n%d\n",NTri);       
 
 //----X-MIN-PLANE---//
 
@@ -253,8 +267,11 @@ for(int i=0; i<PyM1;  i++)
                 Ip1JK	  =	IJK + PxPz      ;
                 Ip1JKp1   =	Ip1JK + 1       ;
 
-                wrgmsh << std::fixed << IJKp1   << "\t" <<  IJK  << "\t" << Ip1JK << "\t" << lab_x_min << "\n"
-                       << Ip1JKp1 << "\t" << IJKp1 << "\t" << Ip1JK << "\t" << lab_x_min << "\n";
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                , IJKp1, IJK, Ip1JK, lab_x_min
+                                , Ip1JKp1, IJKp1, Ip1JK, lab_x_min
+                            );
             }
     }
 
@@ -271,9 +288,12 @@ for(int i=0; i<PxM1;  i++)
                 IJp1K	  =	IJK + pntz	    ;
                 IJp1Kp1   =	IJp1K + 1	    ;
 
-                wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << IJp1K << "\t" << lab_y_min << "\n"
-                       << IJKp1 << "\t" << IJp1Kp1 << "\t" << IJp1K << "\t" << lab_y_min << "\n";
 
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                , IJK, IJKp1, IJp1K, lab_y_min
+                                , IJKp1, IJp1Kp1, IJp1K, lab_y_min
+                            );
             }
     }
 
@@ -290,8 +310,11 @@ for(int i=0; i<PyM1;  i++)
                 IJp1K	  =	IJK + pntz		    	;
                 Ip1Jp1K   =	Ip1JK + pntz			;
 
-                wrgmsh << std::fixed << IJK   << "\t" << IJp1K << "\t" << Ip1Jp1K << "\t" << lab_z_max << "\n"
-                       << Ip1JK << "\t" << IJK   << "\t" << Ip1Jp1K << "\t" << lab_z_max << "\n";
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                , IJK, IJp1K, Ip1Jp1K, lab_z_max
+                                , Ip1JK, IJK ,Ip1Jp1K, lab_z_max
+                            );
             }
     }
 
@@ -307,10 +330,12 @@ for(int i=0; i<PyM1;  i++)
                 Ip1JK	  =	IJK + PxPz			            ;
                 Ip1JKp1   =	Ip1JK + 1				        ;
 
-                wrgmsh << std::fixed << IJK   << "\t" << IJKp1   << "\t" << Ip1JK << "\t" << lab_x_max << "\n"
-                       << IJKp1 << "\t" << Ip1JKp1 << "\t" << Ip1JK << "\t" << lab_x_max << "\n";
 
-
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                 , IJK, IJKp1, Ip1JK, lab_x_max
+                                 , IJKp1, Ip1JKp1, Ip1JK, lab_x_max
+                              );
             }
     }
 
@@ -327,9 +352,11 @@ for(int i=0; i<PxM1;  i++)
                 IJp1K	  =	IJK + pntz				    ;
                 IJp1Kp1   =	IJp1K + 1				    ;
 
-                wrgmsh << std::fixed << IJKp1   << "\t" << IJK   << "\t" << IJp1K << "\t" << lab_y_max << "\n"
-                       << IJp1Kp1 << "\t" << IJKp1 << "\t" << IJp1K << "\t" << lab_y_max << "\n";
-
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                , IJKp1,IJK,IJp1K, lab_y_max
+                                , IJp1Kp1,IJKp1,IJp1K, lab_y_max
+                             );
             }
     }
 
@@ -345,8 +372,11 @@ for(int i=0; i<PyM1;  i++)
                 IJp1K	  =	IJK + pntz				    ;
                 Ip1Jp1K   =	Ip1JK + pntz				;
 
-                wrgmsh << std::fixed << IJp1K << "\t" << IJK   << "\t" << Ip1Jp1K << "\t" << lab_z_min << "\n"
-                       << IJK   << "\t" << Ip1JK << "\t" << Ip1Jp1K << "\t" << lab_z_min << "\n";
+                std::fprintf(w2f, "%d\t%d\t%d\t%d\n"
+                                  "%d\t%d\t%d\t%d\n"
+                                , IJp1K, IJK, Ip1Jp1K, lab_z_min
+                                , IJK, Ip1JK, Ip1Jp1K, lab_z_min
+                             );
             }
     }
 
@@ -360,6 +390,6 @@ t1 +=  t_phase;
 //-----------------------------------------------------------------------------------//
 //---- Finishing footer -----
 //-----------------------------------------------------------------------------------//
-
-wrgmsh << "\n"
-       << "End\n";
+       
+std::fprintf(w2f, "\nEnd\n");
+std::fclose(w2f);      
