@@ -165,13 +165,17 @@ int main(int argc, char **argv)
 
 //-----------------------------------------------------------------------------------//
 //---- Main algo for partitioning -----
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------//
 
-   t_phase = MPI_Wtime();  
-    if(mpirank==0)
-        {
-            #include "./../lib/TopiiVolPartAlgo1D2D3D.hpp"
-        }
+   t_phase = MPI_Wtime();
+   {                                                   // Temporary solution
+    #include "./../lib/TopiiVolParPartAlgo1D2D3D.hpp"  // Temporary solution
+   }                                                   // Temporary solution
+   
+//    if(mpirank==0)                                          // Algorithm  fails  for 
+//        {                                                   // more than 508 domains
+//            #include "./../lib/TopiiVolPartAlgo1D2D3D.hpp"  // due to limitation  on
+//        }                                                   // parallel file streams
     t_phase = MPI_Wtime() - t_phase;
     t1 =  t_phase;
     *time_log = string( *time_log+"\tPoint cloud partitioning : "

@@ -4,3 +4,5 @@
 - Binary format for xyz and meshb
 - Hexahedral mesh
 - Med format output
+- Use DEM data directly for topology creation 
+        - https://cgiarcsi.community/data/srtm-90m-digital-elevation-database-v4-1/
