@@ -116,7 +116,7 @@ This is the sequential mesher
 topIIvol_Mesher --xpoints 32 --ypoints 29 --zpoints 15 --depth -1000 \
 --in ./../etc/DEM_160m.xyz --out out-mesh.mesh --mesh mesh
 ```
-  
+
 - For  sequential mesher producing  `*.msh` mesh.
 
 ```bash
