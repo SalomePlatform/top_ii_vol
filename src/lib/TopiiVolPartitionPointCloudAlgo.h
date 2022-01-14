@@ -53,7 +53,7 @@ double tst = MPI_Wtime();
 //---- opening files -----
 //====================================================================================//
 
-snprintf (pathString, sizeof(pathString), "%s", inpurfile);
+snprintf (pathString, sizeof(pathString), "%s", inputfile);
 
 readFile = fopen(pathString,"r");
 
