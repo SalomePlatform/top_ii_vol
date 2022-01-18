@@ -239,10 +239,10 @@ if(ParallelPart == 1)
 //---- Open MPI files -----
 //-----------------------------------------------------------------------------------//
 
-    char strname[80]="";
-    strcat (strname, inputfile);
+    //char strname[80]="";
+    //strcat (strname, inputfile);
 
-    MPI_File_open( MPI_COMM_WORLD, strname, 
+    MPI_File_open( MPI_COMM_WORLD, inputfile, 
                    MPI_MODE_RDONLY,
                    MPI_INFO_NULL, &filein);
 
@@ -437,10 +437,10 @@ if(ParallelPart == 1)
 //---- open the file, and set the view -----
 //====================================================================================//
 
-    char str[]="";
-    strcat (str, outputfile);
+    //char str[]="";
+    //strcat (str, outputfile);
 
-    MPI_File_open(MPI_COMM_WORLD, str,
+    MPI_File_open(MPI_COMM_WORLD, outputfile,
                   MPI_MODE_CREATE|MPI_MODE_WRONLY,
                   MPI_INFO_NULL, &file);
 
