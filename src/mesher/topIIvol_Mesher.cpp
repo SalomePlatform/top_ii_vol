@@ -23,6 +23,19 @@
 #include <fstream>
 #include <iomanip>
 
+#ifdef MEDCOUPLING
+#include "MEDLoader.hxx"
+#include "MEDFileData.hxx"
+#include "MEDLoader.hxx"
+#include "MEDLoaderBase.hxx"
+#include "MEDCouplingUMesh.hxx"
+#include "MEDCouplingFieldDouble.hxx"
+#include "MEDCouplingFieldFloat.hxx"
+#include "MEDCouplingMemArray.hxx"
+#include "MEDFileData.hxx"
+using namespace MEDCoupling;
+#endif               
+
 using namespace std;
 
 
@@ -624,6 +637,275 @@ int main(int argc, char *argv[])
             cout  << "Done\n";
 
         }
+
+#ifdef MEDCOUPLING
+//-----------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------//
+//---- Writing mesh in .med format -----
+//-----------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------//
+
+    else if (meshtype == "med")
+        {
+            cout << "   Meshing the topology in SALOME's *.med format\n";     
+
+            int counter1 = 0;
+
+            int count = 0;
+            cout << "   Generating points....";
+            double medNodeCoords[pntx*pnty*pntz*3];
+            for(int i=0; i<pntx*pnty; i++)
+                {
+                
+                    fscanf(rf,"%lf",&xx);
+                    fscanf(rf,"%lf",&yy);
+                    fscanf(rf,"%lf",&zz); 
+                    
+                    medNodeCoords[counter1 * 3    ] = xx;
+                    medNodeCoords[counter1 * 3 + 1] = yy;
+                    medNodeCoords[counter1 * 3 + 2] = zz;
+                   
+                    counter1++ ;
+                    zznew = zz ;
+                    delz = (zmax-zz)/PzM1;
+                    for(int j=0; j<PzM1; j++)
+                        {
+                            zznew  = zznew + delz ;
+
+                            medNodeCoords[counter1 * 3    ] = xx;
+                            medNodeCoords[counter1 * 3 + 1] = yy;
+                            medNodeCoords[counter1 * 3 + 2] = zznew;                                        
+                            counter1++;
+
+                        }
+                }
+
+            cout << "   Done\n";
+
+            int  nNodes      = (sizeof(medNodeCoords)/sizeof(medNodeCoords[0]))/3;
+            int  nNodesArray = (sizeof(medNodeCoords)/sizeof(medNodeCoords[0]))  ;
+
+
+            //  get cells  //
+            int TotalCells = NTet;
+            mcIdType medCellConn[NTet*4 /*+ NTri*3*/];
+/*             
+//-----------------------------------------------------------------------------------//
+//---- Generating Triangles -----
+//-----------------------------------------------------------------------------------//
+
+            cout << "   Generating Triangles...."  ;
+            std::fprintf(w2f, "$Elements\n%d\n",NTet+NTri);
+            
+            counter1=1;
+
+//---------------------------------X-MIN-PLANE----------------------------------//
+            for(int i=0; i<PyM1;  i++)
+                {
+                    for(int j=0; j<PzM1;  j++)
+                        {
+
+                            IJK	    = i*Pxz + j + 1;
+                            IJKp1   = IJK + 1;
+                            Ip1JK   = IJK + Pxz;
+                            Ip1JKp1 = Ip1JK + 1;
+
+
+                            std::fprintf(w2f, "%d 2 2 1 11 %d %d %d\n"
+                                              "%d 2 2 1 11 %d %d %d\n"
+                                            , counter1, IJKp1, IJK, Ip1JK
+                                            , counter1+1, Ip1JKp1, IJKp1, Ip1JK
+                                        );
+
+                            counter1=counter1+2;
+
+                        }
+                }
+
+//---------------------------------Y-MIN-PLANE----------------------------------//
+            for(int i=0; i<PxM1;  i++)
+                {
+                    for(int j=0; j<PzM1;  j++)
+                        {
+
+                            IJK	    = i*pntz + j + 1;
+                            IJKp1   = IJK + 1;
+                            IJp1K   = IJK + pntz;
+                            IJp1Kp1 = IJp1K + 1;
+
+                            std::fprintf(w2f, "%d 2 2 2 22 %d %d %d\n"
+                                              "%d 2 2 2 22 %d %d %d\n"
+                                            , counter1, IJK, IJKp1, IJp1K
+                                            , counter1+1, IJKp1, IJp1Kp1, IJp1K
+                                        );
+
+                            counter1=counter1+2;
+
+                        }
+                }
+
+//---------------------------------Z-MIN-PLANE----------------------------------//
+            for(int i=0; i<PyM1;  i++)
+                {
+                    for(int j=0; j<PxM1;  j++)
+                        {
+
+                            IJK	    = i*Pxz + j*pntz + 1;
+                            Ip1JK   = IJK + Pxz;
+                            IJp1K   = IJK + pntz;
+                            Ip1Jp1K = Ip1JK + pntz;
+
+                            std::fprintf(w2f, "%d 2 2 3 33 %d %d %d\n"
+                                              "%d 2 2 3 33 %d %d %d\n"
+                                            , counter1, IJK, IJp1K, Ip1Jp1K
+                                            , counter1+1, Ip1JK, IJK, Ip1Jp1K
+                                        );
+
+                            counter1=counter1+2;
+                        }
+                }
+
+//---------------------------------X-MAX-PLANE----------------------------------//
+            for(int i=0; i<pnty-1;  i++)
+                {
+                    for(int j=0; j<PzM1;  j++)
+                        {
+
+                            IJK	    = i*Pxz + j + 1 + PxM1*pntz;
+                            IJKp1   = IJK + 1;
+                            Ip1JK   = IJK + Pxz;
+                            Ip1JKp1 = Ip1JK + 1;
+
+                            std::fprintf(w2f, "%d 2 2 4 44 %d %d %d\n"
+                                              "%d 2 2 4 44 %d %d %d\n"
+                                            , counter1, IJK, IJKp1, Ip1JK
+                                            , counter1+1, IJKp1, Ip1JKp1, Ip1JK
+                                        );
+                            
+                            counter1=counter1+2;
+
+                        }
+                }
+
+//---------------------------------Y-MAX-PLANE----------------------------------//
+            for(int i=0; i<PxM1;  i++)
+                {
+                    for(int j=0; j<PzM1;  j++)
+                        {
+
+                            IJK	    = i*pntz + j + 1 +  Pxz*PyM1;
+                            IJKp1   = IJK + 1;
+                            IJp1K   = IJK + pntz;
+                            IJp1Kp1 = IJp1K + 1;
+
+                            std::fprintf(w2f, "%d 2 2 5 55 %d %d %d\n"
+                                              "%d 2 2 5 55 %d %d %d\n"
+                                            , counter1, IJKp1, IJK, IJp1K
+                                            , counter1+1, IJp1Kp1, IJKp1, IJp1K
+                                        );
+                            
+                            counter1=counter1+2;
+
+                        }
+                }
+
+//---------------------------------Z-MAX-PLANE----------------------------------//
+            for(int i=0; i<PyM1;  i++)
+                {
+                    for(int j=0; j<PxM1;  j++)
+                        {
+
+                            IJK     = i*Pxz + j*pntz + 1 + PzM1;
+                            Ip1JK   = IJK + Pxz;
+                            IJp1K   = IJK + pntz;
+                            Ip1Jp1K = Ip1JK + pntz;
+
+                            std::fprintf(w2f, "%d 2 2 6 66 %d %d %d\n"
+                                              "%d 2 2 6 66 %d %d %d\n"
+                                            , counter1, IJp1K, IJK, Ip1Jp1K
+                                            , counter1+1, IJK, Ip1JK, Ip1Jp1K
+                                        );
+
+                            counter1 = counter1+2;
+                        }
+                }
+*/
+//-----------------------------------------------------------------------------------//
+//---- Generating Tetrahedra -----
+//-----------------------------------------------------------------------------------//
+
+            cout << "Done  \n"
+                 << "   Generating Tetrahedrons....";
+     
+            count = 0;
+            for(int j=0; j<PyM1;  j++)
+                {
+                    for(int i=0; i<PxM1;  i++)
+                        {
+                            for(int k=1; k<=PzM1; k++)
+                                {
+
+                                    IJK	      =	i*pntz + j*Pxz + k;
+                                    Ip1JK     =	IJK + Pxz;
+                                    IJp1K     =	IJK + pntz;
+                                    Ip1Jp1K   =	IJK + Pxz + pntz;
+                                    IJKp1     =	IJK + 1;
+                                    Ip1JKp1   =	Ip1JK + 1;
+                                    IJp1Kp1   =	IJp1K + 1;
+                                    Ip1Jp1Kp1 =	Ip1Jp1K + 1;
+
+                                    medCellConn[count] = IJK     ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJK     ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+                                    medCellConn[count] = Ip1JKp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  Ip1JKp1 ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+                                    medCellConn[count] = IJp1Kp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJp1Kp1 ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
+
+
+                                }
+                        }
+                }
+            cout  << "Done\n";
+
+            MEDCouplingUMesh * medMesh3d = MEDCouplingUMesh::New();
+
+            medMesh3d -> setMeshDimension(3);
+            medMesh3d -> allocateCells(NTet);
+            medMesh3d -> setName("TetrahedralMesh");
+
+            cout  << "   Writing Tetrahedrons....";
+
+            count = 0;
+            for (int i = 0; i < NTet; i++) {
+              medMesh3d -> insertNextCell(INTERP_KERNEL::NORM_TETRA4, 4, medCellConn + count);
+              count += 4;
+            }
+            medMesh3d -> finishInsertingCells();
+  
+            cout  << "Done\n";
+
+            cout  << "   Writing Nodes....";
+            DataArrayDouble * myCoords = DataArrayDouble::New();
+            myCoords -> alloc(nNodes, 3);
+            myCoords -> setInfoOnComponent(0, "x");
+            myCoords -> setInfoOnComponent(1, "y");
+            myCoords -> setInfoOnComponent(2, "z");  
+            std::copy(medNodeCoords, medNodeCoords + nNodesArray, myCoords -> getPointer());
+            medMesh3d -> setCoords(myCoords);
+          //  medMesh2d -> setCoords(myCoords);
+            myCoords -> decrRef();
+            cout  << "Done\n";
+            
+            cout  << "   Writing Mesh....";            
+            std::vector<const MEDCouplingUMesh *> finalMesh;
+            finalMesh.push_back(medMesh3d);
+            //  finalMesh.push_back(medMesh2d);
+
+            WriteUMeshes("test.med",finalMesh,true);            
+            cout  << "Done\n";
+  
+        }
+#endif               
     else
         {
             cout << " *=============================================================*\n"
