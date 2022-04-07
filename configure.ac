@@ -15,6 +15,11 @@ define(SECTION_TITLE,
 
 
 
+AC_ARG_WITH([salome],
+	[  --with-salome=            salome installation path : (e.g. --with-salome=/opt/install/local)],
+        [salome="$withval"], [salome="no"])
+
+
 AU_ALIAS([ACX_MPI], [AX_MPI])
 AC_DEFUN([AX_MPI], [
 AC_PREREQ(2.50) dnl for AC_LANG_CASE
@@ -148,6 +153,64 @@ test "$MPICXX" == "$CXX" && AC_MSG_ERROR([
   to provide the location of MPI C++ compiler. 
                                    ])
 
+dnl ---------------------------------------------------------------
+dnl Did the user provide salome/medcoupling
+dnl ---------------------------------------------------------------
+SECTION_TITLE([      checking for a salome support     ])
+
+AC_SUBST([salome])
+AM_CONDITIONAL([HAVESALOME], [test $salome != no])
+test "$salome" == "no" && AC_MSG_WARN([
+ top-ii-vol will not be configured with salome,
+ you did not provide --with-salome flag so
+
+ SALOME SUPPORT = OFF
+
+ To have salome support in top-ii-vol, please correctly
+ provide both  --with-salome flag.
+ ])
+dnl ---------------------------------------------------------------
+
+
+dnl ---------------------------------------------------------------
+dnl Associate appropriate suffix for diffrent os
+dnl ---------------------------------------------------------------
+SECTION_TITLE([      checking for operating system type    ])
+
+os_uname=`uname`
+case $os_uname in
+     CYGWIN*|MINGW*|MSYS_NT*)
+	os_type="windows";;
+     Darwin)
+	os_type="mac";;
+     Linux)
+	os_type="linux";;
+     *)
+	os_type="unknown";;
+esac
+
+AC_MSG_RESULT([])
+test "$os_type" == "windows" && AC_MSG_RESULT([ OS identified: Windows])
+test "$os_type" == "mac"     && AC_MSG_RESULT([ OS identified: MacOs])
+test "$os_type" == "linux"   && AC_MSG_RESULT([ OS identified: Linux])
+
+test "$os_type" == "unknown" && AC_MSG_ERROR([
+  For the moment top-ii-vol is only built on Linux or MacOS
+  please contact  mohd-afeef.badri@cea.fr  for  help
+  regarding to building top-ii-vol on your OS.
+                                   ])
+
+AM_CONDITIONAL([WINDOWS], [test "$os_type" == "windows"])
+AM_CONDITIONAL([MAC],     [test "$os_type" == "mac"])
+AM_CONDITIONAL([LINUX],   [test "$os_type" == "linux"])
+
+test "$os_type" == "windows" && AC_SUBST(SO_SUFFIX,"dll"  )
+test "$os_type" == "mac"     && AC_SUBST(SO_SUFFIX,"dylib")
+test "$os_type" == "linux"   && AC_SUBST(SO_SUFFIX,"so"   )
+
+AC_MSG_RESULT([ Shared object sufix   : '$SO_SUFFIX'])
+dnl ---------------------------------------------------------------
+
 SECTION_TITLE([  generating the required makefiles  ])
 
 dnl AC_PREFIX_DEFAULT($HOME)
@@ -166,10 +229,15 @@ dnl Print results
 AC_MSG_RESULT([])
 AC_MSG_RESULT([ top-ii-vol version $VERSION configured successfully.])
 AC_MSG_RESULT([])
-AC_MSG_RESULT([ Using '$prefix' for installation.])
-AC_MSG_RESULT([ Using '$CXX' for C++ compiler.])
-AC_MSG_RESULT([ Using '$MPICXX' for MPIC++ compiler.])
-AC_MSG_RESULT([ Building with '$CXXFLAGS' for C++ compiler flags.])
-AC_MSG_RESULT([ Building with '$LDFLAGS' for linker flags.])
-AC_MSG_RESULT([ Building with '$LIBS' libraries.])
+AC_MSG_RESULT([ top-ii-vol install  path  : '$prefix'])
+AC_MSG_RESULT([ top-ii-vol tutoirlas path : '$HOME/topIIvol-tutorials'])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([ C++ compiler       : '$CXX'])
+AC_MSG_RESULT([ MPIC++ compiler    : '$MPICXX'])
+AC_MSG_RESULT([ FC compiler        : '$FC'])
+AC_MSG_RESULT([ F77 compiler       : '$F77'])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([ C/C++ compiler flags   : '$CXXFLAGS'])
+AC_MSG_RESULT([ C/C++ linker flags     : '$LDFLAGS'])
+AC_MSG_RESULT([ C/C++ library path     : '$LIBS'])
 AC_MSG_RESULT([])
