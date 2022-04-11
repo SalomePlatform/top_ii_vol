@@ -26,13 +26,15 @@
 #ifdef MEDCOUPLING
 #include "MEDLoader.hxx"
 #include "MEDFileData.hxx"
-#include "MEDLoader.hxx"
+
+/*
 #include "MEDLoaderBase.hxx"
 #include "MEDCouplingUMesh.hxx"
 #include "MEDCouplingFieldDouble.hxx"
 #include "MEDCouplingFieldFloat.hxx"
 #include "MEDCouplingMemArray.hxx"
-#include "MEDFileData.hxx"
+*/
+
 using namespace MEDCoupling;
 #endif               
 
@@ -619,8 +621,8 @@ int main(int argc, char *argv[])
                                            , counter1+4, IJp1Kp1, IJKp1, Ip1Jp1Kp1, Ip1Jp1K
                                            , counter1+5, IJKp1, IJp1Kp1, IJp1K, Ip1Jp1K
                                         );
-                            
-                            
+
+
 //<< counter1   << " 4 2 7 77 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
 //<< counter1+1 << " 4 2 7 77 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
 //<< counter1+2 << " 4 2 7 77 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
@@ -653,18 +655,20 @@ int main(int argc, char *argv[])
 
             int count = 0;
             cout << "   Generating points....";
-            double medNodeCoords[pntx*pnty*pntz*3];
+            // double medNodeCoords[pntx*pnty*pntz*3];            //  Causes an error for large meshes be carefull
+            double* medNodeCoords = new double[pntx*pnty*pntz*3];
+
             for(int i=0; i<pntx*pnty; i++)
                 {
-                
+
                     fscanf(rf,"%lf",&xx);
                     fscanf(rf,"%lf",&yy);
                     fscanf(rf,"%lf",&zz); 
                     
-                    medNodeCoords[counter1 * 3    ] = xx;
+                    medNodeCoords[ counter1 * 3   ] = xx;
                     medNodeCoords[counter1 * 3 + 1] = yy;
                     medNodeCoords[counter1 * 3 + 2] = zz;
-                   
+
                     counter1++ ;
                     zznew = zz ;
                     delz = (zmax-zz)/PzM1;
@@ -674,30 +678,65 @@ int main(int argc, char *argv[])
 
                             medNodeCoords[counter1 * 3    ] = xx;
                             medNodeCoords[counter1 * 3 + 1] = yy;
-                            medNodeCoords[counter1 * 3 + 2] = zznew;                                        
-                            counter1++;
+                            medNodeCoords[counter1 * 3 + 2] = zznew;
 
+                            counter1++;
                         }
                 }
 
             cout << "   Done\n";
 
-            int  nNodes      = (sizeof(medNodeCoords)/sizeof(medNodeCoords[0]))/3;
-            int  nNodesArray = (sizeof(medNodeCoords)/sizeof(medNodeCoords[0]))  ;
+            mcIdType Ntete4 = NTet*4;
+            mcIdType *medCellConn = new mcIdType[NTet*4];
+
+//-----------------------------------------------------------------------------------//
+//---- Generating Tetrahedra -----
+//-----------------------------------------------------------------------------------//
+
+            cout << "Done  \n"
+                 << "   Generating Tetrahedrons....";
+
+            count = 0;
+            for(int j=0; j<PyM1;  j++)
+                {
+                    for(int i=0; i<PxM1;  i++)
+                        {
+                            for(int k=0; k<PzM1; k++)
+                                {
+
+                                    IJK	      =	i*pntz + j*Pxz + k;
+                                    Ip1JK     =	IJK + Pxz;
+                                    IJp1K     =	IJK + pntz;
+                                    Ip1Jp1K   =	IJK + Pxz + pntz;
+                                    IJKp1     =	IJK + 1;
+                                    Ip1JKp1   =	Ip1JK + 1;
+                                    IJp1Kp1   =	IJp1K + 1;
+                                    Ip1Jp1Kp1 =	Ip1Jp1K + 1;
+
+//<< counter1   << " 4 2 7 77 " << IJK     << " " << IJKp1   << " " << IJp1K     << " " << Ip1Jp1K <<"\n"
+//<< counter1+1 << " 4 2 7 77 " << IJKp1   << " " << IJK     << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+//<< counter1+2 << " 4 2 7 77 " << Ip1JKp1 << " " << IJKp1   << " " << Ip1JK     << " " << Ip1Jp1K <<"\n"
+//<< counter1+3 << " 4 2 7 77 " << IJKp1   << " " << Ip1JKp1 << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+//<< counter1+4 << " 4 2 7 77 " << IJp1Kp1 << " " << IJKp1   << " " << Ip1Jp1Kp1 << " " << Ip1Jp1K <<"\n"
+//>< counter1+5 << " 4 2 7 77 " << IJKp1   << " " << IJp1Kp1 << " " << IJp1K     << " " << Ip1Jp1K <<"\n";
+
+                                    medCellConn[count] = IJK     ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJK     ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                                    medCellConn[count] = Ip1JKp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  Ip1JKp1 ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                                    medCellConn[count] = IJp1Kp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJp1Kp1 ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++;
 
 
-            //  get cells  //
-            int TotalCells = NTet;
-            mcIdType medCellConn[NTet*4 /*+ NTri*3*/];
-/*             
+                                }
+                        }
+                }
+            cout  << "Done\n";
+
+/*
 //-----------------------------------------------------------------------------------//
 //---- Generating Triangles -----
 //-----------------------------------------------------------------------------------//
-
-            cout << "   Generating Triangles...."  ;
-            std::fprintf(w2f, "$Elements\n%d\n",NTet+NTri);
-            
-            counter1=1;
 
 //---------------------------------X-MIN-PLANE----------------------------------//
             for(int i=0; i<PyM1;  i++)
@@ -710,14 +749,14 @@ int main(int argc, char *argv[])
                             Ip1JK   = IJK + Pxz;
                             Ip1JKp1 = Ip1JK + 1;
 
+                            medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJK   ; count++; medCellConn[count] = Ip1JK ; count++;
+                            medCellConn[count] = Ip1JKp1 ; count++; medCellConn[count] =  IJKp1 ; count++; medCellConn[count] = Ip1JK ; count++;
 
-                            std::fprintf(w2f, "%d 2 2 1 11 %d %d %d\n"
-                                              "%d 2 2 1 11 %d %d %d\n"
-                                            , counter1, IJKp1, IJK, Ip1JK
-                                            , counter1+1, Ip1JKp1, IJKp1, Ip1JK
-                                        );
-
-                            counter1=counter1+2;
+                           // std::fprintf(w2f, "%d 2 2 1 11 %d %d %d\n"
+                           //                   "%d 2 2 1 11 %d %d %d\n"
+                           //                 , counter1, IJKp1, IJK, Ip1JK
+                           //                 , counter1+1, Ip1JKp1, IJKp1, Ip1JK
+                           //             );
 
                         }
                 }
@@ -733,14 +772,14 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             IJp1Kp1 = IJp1K + 1;
 
-                            std::fprintf(w2f, "%d 2 2 2 22 %d %d %d\n"
-                                              "%d 2 2 2 22 %d %d %d\n"
-                                            , counter1, IJK, IJKp1, IJp1K
-                                            , counter1+1, IJKp1, IJp1Kp1, IJp1K
-                                        );
+                            medCellConn[count] = IJK   ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = IJp1K ; count++;
+                            medCellConn[count] = IJKp1 ; count++; medCellConn[count] =  IJp1Kp1 ; count++; medCellConn[count] = IJp1K ; count++;
 
-                            counter1=counter1+2;
-
+                            // std::fprintf(w2f, "%d 2 2 2 22 %d %d %d\n"
+                            //                  "%d 2 2 2 22 %d %d %d\n"
+                            //                , counter1, IJK, IJKp1, IJp1K
+                            //                , counter1+1, IJKp1, IJp1Kp1, IJp1K
+                            //            );
                         }
                 }
 
@@ -754,14 +793,16 @@ int main(int argc, char *argv[])
                             Ip1JK   = IJK + Pxz;
                             IJp1K   = IJK + pntz;
                             Ip1Jp1K = Ip1JK + pntz;
+                                            , IJK, IJp1K, Ip1Jp1K
+                                            , Ip1JK, IJK ,Ip1Jp1K
+                            medCellConn[count] = IJK   ; count++; medCellConn[count] =  IJp1K   ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                            medCellConn[count] = Ip1JK ; count++; medCellConn[count] =  IJK     ; count++; medCellConn[count] = Ip1Jp1K ; count++;
 
-                            std::fprintf(w2f, "%d 2 2 3 33 %d %d %d\n"
-                                              "%d 2 2 3 33 %d %d %d\n"
-                                            , counter1, IJK, IJp1K, Ip1Jp1K
-                                            , counter1+1, Ip1JK, IJK, Ip1Jp1K
-                                        );
-
-                            counter1=counter1+2;
+                            // std::fprintf(w2f, "%d 2 2 3 33 %d %d %d\n"
+                            //                  "%d 2 2 3 33 %d %d %d\n"
+                            //                , counter1, IJK, IJp1K, Ip1Jp1K
+                            //                , counter1+1, Ip1JK, IJK, Ip1Jp1K
+                            //            );
                         }
                 }
 
@@ -776,13 +817,13 @@ int main(int argc, char *argv[])
                             Ip1JK   = IJK + Pxz;
                             Ip1JKp1 = Ip1JK + 1;
 
-                            std::fprintf(w2f, "%d 2 2 4 44 %d %d %d\n"
-                                              "%d 2 2 4 44 %d %d %d\n"
-                                            , counter1, IJK, IJKp1, Ip1JK
-                                            , counter1+1, IJKp1, Ip1JKp1, Ip1JK
-                                        );
-                            
-                            counter1=counter1+2;
+                            medCellConn[count] = IJK   ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1JK ; count++;
+                            medCellConn[count] = IJKp1 ; count++; medCellConn[count] =  Ip1JKp1 ; count++; medCellConn[count] = Ip1JK ; count++;
+                            // std::fprintf(w2f, "%d 2 2 4 44 %d %d %d\n"
+                            //                  "%d 2 2 4 44 %d %d %d\n"
+                            //                , counter1, IJK, IJKp1, Ip1JK
+                            //                , counter1+1, IJKp1, Ip1JKp1, Ip1JK
+                            //            );
 
                         }
                 }
@@ -798,13 +839,14 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             IJp1Kp1 = IJp1K + 1;
 
-                            std::fprintf(w2f, "%d 2 2 5 55 %d %d %d\n"
-                                              "%d 2 2 5 55 %d %d %d\n"
-                                            , counter1, IJKp1, IJK, IJp1K
-                                            , counter1+1, IJp1Kp1, IJKp1, IJp1K
-                                        );
-                            
-                            counter1=counter1+2;
+                            medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJK   ; count++; medCellConn[count] = IJp1K ; count++;
+                            medCellConn[count] = IJp1Kp1 ; count++; medCellConn[count] =  IJKp1 ; count++; medCellConn[count] = IJp1K ; count++;
+
+                            // std::fprintf(w2f, "%d 2 2 5 55 %d %d %d\n"
+                            //                 "%d 2 2 5 55 %d %d %d\n"
+                            //                , counter1, IJKp1, IJK, IJp1K
+                            //                , counter1+1, IJp1Kp1, IJKp1, IJp1K
+                            //            );
 
                         }
                 }
@@ -820,52 +862,19 @@ int main(int argc, char *argv[])
                             IJp1K   = IJK + pntz;
                             Ip1Jp1K = Ip1JK + pntz;
 
-                            std::fprintf(w2f, "%d 2 2 6 66 %d %d %d\n"
-                                              "%d 2 2 6 66 %d %d %d\n"
-                                            , counter1, IJp1K, IJK, Ip1Jp1K
-                                            , counter1+1, IJK, Ip1JK, Ip1Jp1K
-                                        );
+                            medCellConn[count] = IJp1K ; count++; medCellConn[count] =  IJK   ; count++; medCellConn[count] = Ip1Jp1K ; count++;
+                            medCellConn[count] = IJK   ; count++; medCellConn[count] =  Ip1JK ; count++; medCellConn[count] = Ip1Jp1K ; count++;
 
-                            counter1 = counter1+2;
+                            // std::fprintf(w2f, "%d 2 2 6 66 %d %d %d\n"
+                            //                  "%d 2 2 6 66 %d %d %d\n"
+                            //                , counter1, IJp1K, IJK, Ip1Jp1K
+                            //                , counter1+1, IJK, Ip1JK, Ip1Jp1K
+                            //            );
+
                         }
                 }
-*/
+/**/
 //-----------------------------------------------------------------------------------//
-//---- Generating Tetrahedra -----
-//-----------------------------------------------------------------------------------//
-
-            cout << "Done  \n"
-                 << "   Generating Tetrahedrons....";
-     
-            count = 0;
-            for(int j=0; j<PyM1;  j++)
-                {
-                    for(int i=0; i<PxM1;  i++)
-                        {
-                            for(int k=1; k<=PzM1; k++)
-                                {
-
-                                    IJK	      =	i*pntz + j*Pxz + k;
-                                    Ip1JK     =	IJK + Pxz;
-                                    IJp1K     =	IJK + pntz;
-                                    Ip1Jp1K   =	IJK + Pxz + pntz;
-                                    IJKp1     =	IJK + 1;
-                                    Ip1JKp1   =	Ip1JK + 1;
-                                    IJp1Kp1   =	IJp1K + 1;
-                                    Ip1Jp1Kp1 =	Ip1Jp1K + 1;
-
-                                    medCellConn[count] = IJK     ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJK     ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-                                    medCellConn[count] = Ip1JKp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1JK     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  Ip1JKp1 ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-                                    medCellConn[count] = IJp1Kp1 ; count++; medCellConn[count] =  IJKp1   ; count++; medCellConn[count] = Ip1Jp1Kp1 ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-                                    medCellConn[count] = IJKp1   ; count++; medCellConn[count] =  IJp1Kp1 ; count++; medCellConn[count] = IJp1K     ; count++; medCellConn[count] = Ip1Jp1K ; count++; 
-
-
-                                }
-                        }
-                }
-            cout  << "Done\n";
 
             MEDCouplingUMesh * medMesh3d = MEDCouplingUMesh::New();
 
@@ -873,37 +882,59 @@ int main(int argc, char *argv[])
             medMesh3d -> allocateCells(NTet);
             medMesh3d -> setName("TetrahedralMesh");
 
-            cout  << "   Writing Tetrahedrons....";
 
+            cout  << "   Writing Nodes....";
+            DataArrayDouble * myCoords = DataArrayDouble::New();
+            myCoords -> alloc(pntx*pnty*pntz, 3);
+            myCoords -> setInfoOnComponent(0, "x");
+            myCoords -> setInfoOnComponent(1, "y");
+            myCoords -> setInfoOnComponent(2, "z");
+            std::copy(medNodeCoords, medNodeCoords + pntx*pnty*pntz*3, myCoords -> getPointer());
+            medMesh3d -> setCoords(myCoords);
+            cout  << "Done\n";
+
+
+
+            cout  << "   Writing Tetrahedrons....";
             count = 0;
             for (int i = 0; i < NTet; i++) {
               medMesh3d -> insertNextCell(INTERP_KERNEL::NORM_TETRA4, 4, medCellConn + count);
               count += 4;
             }
             medMesh3d -> finishInsertingCells();
-  
             cout  << "Done\n";
 
-            cout  << "   Writing Nodes....";
-            DataArrayDouble * myCoords = DataArrayDouble::New();
-            myCoords -> alloc(nNodes, 3);
-            myCoords -> setInfoOnComponent(0, "x");
-            myCoords -> setInfoOnComponent(1, "y");
-            myCoords -> setInfoOnComponent(2, "z");  
-            std::copy(medNodeCoords, medNodeCoords + nNodesArray, myCoords -> getPointer());
-            medMesh3d -> setCoords(myCoords);
-          //  medMesh2d -> setCoords(myCoords);
-            myCoords -> decrRef();
-            cout  << "Done\n";
-            
+
+
+/*
+            MEDCouplingUMesh * medMesh2d = MEDCouplingUMesh::New();
+            medMesh2d -> setMeshDimension(2);
+            medMesh2d -> allocateCells(NTri);
+            medMesh2d -> setName("TetrahedralMesh");
+            cout  << "   Writing Trinangles....";
+
+            for (int i = 0; i < NTri; i++) {
+              medMesh2d -> insertNextCell(INTERP_KERNEL::NORM_TRI3, 3, medCellConn + count);
+              count += 3;
+            }
+            medMesh2d -> finishInsertingCells();
+ */
+
+//            medMesh2d -> setCoords(myCoords);
+//            cout  << "Done\n";
+
             cout  << "   Writing Mesh....";            
             std::vector<const MEDCouplingUMesh *> finalMesh;
             finalMesh.push_back(medMesh3d);
-            //  finalMesh.push_back(medMesh2d);
+//            finalMesh.push_back(medMesh2d);
 
-            WriteUMeshes("test.med",finalMesh,true);            
+            WriteUMeshes(*outputfile,finalMesh,true);
             cout  << "Done\n";
-  
+
+            medMesh3d -> decrRef();
+            myCoords  -> decrRef();
+            delete[]     medNodeCoords;
+            delete[]     medCellConn;
         }
 #endif               
     else
@@ -912,7 +943,8 @@ int main(int argc, char *argv[])
                  << " * ERROR: --mesh input is wrong only msh or mesh is accepted   *\n"
                  << " *=============================================================*\n\n";
         }
-
+delete inputfile;
+delete outputfile;
 //-----------------------------------------------------------------------------------//
 //---- For timing the program -----
 //-----------------------------------------------------------------------------------//
