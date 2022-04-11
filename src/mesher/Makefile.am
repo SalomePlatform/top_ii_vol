@@ -1,6 +1,10 @@
 FILE1 = topIIvol_PreProc.cpp 
 FILE2 = topIIvol_Mesher.cpp 
 
+MEDCOUPLING_ROOT_DIR=${salome}/INSTALL/MEDCOUPLING
+MEDFILE_ROOT_DIR=${salome}/INSTALL/medfile
+HDF5_ROOT_DIR=${salome}/INSTALL/hdf5
+
 all-local:topIIvol_PreProc topIIvol_Mesher
 	@echo " *============================================================*"
 	@echo ""
@@ -29,7 +33,13 @@ topIIvol_PreProc.o: topIIvol_PreProc.cpp ./../lib/LogoTopiiVolCpp.hpp
 #	@echo ""	
 
 topIIvol_Mesher.o: topIIvol_Mesher.cpp
+if HAVESALOME
+	export LD_LIBRARY_PATH=$(MEDFILE_ROOT_DIR)/lib:$(HDF5_ROOT_DIR)/lib:$(MEDCOUPLING_ROOT_DIR)/lib
+	$(CXX) -c topIIvol_Mesher.cpp -std=c++11 -I$(MEDCOUPLING_ROOT_DIR)/include -I$(MEDFILE_ROOT_DIR)/include -I$(HDF5_ROOT_DIR)/include -L$(MEDCOUPLING_ROOT_DIR)/lib -lmedloader -lmedcoupling -linterpkernel -lmedcouplingremapper $(PDMT_DEBUG) -DMEDCOUPLING
+else !HAVESALOME
 	$(CXX) -c topIIvol_Mesher.cpp -std=c++11	
+	@echo ""
+endif
 
 #top-ii-vol-Mesher: Top2Vol-Mesher.o
 #	$(CXX) -o top-ii-vol-Mesher Top2Vol-Mesher.o 
