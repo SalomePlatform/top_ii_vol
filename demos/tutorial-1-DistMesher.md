@@ -12,19 +12,19 @@ Let us say we would like to create the volumeteric mesh `top-ii-vol-mesh`, with 
 ```bash
 mpirun -n 24 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 3 --partition_z 4 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or 
 ```bash
 mpirun -n 24 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 3 --partition_y 2 --partition_z 4 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or
 ```bash
 mpirun -n 24 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 2 --partition_z 6 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 
 | ![space-1.jpg](./../etc/images/distmesh-2.png) |
@@ -46,13 +46,13 @@ Notice that in all the examples `--partition_x` times `--partition_y` times `--p
 ```bash
 mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 4 --partition_z 1 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or
 ```bash
 mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 1 --partition_z 4 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 | ![space-3.jpg](./../etc/images/distmesh-6.png) |
 | :-----------------------------------------------: |
@@ -68,13 +68,13 @@ mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 6 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 1 --partition_z 3 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or
 ```bash
 mpirun -n 6 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 3 --partition_y 1 --partition_z 2 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 
 - Let us now highlight 2D partitioning of distributed mesher producing `*.mesh` mesh with 16 MPI ranks (with the 16 subdomains divided between y and z directions):
@@ -83,26 +83,26 @@ mpirun -n 6 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 8 --partition_z 2 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 2 --partition_z 8 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 or
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 4 --partition_z 4 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 
 - Let us now highlight 1D partitioning of distributed mesher producing `*.mesh` mesh with 4 MPI ranks (letting the algorithm decide the partition direction): 
 
 ```bash
 mpirun -n 4 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
---depth -1000 --out top-ii-vol-mesh --in ./xyz/point-cloud-coarse
+--depth -1000 --out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 
 | ![space-3.jpg](./../etc/images/distmesh-5.png) |
@@ -115,9 +115,9 @@ Note that we did not provide `--partition_x` , `--partition_y` or `--partition_z
 - Let us now highlight 1D of distributed mesher producing `*.mesh` mesh with 8 MPI ranks (enforced partitioning in x direction): 
 
 ```bash
-mpirun -n 4 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
+mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 1 --partition_z 8 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz
 ```
 
 | ![space-3.jpg](./../etc/images/distmesh-9.png) |
@@ -129,7 +129,7 @@ mpirun -n 4 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 8 --partition_z 1 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz 
 ```
 
 - Let us now highlight 1D partitioning of distributed mesher producing `*.mesh` mesh with 3 MPI ranks (enforced partitioning in z direction): 
@@ -138,7 +138,7 @@ mpirun -n 8 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 3 topIIvol_DistMesher --zpoints 30 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 1 --partition_z 3 \
---out top-ii-vol-mesh --in ./xyz/point-cloud-coarse 
+--out top-ii-vol-mesh --in ./xyz/point-cloud-coarse.xyz 
 ```
 
 ### What else is there to try ###
