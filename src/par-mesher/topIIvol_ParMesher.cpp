@@ -24,6 +24,9 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+#include <cstring>
+
+using namespace std;
 
 float **alloc2d(int, int);
 
@@ -33,7 +36,7 @@ int fetchStartRows(int mpirank, int mpisize, int multipyFactor, int pntM);
 void initializeThreeIntegers(int *int1, int *int2, int *int3, int val1, int val2, int val3);
 void fetchIstartIend(int mpirank, int mpisize, int *istart, int *iend);
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 
 //====================================================================================//
@@ -148,8 +151,11 @@ int main(int argc, char *argv[])
     int pnty = 29  ;
     int pntz = 100 ;
 
-    char inputfile[] = "./../../data/DEM_160m.xyz" ;
-    char outputfile[] = "Tetra-ParTop2Vol.mesh"     ;
+    std::string *inputfile  = new std::string();
+    std::string *outputfile = new std::string();
+
+    *inputfile  = "./../../data/DEM_160m.xyz";
+    *outputfile = "Tetra-ParTop2Vol.mesh"    ;
 
 //====================================================================================//
 //---- Comandline Parameters -----
@@ -158,7 +164,7 @@ int main(int argc, char *argv[])
     for(int i=0; i<argc-1; i++)
         {
 
-            char argvdummy = *argv[i] ;
+            string argvdummy = argv[i];
 
             if (!strcmp(argv[i], "--xpoints"))
                 pntx = atoi(argv[i+1]);
@@ -170,10 +176,10 @@ int main(int argc, char *argv[])
                 pntz = atoi(argv[i+1]);
 
             if (!strcmp(argv[i], "--in"))
-                strcpy(inputfile, argv[i+1]);
+                *inputfile = argv[i+1];
 
             if (!strcmp(argv[i], "--out"))
-                strcpy(outputfile, argv[i+1]);
+                *outputfile = argv[i+1];
 
             if (!strcmp(argv[i], "--depth"))
                 zmax= atol(argv[i+1]);
@@ -242,7 +248,7 @@ if(ParallelPart == 1)
     //char strname[80]="";
     //strcat (strname, inputfile);
 
-    MPI_File_open( MPI_COMM_WORLD, inputfile, 
+    MPI_File_open( MPI_COMM_WORLD, inputfile->c_str(),
                    MPI_MODE_RDONLY,
                    MPI_INFO_NULL, &filein);
 
@@ -440,7 +446,7 @@ if(ParallelPart == 1)
     //char str[]="";
     //strcat (str, outputfile);
 
-    MPI_File_open(MPI_COMM_WORLD, outputfile,
+    MPI_File_open(MPI_COMM_WORLD, outputfile->c_str(),
                   MPI_MODE_CREATE|MPI_MODE_WRONLY,
                   MPI_INFO_NULL, &file);
 
