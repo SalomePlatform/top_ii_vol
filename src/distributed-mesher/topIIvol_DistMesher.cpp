@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     string *inputfile  = new string();
     string *outputfile = new string();
 
-    *inputfile  = "./../../data/DEM_160m";
+    *inputfile  = "./../../data/DEM_160m.xyz";
     *outputfile = "point-cloud-strip";
 
 //-----------------------------------------------------------------------------------//
