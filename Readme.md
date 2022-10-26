@@ -173,19 +173,19 @@ This is  tool to created distributed mesh from  partitioned point cloud
 ```bash
 mpirun -n 24 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 3 --partition_z 4 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or 
 ```bash
 mpirun -n 24 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 3 --partition_y 2 --partition_z 4 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or
 ```bash
 mpirun -n 24 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 2 --partition_z 6 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 8 MPI ranks (with the 8 subdomains divided between x and y directions):
@@ -193,13 +193,13 @@ mpirun -n 24 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 8 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 4 --partition_z 1 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or
 ```bash
 mpirun -n 8 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 4 --partition_y 2 --partition_z 1 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 6 MPI ranks (with the 6 subdomains divided between x and z directions):
@@ -208,13 +208,13 @@ mpirun -n 8 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 6 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 2 --partition_y 1 --partition_z 3 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or
 ```bash
 mpirun -n 6 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 3 --partition_y 1 --partition_z 2 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 2D partitioning of distributed mesher producing  `*.mesh` mesh with 16 MPI ranks (with the 16 subdomains divided between y and z directions):
@@ -223,26 +223,26 @@ mpirun -n 6 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 8 --partition_z 2 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 2 --partition_z 8 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 or
 ```bash
 mpirun -n 16 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 4 --partition_z 4 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (letting the algorithm decide the partition direction): 
 
 ```bash
 mpirun -n 4 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
---depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m
+--depth -1000 --out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 4 MPI ranks (enforced partitioning in x direction): 
@@ -250,7 +250,7 @@ mpirun -n 4 topIIvol_DistMesher --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 4 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 4 --partition_y 1 --partition_z 1 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 8 MPI ranks (enforced partitioning in y direction): 
@@ -258,7 +258,7 @@ mpirun -n 4 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 8 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 8 --partition_z 1 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 - Examples 1D partitioning of distributed mesher producing  `*.mesh` mesh with 3 MPI ranks (enforced partitioning in z direction): 
@@ -266,7 +266,7 @@ mpirun -n 8 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 ```bash
 mpirun -n 3 topIIvol_DistMesher  --zpoints 50 --xpoints 32 --ypoints 29 \
 --depth -1000 --partition_x 1 --partition_y 1 --partition_z 3 \
---out top-ii-vol-mesh  --in ./../etc/DEM_160m 
+--out top-ii-vol-mesh  --in ./../etc/DEM_160m.xyz
 ```
 
 
