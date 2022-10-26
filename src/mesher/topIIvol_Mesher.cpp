@@ -171,6 +171,11 @@ int main(int argc, char *argv[])
     int NTri = 4*(PzM1*PxM1 + PyM1*PzM1 + PxM1*PyM1);
     int NTet = PxM1 * PyM1 * PzM1 * 6;
 
+//-----------------------------------------------------------------------------------//
+//---- Debug Parameters -----
+//-----------------------------------------------------------------------------------//
+
+    int filePoints = 0;
 
 //-----------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------//
@@ -186,22 +191,22 @@ int main(int argc, char *argv[])
 //---- Header for mesh -----
 //-----------------------------------------------------------------------------------//
 
-            std::fprintf(w2f, "MeshVersionFormatted 1\n\nDimension 3\n\n");       
-            
+            std::fprintf(w2f, "MeshVersionFormatted 1\n\nDimension 3\n\n");
+
 //-----------------------------------------------------------------------------------//
 //---- Generating points -----
 //-----------------------------------------------------------------------------------//
 
             cout   << "   Generating points....";
-            std::fprintf(w2f, "Vertices\n%d\n",NPnt);       
+            std::fprintf(w2f, "Vertices\n%d\n",NPnt);
 
             for(int i=0; i<pntx*pnty; i++)
                 {
-                    
-                    fscanf(rf,"%lf",&xx);
-                    fscanf(rf,"%lf",&yy);
-                    fscanf(rf,"%lf",&zz);
-                    
+
+                    filePoints += fscanf(rf,"%lf",&xx);
+                    filePoints += fscanf(rf,"%lf",&yy);
+                    filePoints += fscanf(rf,"%lf",&zz);
+
                     std::fprintf(w2f, "%lf %lf %lf 0\n"
                                     , xx,yy,zz
                                 );
@@ -216,7 +221,17 @@ int main(int argc, char *argv[])
                                         );
                         }
                 }
-                
+
+            if(filePoints != pntx*pnty*3 )
+            	{
+            		cout<<"ERROR! Something is not right \n" 
+            		    << filePoints*3 << " Vertices read \n"
+            		    << pntx*pnty    << " Vertices expected \n";
+
+            		exit(111);
+            	}
+            filePoints = 0;
+
             std::fclose(rf);
             std::fprintf(w2f, "\n");
             cout   << "   Done\n   #  " << NPnt << " points written\n";
@@ -226,7 +241,7 @@ int main(int argc, char *argv[])
 // 6 Tetrahedra are written together for one Hex
 //-----------------------------------------------------------------------------------//
 
-                                   
+
             cout   << "   Generating Tetrahedra....";
             std::fprintf(w2f, "Tetrahedra\n%d\n",NTet);
             for(int j=0; j<PyM1;  j++)
@@ -408,8 +423,8 @@ int main(int argc, char *argv[])
 //--------------------------------------//
 //---- Header for msh2 -----
 //--------------------------------------//
-                  
-            std::fprintf(w2f, "$MeshFormat\n2.2 0 8\n$EndMeshFormat\n$Nodes\n%d\n",NPnt);       
+
+            std::fprintf(w2f, "$MeshFormat\n2.2 0 8\n$EndMeshFormat\n$Nodes\n%d\n",NPnt);
 
             int counter1 = 1;
 
@@ -417,15 +432,15 @@ int main(int argc, char *argv[])
 
             for(int i=0; i<pntx*pnty; i++)
                 {
-                
-                    fscanf(rf,"%lf",&xx);
-                    fscanf(rf,"%lf",&yy);
-                    fscanf(rf,"%lf",&zz); 
-                    
+
+                    filePoints += fscanf(rf,"%lf",&xx);
+                    filePoints += fscanf(rf,"%lf",&yy);
+                    filePoints += fscanf(rf,"%lf",&zz); 
+
                     std::fprintf(w2f, "%d %lf %lf %lf\n"
                                     ,  counter1,xx,yy,zz
                                 );
-                   
+
                     counter1++ ;
                     zznew = zz ;
                     delz= (zmax-zz)/PzM1;
@@ -439,6 +454,16 @@ int main(int argc, char *argv[])
 
                         }
                 }
+
+            if(filePoints != pntx*pnty*3 )
+            	{
+            		cout<<"ERROR! Something is not right \n"
+            		    << filePoints*3 << " Vertices read \n"
+            		    << pntx*pnty    << " Vertices expected \n";
+
+            		exit(111);
+            	}
+            filePoints = 0;
 
             std::fclose(rf);
             std::fprintf(w2f, "$EndNodes\n");
@@ -661,10 +686,10 @@ int main(int argc, char *argv[])
             for(int i=0; i<pntx*pnty; i++)
                 {
 
-                    fscanf(rf,"%lf",&xx);
-                    fscanf(rf,"%lf",&yy);
-                    fscanf(rf,"%lf",&zz); 
-                    
+                    filePoints += fscanf(rf,"%lf",&xx);
+                    filePoints += fscanf(rf,"%lf",&yy);
+                    filePoints += fscanf(rf,"%lf",&zz); 
+
                     medNodeCoords[ counter1 * 3   ] = xx;
                     medNodeCoords[counter1 * 3 + 1] = yy;
                     medNodeCoords[counter1 * 3 + 2] = zz;
@@ -684,6 +709,17 @@ int main(int argc, char *argv[])
                         }
                 }
 
+
+            if(filePoints != pntx*pnty*3)
+            	{
+            		cout<<"ERROR! Something is not right \n" 
+            		    << filePoints*3 << " Vertices read \n"
+            		    << pntx*pnty    << " Vertices expected \n";
+
+            		exit(111);
+            	}
+            filePoints = 0;
+            
             cout << "   Done\n";
 
             mcIdType *medCellConn = new mcIdType[NTet*4 + NTri*3];

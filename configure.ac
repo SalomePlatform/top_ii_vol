@@ -1,4 +1,4 @@
-AC_INIT([top-ii-vol], [1.3], [mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
+AC_INIT([top-ii-vol],[1.3],[mohd-afeef.badri@cea.fr; mohd-afeef.badri@hotmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_CONFIG_HEADERS([config.h])
@@ -13,11 +13,17 @@ define(SECTION_TITLE,
 	echo '   $1   ' | sed -e's/./-/g' >&AS_MESSAGE_FD
 ])
 
+AC_ARG_WITH([hdf5],
+	[  --with-hdf5=               hdf5 root path : (e.g. --with-hdf5=/home/salome/INSTALL/hdf5)],
+        [hdf5="$withval"], [hdf5="no"])
 
+AC_ARG_WITH([medfile],
+	[  --with-medfile=            medfile root path : (e.g. --with-medfile=/home/salome/INSTALL/medfile)],
+        [medfile="$withval"], [medfile="no"])
 
-AC_ARG_WITH([salome],
-	[  --with-salome=            salome installation path : (e.g. --with-salome=/opt/install/local)],
-        [salome="$withval"], [salome="no"])
+AC_ARG_WITH([medcoupling],
+	[  --with-medcoupling=        medcoupling root path : (e.g. --with-salome=/home/salome/INSTALL/MEDCOUPLING)],
+        [medcoupling="$withval"], [medcoupling="no"])
 
 
 AU_ALIAS([ACX_MPI], [AX_MPI])
@@ -156,18 +162,38 @@ test "$MPICXX" == "$CXX" && AC_MSG_ERROR([
 dnl ---------------------------------------------------------------
 dnl Did the user provide salome/medcoupling
 dnl ---------------------------------------------------------------
-SECTION_TITLE([      checking for a salome support     ])
+SECTION_TITLE([      checking for a med support     ])
 
-AC_SUBST([salome])
-AM_CONDITIONAL([HAVESALOME], [test $salome != no])
-test "$salome" == "no" && AC_MSG_WARN([
- top-ii-vol will not be configured with salome,
- you did not provide --with-salome flag so
+AC_SUBST([hdf5])
+AC_SUBST([medfile])
+AC_SUBST([medcoupling])
+
+CXXFLAGS_MED="-I${hdf5}/include -I${medfile}/include -I${medcoupling}/include  ${CXXFLAGS}"
+LDFLAGS_MED="-L${hdf5}/lib -L${medfile}/lib -L${medcoupling}/lib ${LDFLAGS}"
+LIBS_MED="-lhdf5 -lmedC -lmedloader -lmedcoupling -linterpkernel -lmedcouplingremapper   ${LIBS}"
+AC_SUBST(CXXFLAGS_MED,[$CXXFLAGS_MED])
+AC_SUBST(LDFLAGS_MED,[$LDFLAGS_MED])
+AC_SUBST(LIBS_MED,[$LIBS_MED])
+
+AM_CONDITIONAL([HAVEMED], [test $hdf5 != no -a $medfile != no -a $medcoupling != no])
+
+test $hdf5 != no && AC_MSG_RESULT([checking for hdf5... yes])
+test $hdf5 == no && AC_MSG_RESULT([checking for hdf5... no])
+test $medfile != no && AC_MSG_RESULT([checking for medfile... yes])
+test $medfile == no && AC_MSG_RESULT([checking for medfile... no])
+test $medcoupling != no && AC_MSG_RESULT([checking for medcoupling... yes])
+test $medcoupling == no && AC_MSG_RESULT([checking for medcoupling... yes])
+test $hdf5 != no -a $medfile != no -a $medcoupling != no && AC_MSG_RESULT([med support... yes
+ ])
+
+test $hdf5 == no -o $medfile == no -o $medcoupling == no && AC_MSG_WARN([
+top-ii-vol will not be configured with med support,
+you did not provide the flags:
+    --with-hdf5
+    --with-medfile
+    --with-medcoupling
 
  SALOME SUPPORT = OFF
-
- To have salome support in top-ii-vol, please correctly
- provide both  --with-salome flag.
  ])
 dnl ---------------------------------------------------------------
 
@@ -240,4 +266,14 @@ AC_MSG_RESULT([])
 AC_MSG_RESULT([ C/C++ compiler flags   : '$CXXFLAGS'])
 AC_MSG_RESULT([ C/C++ linker flags     : '$LDFLAGS'])
 AC_MSG_RESULT([ C/C++ library path     : '$LIBS'])
+AC_MSG_RESULT([])
+test "$hdf5" != "no" &&  AC_MSG_RESULT([ Hdf5          : YES $hdf5])
+test "$hdf5" == "no" &&  AC_MSG_RESULT([ Hdf5          : NO])
+test "$medfile" != "no" &&  AC_MSG_RESULT([ medfile       : YES $medfile])
+test "$medfile" == "no" &&  AC_MSG_RESULT([ medfile       : NO])
+test "$medcoupling" != "no" &&  AC_MSG_RESULT([ medcoupling   : YES $medcoupling])
+test "$medcoupling" == "no" &&  AC_MSG_RESULT([ medcoupling   : NO])
+test $hdf5 != no -a $medfile != no -a $medcoupling != no &&  AC_MSG_RESULT([ med support   : YES])
+test $hdf5 == no -o $medfile == no -o $medcoupling == no &&  AC_MSG_RESULT([ med support   : NO])
+AC_MSG_RESULT([])
 AC_MSG_RESULT([])

@@ -1,9 +1,5 @@
 FILE1 = topIIvol_PreProc.cpp 
-FILE2 = topIIvol_Mesher.cpp 
-
-MEDCOUPLING_ROOT_DIR=${salome}/INSTALL/MEDCOUPLING
-MEDFILE_ROOT_DIR=${salome}/INSTALL/medfile
-HDF5_ROOT_DIR=${salome}/INSTALL/hdf5
+FILE2 = topIIvol_Mesher.cpp
 
 all-local:topIIvol_PreProc topIIvol_Mesher
 	@echo " *============================================================*"
@@ -25,25 +21,25 @@ bin_PROGRAMS                = topIIvol_PreProc  topIIvol_Mesher
 topIIvol_PreProc_SOURCES    = topIIvol_PreProc.cpp
 topIIvol_Mesher_SOURCES     = topIIvol_Mesher.cpp
 
-topIIvol_PreProc.o: topIIvol_PreProc.cpp ./../lib/LogoTopiiVolCpp.hpp
-	$(CXX) -c topIIvol_PreProc.cpp -std=c++11	
-
-#top-ii-vol-PreProc: Top2Vol-preproc.o
-#	$(CXX) -o top-ii-vol-PreProc Top2Vol-preproc.o
-#	@echo ""	
-
-topIIvol_Mesher.o: topIIvol_Mesher.cpp
-if HAVESALOME
-	export LD_LIBRARY_PATH=$(MEDFILE_ROOT_DIR)/lib:$(HDF5_ROOT_DIR)/lib:$(MEDCOUPLING_ROOT_DIR)/lib
-	$(CXX) -c topIIvol_Mesher.cpp -std=c++11 -I$(MEDCOUPLING_ROOT_DIR)/include -I$(MEDFILE_ROOT_DIR)/include -I$(HDF5_ROOT_DIR)/include -L$(MEDCOUPLING_ROOT_DIR)/lib -lmedloader -lmedcoupling -linterpkernel -lmedcouplingremapper $(PDMT_DEBUG) -DMEDCOUPLING
-else !HAVESALOME
-	$(CXX) -c topIIvol_Mesher.cpp -std=c++11	
-	@echo ""
+if HAVEMED
+topIIvol_Mesher_LDFLAGS=$(LDFLAGS_MED)
+topIIvol_Mesher_LDADD=$(LIBS_MED)
 endif
 
-#top-ii-vol-Mesher: Top2Vol-Mesher.o
-#	$(CXX) -o top-ii-vol-Mesher Top2Vol-Mesher.o 
-#	@echo ""
+
+topIIvol_PreProc.o: topIIvol_PreProc.cpp ./../lib/LogoTopiiVolCpp.hpp
+	$(CXX) -c topIIvol_PreProc.cpp -std=c++11
+
+#g++ -L/home/catA/mb258512/Install/TarPackages/SALOME-9.9.0-native-UB22.04-SRC/BINARIES-UB22.04/MEDCOUPLING/lib -L/home/catA/mb258512/Install/TarPackages/SALOME-9.9.0-native-UB22.04-SRC/BINARIES-UB22.04/medfile/lib -L/home/catA/mb258512/Install/TarPackages/SALOME-9.9.0-native-UB22.04-SRC/BINARIES-UB22.04/hdf5/lib -o topIIvol_Mesher topIIvol_Mesher.o -lmedloader -lmedcoupling -linterpkernel -lmedcouplingremapper -lmedC -lhdf5
+
+
+topIIvol_Mesher.o: topIIvol_Mesher.cpp
+if HAVEMED
+	$(CXX) $(CXXFLAGS_MED) -c topIIvol_Mesher.cpp -std=c++11  -DMEDCOUPLING
+else !HAVEMED
+	$(CXX) -c topIIvol_Mesher.cpp -std=c++11
+	@echo ""
+endif
 
 check-local:
 	./topIIvol_PreProc --xpoints 500 --ypoints 451 --zpoints 7 --xskip 10 --yskip 10 --in ../../data/DEM_10m.xyz --out out-coarse.xyz
