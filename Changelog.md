@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to top-ii-vol mesher will be documented in this file.
 
+## [Rolling Release]
+
+### Added
+
+- Added `.med` extension for `topIIvol_Mesher`
+- New configuration flags `--with-medfile`, `--with-medcoupling`  and `--with-hdf5` for providing med support.
+
+### Changed
+
+- `topIIvol_DistMesher` input DEM is given with `.xyz` suffix e.g. `--in filename.xyz `.
+
 ## [1.3] 11-01-2021
 
 ### Added
@@ -8,15 +19,13 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 - New flags `--partition_x`, `--partition_y`  and `--partition_z` to decide # of partitions in each direction. 
 - Installation now performed at `/usr/local/bin` or `/usr/bin`.
 - More tutorials and examples.
-- Diffrent labeling for diffrent surfaces for `.msh` mesher.
+- Different labeling for different surfaces for `.msh` mesher.
 - Faster file writing for sequential mesher and preprocessor.
 - Faster and more robust parallel partitonoing of point cloud for distributed mesher.
 
 ### Changed
 
 - Tools renamed from `top-ii-vol_*`  to `topIIvol_*`.
-
-### Removed
 
 ### Bug
 
@@ -53,7 +62,7 @@ All notable changes to top-ii-vol mesher will be documented in this file.
 
 ### Changed
 - Name changes from Top2Vol to top-ii-vol
-- Larger buffer size written at once to iprove performance 5X
+- Larger buffer size written at once to improve performance 5X
 
 ## [1.0] 2019‑12‑19
 ### Added
