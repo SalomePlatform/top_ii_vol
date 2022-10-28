@@ -18,13 +18,12 @@
 
 *******************************************************************************/
 
-
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <mpi.h>
 
 #include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -151,8 +150,8 @@ int main(int argc, char **argv)
     int pnty = 29  ;
     int pntz = 100 ;
 
-    std::string *inputfile  = new std::string();
-    std::string *outputfile = new std::string();
+    string *inputfile  = new string();
+    string *outputfile = new string();
 
     *inputfile  = "./../../data/DEM_160m.xyz";
     *outputfile = "Tetra-ParTop2Vol.mesh"    ;
